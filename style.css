@@ -734,3 +734,144 @@ h1 {
     margin-top: 12px;
     font-size: 0.85rem;
 }
+/* ============= ГЛАВНОЕ НАЗВАНИЕ НА СТРАНИЦЕ ПЛЕЕРА ============= */
+.film-title-main {
+    font-size: 2rem;
+    text-align: left;
+    background: none;
+    color: white;
+    margin-bottom: 20px;
+}
+
+/* ============= ЛЕЙАУТ: НА ПК ПОСТЕР СЛЕВА, КНОПКИ ПОД НИМ ============= */
+.player-layout {
+    display: flex;
+    gap: 40px;
+    margin: 30px 0;
+    flex-wrap: wrap;
+}
+
+.film-info-panel {
+    flex: 1;
+    min-width: 250px;
+    background: rgba(30, 30, 40, 0.5);
+    backdrop-filter: blur(10px);
+    border-radius: 24px;
+    padding: 24px;
+    border: 1px solid rgba(255,255,255,0.1);
+}
+
+.film-info-panel img {
+    width: 100%;
+    max-width: 280px;
+    border-radius: 20px;
+    margin: 0 auto 20px auto;
+    display: block;
+}
+
+.film-description-full {
+    font-size: 0.95rem;
+    line-height: 1.5;
+    color: #ccc;
+    text-align: left;
+    width: 100%;
+}
+
+/* ПАНЕЛЬ С КНОПКАМИ (ОТДЕЛЬНО, НЕ ВНУТРИ FILM-INFO) */
+.actions-panel {
+    flex: 0 0 200px;
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    justify-content: flex-start;
+}
+
+.rate-btn, .download-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    width: 100%;
+    padding: 12px 16px;
+    border-radius: 40px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    text-decoration: none;
+    font-size: 0.9rem;
+    border: none;
+    box-sizing: border-box;
+}
+
+.rate-btn {
+    background: rgba(255, 193, 7, 0.15);
+    border: 1px solid #ffc107;
+    color: #ffc107;
+}
+
+.rate-btn:hover {
+    background: #ffc107;
+    color: #1a1a2e;
+    transform: scale(1.02);
+}
+
+.download-btn {
+    background: rgba(76, 175, 80, 0.15);
+    border: 1px solid #4caf50;
+    color: #4caf50;
+}
+
+.download-btn:hover {
+    background: #4caf50;
+    color: white;
+    transform: scale(1.02);
+}
+
+/* ============= АДАПТАЦИЯ ПОД ТЕЛЕФОН ============= */
+@media (max-width: 768px) {
+    .film-title-main {
+        font-size: 1.5rem;
+        margin-bottom: 15px;
+    }
+    
+    /* На телефоне: постер и кнопки — одной строкой? Нет, ты просил кнопки РЯДОМ */
+    .player-layout {
+        flex-direction: column;
+        gap: 20px;
+    }
+    
+    .film-info-panel {
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        gap: 20px;
+        text-align: left;
+    }
+    
+    .film-info-panel img {
+        max-width: 100px;
+        margin: 0;
+    }
+    
+    .film-description-full {
+        flex: 1;
+        margin-bottom: 0;
+    }
+    
+    /* КНОПКИ РЯДОМ, НЕ ДРУГ НА ДРУГЕ */
+    .actions-panel {
+        flex-direction: row;
+        gap: 12px;
+        width: 100%;
+    }
+    
+    .rate-btn, .download-btn {
+        flex: 1;
+        padding: 10px 12px;
+        font-size: 0.8rem;
+    }
+    
+    .video-wrapper {
+        margin-bottom: 15px;
+    }
+}
