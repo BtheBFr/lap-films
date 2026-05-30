@@ -34,6 +34,7 @@
         </div>
     </div>
 
+    <!-- МОДАЛЬНОЕ ОКНО -->
     <div id="suggestModal" class="modal">
         <div class="modal-content">
             <span class="modal-close">&times;</span>
@@ -49,11 +50,14 @@
             
             <div id="suggestStatus" class="suggest-status"></div>
             
-            <div class="suggestions-divider"></div>
+            <button id="showSuggestedBtn" class="show-suggested-btn">📋 Предложенные фильмы</button>
             
-            <h4 class="suggested-title">📋 Предложенные фильмы</h4>
-            <div id="suggestedFilmsList" class="suggested-films-list">
-                <div class="loading-text">Загрузка...</div>
+            <div id="suggestedFilmsContainer" style="display: none;">
+                <div class="suggestions-divider"></div>
+                <h4 class="suggested-title">📋 Список предложенных фильмов</h4>
+                <div id="suggestedFilmsList" class="suggested-films-list">
+                    <div class="loading-text">Загрузка...</div>
+                </div>
             </div>
         </div>
     </div>
