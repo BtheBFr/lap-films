@@ -6,7 +6,7 @@ const FILMS_CATALOG = [
         description: "Ждун возвращается на Землю, чтобы предупредить об угрозе своего друга, мальчика Никиту, отдыхающего в летнем лагере. Злодеи из космоса планируют визит на Землю, и этот визит грозит землянам настоящей катастрофой. Никите предстоит собрать команду и дать отпор непрошенным гостям.",
         poster: "posters/ждун2.png",
         seasons: "none",
-        videoUrl: "https://drive.usercontent.google.com/download?id=11dKW3RGr1td0_P8HWp_O7F5mGyFQSEZR&export=download&authuser=0",
+        videoUrl: "https://vkvideo.ru/video_ext.php?oid=-236370879&id=456239020&hash=17bdef8fa681bb08&hd=3",
         downloadUrl: "https://drive.usercontent.google.com/download?id=11dKW3RGr1td0_P8HWp_O7F5mGyFQSEZR&export=download&authuser=0",
         betterVersionReady: false,
         betterVersionDate: null,
