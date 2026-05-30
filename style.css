@@ -87,7 +87,7 @@ h1 {
     color: #aaa;
 }
 
-/* ============= МАЛЕНЬКИЕ КАРТОЧКИ НА ГЛАВНОЙ ============= */
+/* ============= КАРТОЧКИ НА ГЛАВНОЙ ============= */
 .films-grid {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
@@ -170,7 +170,7 @@ h1 {
     transform: translateY(-2px);
 }
 
-/* ============= СТРАНИЦА ПЛЕЕРА (2 КОЛОНКИ) ============= */
+/* ============= СТРАНИЦА ПЛЕЕРА ============= */
 .player-layout {
     display: flex;
     gap: 40px;
@@ -275,15 +275,28 @@ video {
 }
 
 .back-link {
-    display: inline-block;
-    color: #e50914;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: rgba(255, 255, 255, 0.08);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    padding: 10px 24px;
+    border-radius: 60px;
+    color: white;
     text-decoration: none;
-    margin-bottom: 20px;
     font-weight: 600;
+    font-size: 0.95rem;
+    transition: all 0.3s ease;
+    margin-bottom: 30px;
+    width: auto;
+    cursor: pointer;
 }
 
 .back-link:hover {
-    transform: translateX(-3px);
+    background: #e50914;
+    border-color: white;
+    transform: translateX(-5px);
 }
 
 .player-buttons {
@@ -311,6 +324,8 @@ video {
     padding: 32px;
     max-width: 450px;
     width: 90%;
+    max-height: 80vh;
+    overflow-y: auto;
 }
 
 .modal-content h3 {
@@ -353,11 +368,86 @@ video {
     color: white;
     font-weight: 700;
     cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
 }
 
 .suggest-status {
     margin-top: 12px;
     text-align: center;
+}
+
+/* ============= СПИННЕР ============= */
+.spinner {
+    display: inline-block;
+    width: 16px;
+    height: 16px;
+    border: 2px solid rgba(255,255,255,0.3);
+    border-radius: 50%;
+    border-top-color: white;
+    animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+    to { transform: rotate(360deg); }
+}
+
+/* ============= РАЗДЕЛИТЕЛЬ ============= */
+.suggestions-divider {
+    height: 1px;
+    background: rgba(255,255,255,0.2);
+    margin: 20px 0 15px;
+}
+
+.suggested-title {
+    font-size: 1.1rem;
+    margin-bottom: 12px;
+    color: #e50914;
+}
+
+.suggested-films-list {
+    max-height: 200px;
+    overflow-y: auto;
+    background: rgba(0,0,0,0.3);
+    border-radius: 16px;
+    padding: 10px;
+}
+
+.suggested-film-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 8px 12px;
+    border-bottom: 1px solid rgba(255,255,255,0.1);
+    font-size: 0.9rem;
+}
+
+.suggested-film-item:last-child {
+    border-bottom: none;
+}
+
+.suggested-film-name {
+    font-weight: 500;
+}
+
+.suggested-film-date {
+    color: #888;
+    font-size: 0.75rem;
+}
+
+.empty-suggestions {
+    text-align: center;
+    color: #888;
+    padding: 20px;
+    font-size: 0.85rem;
+}
+
+.loading-text {
+    text-align: center;
+    color: #aaa;
+    padding: 15px;
 }
 
 /* ============= АДАПТАЦИЯ ============= */
