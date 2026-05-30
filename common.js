@@ -2,18 +2,14 @@
 let currentFilmId = null;
 let allFilms = [];
 
-// ============= НАСТРОЙКА GOOGLE TABLES =============
-// ЗАМЕНИ НА СВОЮ ССЫЛКУ ПОСЛЕ НАСТРОЙКИ
 const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/ВАШ_КОД/exec";
 
-// ============= ПОИСК (по title И searchTerms) =============
+// ============= ПОИСК =============
 function searchFilms(query) {
     if (!query.trim()) return allFilms;
     const lowerQuery = query.toLowerCase().trim();
     return allFilms.filter(film => {
-        // Поиск по названию
         if (film.title.toLowerCase().includes(lowerQuery)) return true;
-        // Поиск по searchTerms (ключевым словам)
         if (film.searchTerms && film.searchTerms.some(term => term.toLowerCase().includes(lowerQuery))) return true;
         return false;
     });
@@ -33,42 +29,24 @@ function renderFilmsGrid(filmsToRender) {
     const noResults = document.getElementById('noResults');
     if (noResults) noResults.style.display = 'none';
     
+    // Маленькие карточки, кликабельны целиком
     grid.innerHTML = filmsToRender.map(film => `
         <div class="film-card" data-id="${film.id}">
             <img src="${film.poster}" alt="${film.title}" loading="lazy">
-            <div class="film-card-content">
-                <h3>${film.title}</h3>
-                <p class="film-description">${film.description || ''}</p>
-                <a href="player.html?id=${film.id}" class="watch-btn">Смотреть</a>
-            </div>
+            <h3>${film.title}</h3>
         </div>
     `).join('');
+    
+    // Клик по всей карточке
+    document.querySelectorAll('.film-card').forEach(card => {
+        card.addEventListener('click', (e) => {
+            const id = card.dataset.id;
+            window.location.href = `player.html?id=${id}`;
+        });
+    });
 }
 
-// ============= ПРЕДЛОЖЕНИЯ (БЕЗ ДУБЛЕЙ) =============
-function getRandomSuggestions(excludeId, count = 4) {
-    let others = allFilms.filter(f => f.id !== excludeId);
-    for (let i = others.length - 1; i > 0; i--) {
-        const j = Math.floor(Math.random() * (i + 1));
-        [others[i], others[j]] = [others[j], others[i]];
-    }
-    return others.slice(0, count);
-}
-
-function renderSuggestions(containerId, excludeId) {
-    const container = document.getElementById(containerId);
-    if (!container) return;
-    const suggestions = getRandomSuggestions(excludeId, 4);
-    container.innerHTML = suggestions.map(film => `
-        <div class="suggestion-card" data-id="${film.id}">
-            <img src="${film.poster}" alt="${film.title}">
-            <h4>${film.title}</h4>
-            <a href="player.html?id=${film.id}">Смотреть →</a>
-        </div>
-    `).join('');
-}
-
-// ============= ЛОГИКА ПЛЕЕРА =============
+// ============= ЛОГИКА ПЛЕЕРА (КАРТОЧКА СЛЕВА, ПЛЕЕР СПРАВА) =============
 function initPlayer() {
     const urlParams = new URLSearchParams(window.location.search);
     const filmId = urlParams.get('id');
@@ -83,65 +61,85 @@ function initPlayer() {
         return;
     }
 
-    const playerHeader = document.getElementById('playerHeader');
+    // Левая панель: постер и описание
+    const filmPoster = document.getElementById('filmPoster');
+    const filmDescription = document.getElementById('filmDescription');
+    const filmTitle = document.getElementById('filmTitle');
+    const seasonSeriesNav = document.getElementById('seasonSeriesNav');
+    const watchBtn = document.getElementById('watchBtn');
     const videoPlayer = document.getElementById('mainPlayer');
-
+    
+    filmPoster.src = film.poster;
+    filmDescription.textContent = film.description || 'Описание отсутствует';
+    filmTitle.textContent = film.title;
+    
     if (film.seasons === "none") {
-        playerHeader.innerHTML = `<h1>${film.title}</h1>`;
-        videoPlayer.src = film.videoUrl;
-        videoPlayer.poster = film.poster;
+        // Фильм без серий
+        seasonSeriesNav.innerHTML = '';
+        watchBtn.onclick = () => {
+            videoPlayer.src = film.videoUrl;
+            videoPlayer.poster = film.poster;
+            videoPlayer.play();
+        };
     } 
     else {
-        let seasonNum = urlParams.get('season') || Object.keys(film.seasons)[0];
-        let seriesNum = urlParams.get('series') || Object.keys(film.seasons[seasonNum].series)[0];
+        // Сериал с сезонами
+        let currentSeason = urlParams.get('season') || Object.keys(film.seasons)[0];
+        let currentSeries = urlParams.get('series') || Object.keys(film.seasons[currentSeason].series)[0];
         
-        function renderSeasonSeries() {
-            const season = film.seasons[seasonNum];
+        function renderNav() {
+            const season = film.seasons[currentSeason];
             if (!season) return;
-            const series = season.series[seriesNum];
-            if (!series) return;
             
-            videoPlayer.src = series.videoUrl;
-            videoPlayer.poster = film.poster;
-            
-            playerHeader.innerHTML = `
-                <h1>${film.title} — ${season.title} — Серия ${seriesNum}</h1>
+            let html = `
                 <div class="season-nav">
                     ${Object.keys(film.seasons).map(sn => `
-                        <button class="season-btn ${sn == seasonNum ? 'active' : ''}" data-season="${sn}">
+                        <button class="season-btn ${sn == currentSeason ? 'active' : ''}" data-season="${sn}">
                             Сезон ${sn}
                         </button>
                     `).join('')}
                 </div>
                 <div class="series-nav">
-                    ${Object.keys(film.seasons[seasonNum].series).map(srn => `
-                        <button class="series-btn ${srn == seriesNum ? 'active' : ''}" data-series="${srn}">
-                            Серия ${srn}
+                    ${Object.keys(film.seasons[currentSeason].series).map(srn => `
+                        <button class="series-btn ${srn == currentSeries ? 'active' : ''}" data-series="${srn}">
+                            Серия ${srn}: ${film.seasons[currentSeason].series[srn].title}
                         </button>
                     `).join('')}
                 </div>
             `;
+            seasonSeriesNav.innerHTML = html;
             
+            // Обработчики сезонов
             document.querySelectorAll('.season-btn').forEach(btn => {
                 btn.addEventListener('click', (e) => {
-                    seasonNum = btn.dataset.season;
-                    seriesNum = Object.keys(film.seasons[seasonNum].series)[0];
-                    renderSeasonSeries();
-                    updateUrlWithoutReload(filmId, seasonNum, seriesNum);
+                    currentSeason = btn.dataset.season;
+                    currentSeries = Object.keys(film.seasons[currentSeason].series)[0];
+                    renderNav();
+                    updateUrlWithoutReload(filmId, currentSeason, currentSeries);
                 });
             });
+            
+            // Обработчики серий
             document.querySelectorAll('.series-btn').forEach(btn => {
                 btn.addEventListener('click', (e) => {
-                    seriesNum = btn.dataset.series;
-                    renderSeasonSeries();
-                    updateUrlWithoutReload(filmId, seasonNum, seriesNum);
+                    currentSeries = btn.dataset.series;
+                    renderNav();
+                    updateUrlWithoutReload(filmId, currentSeason, currentSeries);
                 });
             });
         }
-        renderSeasonSeries();
+        
+        renderNav();
+        
+        watchBtn.onclick = () => {
+            const series = film.seasons[currentSeason].series[currentSeries];
+            if (series) {
+                videoPlayer.src = series.videoUrl;
+                videoPlayer.poster = film.poster;
+                videoPlayer.play();
+            }
+        };
     }
-
-    renderSuggestions('suggestionsGrid', filmId);
 }
 
 function updateUrlWithoutReload(filmId, season, series) {
@@ -154,7 +152,6 @@ async function sendToGoogleSheets(filmName, comment) {
     if (!GOOGLE_SCRIPT_URL || GOOGLE_SCRIPT_URL === "https://script.google.com/macros/s/ВАШ_КОД/exec") {
         return { success: false, message: "Форма временно недоступна" };
     }
-    
     try {
         await fetch(GOOGLE_SCRIPT_URL, {
             method: 'POST',
@@ -175,27 +172,31 @@ async function sendToGoogleSheets(filmName, comment) {
 // ============= МОДАЛЬНОЕ ОКНО =============
 function initModal() {
     const modal = document.getElementById('suggestModal');
-    const openBtn = document.getElementById('suggestFilmBtn');
+    const openBtns = document.querySelectorAll('#suggestFilmBtn');
     const closeSpan = document.querySelector('.modal-close');
     const submitBtn = document.getElementById('submitSuggestionBtn');
     const filmInput = document.getElementById('suggestFilmInput');
     const commentInput = document.getElementById('suggestCommentInput');
     const statusDiv = document.getElementById('suggestStatus');
     
-    if (!openBtn || !modal) return;
+    if (!modal) return;
     
-    openBtn.onclick = () => {
-        modal.style.display = 'flex';
-        if (filmInput) filmInput.value = '';
-        if (commentInput) commentInput.value = '';
-        if (statusDiv) statusDiv.innerHTML = '';
-    }
+    openBtns.forEach(btn => {
+        if (btn) {
+            btn.onclick = () => {
+                modal.style.display = 'flex';
+                if (filmInput) filmInput.value = '';
+                if (commentInput) commentInput.value = '';
+                if (statusDiv) statusDiv.innerHTML = '';
+            };
+        }
+    });
     
     if (closeSpan) closeSpan.onclick = () => modal.style.display = 'none';
     
     window.onclick = (event) => {
         if (event.target === modal) modal.style.display = 'none';
-    }
+    };
     
     if (submitBtn) {
         submitBtn.onclick = async () => {
@@ -223,7 +224,6 @@ document.addEventListener('DOMContentLoaded', () => {
     // Главная страница
     if (document.getElementById('filmsGrid')) {
         renderFilmsGrid(allFilms);
-        renderSuggestions('suggestionsGrid', null);
         
         const searchInput = document.getElementById('searchInput');
         const clearBtn = document.getElementById('searchClear');
@@ -252,11 +252,11 @@ document.addEventListener('DOMContentLoaded', () => {
         initPlayer();
     }
     
-    // Ссылка на другие проекты (ЗАМЕНИ НА СВОЮ)
-    const otherLink = document.getElementById('otherProjectsLink');
-    if (otherLink) {
-        otherLink.href = '#'; // СЮДА ТВОЮ ССЫЛКУ
-    }
+    // Ссылка на другие проекты (замени на свою)
+    const otherLinks = document.querySelectorAll('#otherProjectsLink');
+    otherLinks.forEach(link => {
+        if (link) link.href = '#'; // СЮДА ТВОЮ ССЫЛКУ
+    });
     
     initModal();
 });
