@@ -4,7 +4,7 @@ const FILMS_CATALOG = [
         id: "zhdun2",
         title: "Ждун 2",
         searchTerms: ["ждун", "ждун2", "ждун 2", "zhdun", "zhdun2", "ждуг", "ждуний", "серый", "великан"],
-        description: "Продолжение приключений серого великана",
+        description: "Продолжение приключений серого великана. Ждун возвращается в новом захватывающем приключении!",
         poster: "https://via.placeholder.com/300x450?text=Zhdun2",
         seasons: "none",
         videoUrl: "https://example.com/video/zhdun2.mp4"
@@ -13,43 +13,33 @@ const FILMS_CATALOG = [
         id: "obsessiya",
         title: "Обсессия",
         searchTerms: ["обсессия", "obsessiya", "obsessia", "одержимость", "триллер", "психологический"],
-        description: "Психологический триллер о навязчивой идее",
+        description: "Психологический триллер о навязчивой идее, которая меняет всё.",
         poster: "https://via.placeholder.com/300x450?text=Obsessiya",
         seasons: "none",
         videoUrl: "https://example.com/video/obsessiya.mp4"
+    },
+    {
+        id: "test-serial",
+        title: "Тестовый сериал",
+        searchTerms: ["тест", "сериал", "test", "serial"],
+        description: "Пример сериала с несколькими сезонами и сериями",
+        poster: "https://via.placeholder.com/300x450?text=TestSerial",
+        seasons: {
+            "1": {
+                title: "Сезон 1",
+                series: {
+                    "1": { title: "Серия 1 - Начало", videoUrl: "https://example.com/s1e1.mp4" },
+                    "2": { title: "Серия 2 - Продолжение", videoUrl: "https://example.com/s1e2.mp4" },
+                    "3": { title: "Серия 3 - Финал", videoUrl: "https://example.com/s1e3.mp4" }
+                }
+            },
+            "2": {
+                title: "Сезон 2",
+                series: {
+                    "1": { title: "Серия 1 - Новый поворот", videoUrl: "https://example.com/s2e1.mp4" },
+                    "2": { title: "Серия 2 - Развязка", videoUrl: "https://example.com/s2e2.mp4" }
+                }
+            }
+        }
     }
-    // ===== ДОБАВЛЯЙ НОВЫЕ ФИЛЬМЫ СЮДА =====
-    // {
-    //     id: "nazvanie",
-    //     title: "Название фильма",
-    //     searchTerms: ["ключ1", "ключ2", "ключ3"],
-    //     description: "Описание",
-    //     poster: "ссылка_на_постер",
-    //     seasons: "none",
-    //     videoUrl: "ссылка_на_видео"
-    // },
-    // 
-    // ===== ПРИМЕР СЕРИАЛА С СЕЗОНАМИ =====
-    // {
-    //     id: "serial",
-    //     title: "Название сериала",
-    //     searchTerms: ["сериал", "ключ1"],
-    //     description: "Описание сериала",
-    //     poster: "ссылка_на_постер",
-    //     seasons: {
-    //         "1": {
-    //             title: "Сезон 1",
-    //             series: {
-    //                 "1": { title: "Серия 1", videoUrl: "ссылка_1" },
-    //                 "2": { title: "Серия 2", videoUrl: "ссылка_2" }
-    //             }
-    //         },
-    //         "2": {
-    //             title: "Сезон 2",
-    //             series: {
-    //                 "1": { title: "Серия 1", videoUrl: "ссылка_3" }
-    //             }
-    //         }
-    //     }
-    // }
 ];
