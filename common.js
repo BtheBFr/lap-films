@@ -2,7 +2,7 @@
 let currentFilmId = null;
 let allFilms = [];
 
-// ↓↓↓ ВСТАВЬ СЮДА СВОЮ ССЫЛКУ ИЗ APPS SCRIPT ↓↓↓
+// ↓↓↓ ВСТАВЬ СВОЮ ССЫЛКУ ИЗ APPS SCRIPT ↓↓↓
 const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycby86FMOsqBSKIP8qE_1T8W4G5mgINcSiV4z7TnIaVlHpvHR7YYROpSXrhMGO24yfT1C/exec";
 // ↑↑↑ ВСТАВЬ СВОЮ ССЫЛКУ ↑↑↑
 
@@ -166,19 +166,21 @@ async function sendToGoogleSheets(filmName, comment) {
 
 // ============= ЗАГРУЗКА СПИСКА ПРЕДЛОЖЕННЫХ ФИЛЬМОВ =============
 async function loadSuggestedFilms() {
-    const container = document.getElementById('suggestedFilmsList');
-    if (!container) return;
+    const listContainer = document.getElementById('suggestedFilmsList');
+    if (!listContainer) return;
+    
+    listContainer.innerHTML = '<div class="loading-text">Загрузка...</div>';
     
     try {
         const response = await fetch(`${GOOGLE_SCRIPT_URL}?action=get`);
         const films = await response.json();
         
         if (!films || films.length === 0) {
-            container.innerHTML = '<p class="empty-suggestions">Пока нет предложенных фильмов</p>';
+            listContainer.innerHTML = '<p class="empty-suggestions">Пока нет предложенных фильмов</p>';
             return;
         }
         
-        container.innerHTML = films.map(film => `
+        listContainer.innerHTML = films.map(film => `
             <div class="suggested-film-item">
                 <span class="suggested-film-name">🎬 ${film.name}</span>
                 <span class="suggested-film-date">${film.date ? new Date(film.date).toLocaleDateString() : ''}</span>
@@ -186,7 +188,7 @@ async function loadSuggestedFilms() {
         `).join('');
     } catch (error) {
         console.error('Ошибка загрузки предложений:', error);
-        container.innerHTML = '<p class="empty-suggestions">Не удалось загрузить список</p>';
+        listContainer.innerHTML = '<p class="empty-suggestions">Не удалось загрузить список</p>';
     }
 }
 
@@ -196,6 +198,8 @@ function initModal() {
     const openBtns = document.querySelectorAll('#suggestFilmBtn');
     const closeSpan = document.querySelector('.modal-close');
     const submitBtn = document.getElementById('submitSuggestionBtn');
+    const showSuggestedBtn = document.getElementById('showSuggestedBtn');
+    const suggestedContainer = document.getElementById('suggestedFilmsContainer');
     const filmInput = document.getElementById('suggestFilmInput');
     const commentInput = document.getElementById('suggestCommentInput');
     const statusDiv = document.getElementById('suggestStatus');
@@ -203,17 +207,29 @@ function initModal() {
     
     if (!modal) return;
     
+    // Открытие модалки
     openBtns.forEach(btn => {
         if (btn) {
-            btn.onclick = async () => {
+            btn.onclick = () => {
                 modal.style.display = 'flex';
                 if (filmInput) filmInput.value = '';
                 if (commentInput) commentInput.value = '';
                 if (statusDiv) statusDiv.innerHTML = '';
-                await loadSuggestedFilms();
+                // Скрываем список при открытии
+                if (suggestedContainer) suggestedContainer.style.display = 'none';
             };
         }
     });
+    
+    // Кнопка "Предложенные фильмы"
+    if (showSuggestedBtn) {
+        showSuggestedBtn.onclick = async () => {
+            if (suggestedContainer) {
+                suggestedContainer.style.display = 'block';
+                await loadSuggestedFilms();
+            }
+        };
+    }
     
     if (closeSpan) closeSpan.onclick = () => modal.style.display = 'none';
     
@@ -221,6 +237,7 @@ function initModal() {
         if (event.target === modal) modal.style.display = 'none';
     };
     
+    // Отправка предложения
     if (submitBtn) {
         submitBtn.onclick = async () => {
             const filmName = filmInput.value.trim();
@@ -242,7 +259,10 @@ function initModal() {
                 if (statusDiv) statusDiv.innerHTML = `<span style="color:#4caf50">${result.message}</span>`;
                 if (filmInput) filmInput.value = '';
                 if (commentInput) commentInput.value = '';
-                await loadSuggestedFilms();
+                // Если список был открыт — обновляем его
+                if (suggestedContainer && suggestedContainer.style.display === 'block') {
+                    await loadSuggestedFilms();
+                }
                 setTimeout(() => {
                     if (statusDiv) statusDiv.innerHTML = '';
                 }, 3000);
