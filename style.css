@@ -29,6 +29,7 @@ body {
     }
 }
 
+/* ============= ЗАГОЛОВОК ============= */
 h1 {
     font-size: 3rem;
     font-weight: 800;
@@ -125,7 +126,7 @@ h1 {
     font-weight: 600;
 }
 
-/* ============= ДВЕ КНОПКИ РЯДОМ ============= */
+/* ============= КНОПКИ РЯДОМ ============= */
 .buttons-row {
     display: flex;
     justify-content: center;
@@ -171,45 +172,7 @@ h1 {
 }
 
 /* ============= СТРАНИЦА ПЛЕЕРА ============= */
-.player-layout {
-    display: flex;
-    gap: 40px;
-    margin: 30px 0;
-    flex-wrap: wrap;
-}
-
-.film-info-panel {
-    flex: 1;
-    min-width: 250px;
-    background: rgba(30, 30, 40, 0.5);
-    backdrop-filter: blur(10px);
-    border-radius: 24px;
-    padding: 24px;
-    text-align: center;
-    border: 1px solid rgba(255,255,255,0.1);
-    align-self: flex-start;
-}
-
-.film-info-panel img {
-    width: 100%;
-    max-width: 280px;
-    border-radius: 20px;
-    margin-bottom: 20px;
-}
-
-.film-description-full {
-    font-size: 0.95rem;
-    line-height: 1.5;
-    color: #ccc;
-    text-align: left;
-}
-
-.player-panel {
-    flex: 2;
-    min-width: 300px;
-}
-
-.player-panel h1 {
+.player-page h1 {
     font-size: 2rem;
     text-align: left;
     background: none;
@@ -217,44 +180,14 @@ h1 {
     margin-bottom: 15px;
 }
 
-.video-wrapper {
-    background: #000;
-    border-radius: 20px;
-    overflow: hidden;
-    aspect-ratio: 16 / 9;
-    margin-bottom: 20px;
-}
-
-video {
-    width: 100%;
-    height: 100%;
-}
-
-.season-series-nav {
-    margin: 20px 0;
-}
-
-.season-nav, .series-nav {
-    display: flex;
-    gap: 10px;
-    flex-wrap: wrap;
-    margin-bottom: 15px;
-}
-
-.season-btn, .series-btn {
-    background: #2a2a3a;
-    border: 1px solid #444;
-    padding: 8px 18px;
+.better-version-notice {
+    background: rgba(229, 9, 20, 0.2);
+    border: 1px solid #e50914;
     border-radius: 40px;
-    color: white;
-    cursor: pointer;
-    font-size: 0.85rem;
-    transition: 0.2s;
-}
-
-.season-btn.active, .series-btn.active {
-    background: #e50914;
-    border-color: white;
+    padding: 10px 20px;
+    text-align: center;
+    margin: 15px 0;
+    font-size: 0.9rem;
 }
 
 .watch-btn-large {
@@ -268,42 +201,158 @@ video {
     font-weight: 700;
     cursor: pointer;
     transition: 0.3s;
+    margin: 15px 0;
 }
 
 .watch-btn-large:hover {
     transform: scale(1.02);
 }
 
-.back-link {
+.video-wrapper {
+    background: #000;
+    border-radius: 20px;
+    overflow: hidden;
+    aspect-ratio: 16 / 9;
+    margin-bottom: 30px;
+}
+
+video {
+    width: 100%;
+    height: 100%;
+}
+
+/* ============= ПОСТЕР И КНОПКИ ============= */
+.info-actions-row {
+    display: flex;
+    gap: 30px;
+    margin: 20px 0 40px;
+    flex-wrap: wrap;
+}
+
+.film-info-panel {
+    flex: 2;
+    min-width: 200px;
+    background: rgba(30, 30, 40, 0.5);
+    backdrop-filter: blur(10px);
+    border-radius: 24px;
+    padding: 20px;
+    text-align: center;
+    border: 1px solid rgba(255,255,255,0.1);
+}
+
+.film-info-panel img {
+    width: 100%;
+    max-width: 200px;
+    border-radius: 16px;
+    margin-bottom: 15px;
+}
+
+.film-description-full {
+    font-size: 0.9rem;
+    line-height: 1.5;
+    color: #ccc;
+    text-align: left;
+}
+
+.actions-panel {
+    flex: 1;
+    min-width: 180px;
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    justify-content: flex-start;
+}
+
+.rate-btn, .download-btn {
     display: inline-flex;
     align-items: center;
+    justify-content: center;
     gap: 8px;
-    background: rgba(255, 255, 255, 0.08);
-    backdrop-filter: blur(10px);
-    border: 1px solid rgba(255, 255, 255, 0.2);
-    padding: 10px 24px;
-    border-radius: 60px;
-    color: white;
-    text-decoration: none;
+    padding: 12px 20px;
+    border-radius: 40px;
     font-weight: 600;
-    font-size: 0.95rem;
-    transition: all 0.3s ease;
-    margin-bottom: 30px;
-    width: auto;
     cursor: pointer;
+    transition: all 0.3s ease;
+    text-decoration: none;
+    font-size: 0.95rem;
+    width: 100%;
 }
 
-.back-link:hover {
-    background: #e50914;
-    border-color: white;
-    transform: translateX(-5px);
+.rate-btn {
+    background: rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    color: white;
 }
 
-.player-buttons {
-    margin-top: 50px;
+.rate-btn:hover {
+    background: #ffc107;
+    color: #1a1a2e;
 }
 
-/* ============= МОДАЛЬНОЕ ОКНО ============= */
+.download-btn {
+    background: rgba(76, 175, 80, 0.2);
+    border: 1px solid #4caf50;
+    color: #4caf50;
+}
+
+.download-btn:hover {
+    background: #4caf50;
+    color: white;
+}
+
+/* ============= ОТЗЫВЫ ============= */
+.reviews-section {
+    margin-top: 30px;
+    padding-top: 30px;
+    border-top: 2px solid rgba(255, 255, 255, 0.1);
+}
+
+.reviews-section h3 {
+    font-size: 1.3rem;
+    margin-bottom: 20px;
+}
+
+.reviews-list {
+    background: rgba(30, 30, 40, 0.4);
+    border-radius: 20px;
+    padding: 20px;
+}
+
+.average-rating {
+    font-size: 1.1rem;
+    margin-bottom: 20px;
+    padding-bottom: 15px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.review-item {
+    padding: 15px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.review-item:last-child {
+    border-bottom: none;
+}
+
+.review-stars {
+    color: #ffc107;
+    font-size: 0.9rem;
+    margin-bottom: 8px;
+}
+
+.review-text {
+    color: #ddd;
+    font-size: 0.85rem;
+    line-height: 1.4;
+    margin-bottom: 5px;
+}
+
+.review-date {
+    color: #777;
+    font-size: 0.7rem;
+}
+
+/* ============= МОДАЛКИ ============= */
 .modal {
     display: none;
     position: fixed;
@@ -331,11 +380,6 @@ video {
 .modal-content h3 {
     font-size: 1.5rem;
     margin-bottom: 8px;
-}
-
-.modal-hint {
-    color: #aaa;
-    margin-bottom: 20px;
 }
 
 .modal-content input,
@@ -379,7 +423,22 @@ video {
     text-align: center;
 }
 
-/* ============= СПИННЕР ============= */
+/* ЗВЕЗДЫ */
+.stars-container {
+    display: flex;
+    gap: 10px;
+    justify-content: center;
+    margin: 20px 0;
+}
+
+.stars-container span {
+    font-size: 2rem;
+    cursor: pointer;
+    transition: 0.2s;
+    color: #555;
+}
+
+/* СПИННЕР */
 .spinner {
     display: inline-block;
     width: 16px;
@@ -394,7 +453,25 @@ video {
     to { transform: rotate(360deg); }
 }
 
-/* ============= РАЗДЕЛИТЕЛЬ ============= */
+/* ПРЕДЛОЖЕННЫЕ ФИЛЬМЫ */
+.show-suggested-btn {
+    width: 100%;
+    padding: 12px;
+    background: rgba(255, 255, 255, 0.08);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 40px;
+    color: white;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    margin-top: 10px;
+}
+
+.show-suggested-btn:hover {
+    background: #e50914;
+    border-color: white;
+}
+
 .suggestions-divider {
     height: 1px;
     background: rgba(255,255,255,0.2);
@@ -424,10 +501,6 @@ video {
     font-size: 0.9rem;
 }
 
-.suggested-film-item:last-child {
-    border-bottom: none;
-}
-
 .suggested-film-name {
     font-weight: 500;
 }
@@ -437,35 +510,46 @@ video {
     font-size: 0.75rem;
 }
 
-.empty-suggestions {
+.empty-suggestions, .loading-text {
     text-align: center;
     color: #888;
     padding: 20px;
     font-size: 0.85rem;
 }
 
-.loading-text {
-    text-align: center;
-    color: #aaa;
-    padding: 15px;
+.back-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: rgba(255, 255, 255, 0.08);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    padding: 10px 24px;
+    border-radius: 60px;
+    color: white;
+    text-decoration: none;
+    font-weight: 600;
+    font-size: 0.9rem;
+    transition: all 0.3s ease;
+    margin-bottom: 30px;
+    width: auto;
+    cursor: pointer;
 }
 
-/* ============= АДАПТАЦИЯ ============= */
+.back-link:hover {
+    background: #e50914;
+    border-color: white;
+    transform: translateX(-5px);
+}
+
+/* ============= АДАПТАЦИЯ ПОД ТЕЛЕФОН ============= */
 @media (max-width: 768px) {
-    .player-layout {
-        flex-direction: column;
+    body {
+        padding: 20px 15px;
     }
     
-    .film-info-panel {
-        display: flex;
-        gap: 20px;
-        align-items: center;
-        flex-wrap: wrap;
-    }
-    
-    .film-info-panel img {
-        max-width: 120px;
-        margin-bottom: 0;
+    h1 {
+        font-size: 2rem;
     }
     
     .films-grid {
@@ -481,151 +565,28 @@ video {
         padding: 8px 18px;
         font-size: 0.85rem;
     }
-}
-/* ============= КНОПКА "ПРЕДЛОЖЕННЫЕ ФИЛЬМЫ" ============= */
-.show-suggested-btn {
-    width: 100%;
-    padding: 12px;
-    background: rgba(255, 255, 255, 0.08);
-    border: 1px solid rgba(255, 255, 255, 0.2);
-    border-radius: 40px;
-    color: white;
-    font-weight: 600;
-    cursor: pointer;
-    transition: all 0.3s ease;
-    margin-top: 10px;
-}
-
-.show-suggested-btn:hover {
-    background: #e50914;
-    border-color: white;
-}
-/* ============= КНОПКИ ОЦЕНИТЬ И СКАЧАТЬ ============= */
-.film-actions {
-    display: flex;
-    gap: 15px;
-    margin-top: 25px;
-    justify-content: center;
-    flex-wrap: wrap;
-}
-
-.rate-btn, .download-btn {
-    display: inline-flex;
-    align-items: center;
-    gap: 8px;
-    padding: 10px 20px;
-    border-radius: 40px;
-    font-weight: 600;
-    cursor: pointer;
-    transition: all 0.3s ease;
-    text-decoration: none;
-    font-size: 0.9rem;
-}
-
-.rate-btn {
-    background: rgba(255, 255, 255, 0.1);
-    border: 1px solid rgba(255, 255, 255, 0.2);
-    color: white;
-}
-
-.rate-btn:hover {
-    background: #ffc107;
-    color: #1a1a2e;
-}
-
-.download-btn {
-    background: rgba(76, 175, 80, 0.2);
-    border: 1px solid #4caf50;
-    color: #4caf50;
-}
-
-.download-btn:hover {
-    background: #4caf50;
-    color: white;
-}
-
-/* ============= ЗВЕЗДЫ ДЛЯ ОЦЕНКИ ============= */
-.stars-container {
-    display: flex;
-    gap: 10px;
-    justify-content: center;
-    margin: 20px 0;
-}
-
-.stars-container span {
-    font-size: 2.5rem;
-    cursor: pointer;
-    transition: 0.2s;
-    color: #555;
-}
-
-.stars-container span:hover {
-    transform: scale(1.1);
-}
-
-.rate-modal {
-    max-width: 400px;
-    text-align: center;
-}
-
-/* ============= ОТЗЫВЫ ============= */
-.reviews-section {
-    margin-top: 50px;
-    padding-top: 30px;
-    border-top: 2px solid rgba(255, 255, 255, 0.1);
-}
-
-.reviews-section h3 {
-    font-size: 1.5rem;
-    margin-bottom: 20px;
-}
-
-.reviews-list {
-    background: rgba(30, 30, 40, 0.4);
-    border-radius: 20px;
-    padding: 20px;
-}
-
-.average-rating {
-    font-size: 1.2rem;
-    margin-bottom: 20px;
-    padding-bottom: 15px;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-}
-
-.review-item {
-    padding: 15px;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
-}
-
-.review-item:last-child {
-    border-bottom: none;
-}
-
-.review-stars {
-    color: #ffc107;
-    font-size: 1rem;
-    margin-bottom: 8px;
-}
-
-.review-text {
-    color: #ddd;
-    font-size: 0.9rem;
-    line-height: 1.4;
-    margin-bottom: 5px;
-}
-
-.review-date {
-    color: #777;
-    font-size: 0.7rem;
-}
-
-.better-version-notice {
-    background: rgba(229, 9, 20, 0.2);
-    border: 1px solid #e50914;
-    border-radius: 40px;
-    padding: 10px 20px;
-    text-align: center;
-    margin: 15px 0;
-    font-size: 0.9rem;
+    
+    .info-actions-row {
+        flex-direction: column;
+    }
+    
+    .film-info-panel {
+        display: flex;
+        gap: 15px;
+        align-items: center;
+        text-align: left;
+    }
+    
+    .film-info-panel img {
+        max-width: 100px;
+        margin-bottom: 0;
+    }
+    
+    .actions-panel {
+        flex-direction: row;
+    }
+    
+    .player-page h1 {
+        font-size: 1.5rem;
+    }
 }
