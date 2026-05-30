@@ -2,6 +2,7 @@
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
     <title>Плеер — lap-films</title>
     <link rel="stylesheet" href="style.css">
 </head>
@@ -9,22 +10,39 @@
     <div class="player-container">
         <a href="index.html" class="back-link">← Назад к каталогу</a>
         
-        <!-- Заголовок и навигация по сезонам/сериям -->
         <div id="playerHeader"></div>
         
-        <!-- Сам плеер -->
         <div class="video-wrapper">
             <video id="mainPlayer" controls width="100%" poster="">
                 Ваш браузер не поддерживает видео.
             </video>
         </div>
 
-        <!-- Тот же блок предложений внизу -->
+        <!-- БЛОК ПРЕДЛОЖЕНИЙ (без дублей текущего фильма) -->
         <section class="suggestions">
-            <h2>🎥 Вам также может понравиться</h2>
+            <h2>🔥 Вам также может понравиться</h2>
             <div class="suggestions-grid" id="suggestionsGrid"></div>
         </section>
+
+        <!-- КНОПКА "ПРЕДЛОЖИТЬ ФИЛЬМ/СЕРИАЛ" -->
+        <div class="suggest-film-container">
+            <button id="suggestFilmBtn" class="suggest-btn">📩 Предложить фильм / сериал</button>
+        </div>
     </div>
+
+    <!-- МОДАЛЬНОЕ ОКНО -->
+    <div id="suggestModal" class="modal">
+        <div class="modal-content">
+            <span class="modal-close">&times;</span>
+            <h3>📝 Предложить фильм или сериал</h3>
+            <p class="modal-hint">Напишите название, и мы постараемся добавить!</p>
+            <input type="text" id="suggestFilmInput" placeholder="Название фильма/сериала">
+            <textarea id="suggestCommentInput" rows="3" placeholder="Комментарий (по желанию)"></textarea>
+            <button id="submitSuggestionBtn" class="submit-suggest-btn">Отправить предложение</button>
+            <div id="suggestStatus" class="suggest-status"></div>
+        </div>
+    </div>
+
     <script src="films.js"></script>
     <script src="common.js"></script>
 </body>
