@@ -6,7 +6,7 @@
 }
 
 body {
-    font-family: 'Segoe UI', 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Roboto', sans-serif;
+    font-family: 'Segoe UI', 'Inter', system-ui, -apple-system, 'Roboto', sans-serif;
     background: linear-gradient(135deg, #0a0a0a 0%, #1a1a2e 100%);
     color: #ffffff;
     min-height: 100vh;
@@ -39,29 +39,73 @@ h1 {
     -webkit-background-clip: text;
     background-clip: text;
     color: transparent;
-    margin-bottom: 10px;
+    margin-bottom: 30px;
     letter-spacing: -1px;
 }
 
-.subtitle {
-    text-align: center;
-    color: #aaaaaa;
-    font-size: 1.2rem;
-    margin-bottom: 50px;
-    border-bottom: 1px solid rgba(255,255,255,0.1);
-    display: inline-block;
-    width: auto;
-    margin-left: auto;
-    margin-right: auto;
-    padding-bottom: 15px;
+/* ============= ПОИСК ============= */
+.search-container {
+    position: relative;
+    max-width: 500px;
+    margin: 0 auto 50px;
 }
 
-/* ============= СЕТКА ФИЛЬМОВ ============= */
+#searchInput {
+    width: 100%;
+    padding: 16px 50px 16px 24px;
+    background: rgba(30, 30, 40, 0.8);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255,255,255,0.2);
+    border-radius: 60px;
+    color: white;
+    font-size: 1rem;
+    transition: all 0.3s ease;
+}
+
+#searchInput:focus {
+    outline: none;
+    border-color: #e50914;
+    background: rgba(30, 30, 40, 0.95);
+    box-shadow: 0 0 15px rgba(229, 9, 20, 0.3);
+}
+
+#searchInput::placeholder {
+    color: #888;
+}
+
+.clear-btn {
+    position: absolute;
+    right: 15px;
+    top: 50%;
+    transform: translateY(-50%);
+    background: #555;
+    border: none;
+    color: white;
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    cursor: pointer;
+    font-size: 14px;
+    transition: 0.2s;
+}
+
+.clear-btn:hover {
+    background: #e50914;
+}
+
+.no-results {
+    text-align: center;
+    padding: 60px;
+    font-size: 1.3rem;
+    color: #aaa;
+}
+
+/* ============= СЕТКА ФИЛЬМОВ (ФИКСИРОВАННАЯ ВЫСОТА) ============= */
 .films-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
     gap: 35px;
-    margin: 50px 0 60px;
+    margin: 30px 0 60px;
 }
 
 .film-card {
@@ -71,8 +115,9 @@ h1 {
     overflow: hidden;
     transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
     border: 1px solid rgba(255,255,255,0.1);
-    cursor: pointer;
-    position: relative;
+    display: flex;
+    flex-direction: column;
+    height: 100%;
 }
 
 .film-card:hover {
@@ -83,7 +128,7 @@ h1 {
 
 .film-card img {
     width: 100%;
-    height: 400px;
+    aspect-ratio: 2 / 3;
     object-fit: cover;
     transition: transform 0.4s ease;
 }
@@ -92,17 +137,25 @@ h1 {
     transform: scale(1.05);
 }
 
+.film-card-content {
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    flex-grow: 1;
+}
+
 .film-card h3 {
-    font-size: 1.6rem;
-    margin: 20px 20px 10px;
+    font-size: 1.5rem;
+    margin-bottom: 10px;
     font-weight: 700;
 }
 
-.film-card p {
+.film-description {
     color: #bbbbbb;
-    margin: 0 20px 20px;
-    font-size: 0.95rem;
+    font-size: 0.85rem;
     line-height: 1.4;
+    margin-bottom: 20px;
+    flex-grow: 1;
 }
 
 .watch-btn {
@@ -110,63 +163,43 @@ h1 {
     background: linear-gradient(135deg, #e50914, #b00710);
     color: white;
     text-decoration: none;
-    padding: 12px 28px;
+    padding: 12px 24px;
     border-radius: 40px;
-    margin: 0 20px 25px;
     font-weight: 600;
     transition: all 0.3s ease;
-    border: none;
-    cursor: pointer;
     text-align: center;
-    font-size: 1rem;
+    margin-top: auto;
 }
 
 .watch-btn:hover {
-    transform: scale(1.05);
+    transform: scale(1.02);
     box-shadow: 0 5px 15px rgba(229, 9, 20, 0.4);
-    background: linear-gradient(135deg, #ff1a24, #e50914);
 }
 
-/* ============= БЛОК ПРЕДЛОЖЕНИЙ (внизу) ============= */
+/* ============= ПРЕДЛОЖЕНИЯ ============= */
 .suggestions {
-    margin-top: 80px;
-    padding-top: 50px;
+    margin-top: 60px;
+    padding-top: 40px;
     border-top: 2px solid rgba(255,255,255,0.1);
-    background: rgba(0,0,0,0.3);
-    border-radius: 40px;
-    padding: 50px 30px;
 }
 
 .suggestions h2 {
-    font-size: 2rem;
-    margin-bottom: 35px;
+    font-size: 1.8rem;
+    margin-bottom: 30px;
     text-align: center;
-    font-weight: 600;
-    position: relative;
-}
-
-.suggestions h2::after {
-    content: '';
-    display: block;
-    width: 80px;
-    height: 4px;
-    background: linear-gradient(90deg, #e50914, transparent);
-    margin: 15px auto 0;
-    border-radius: 2px;
 }
 
 .suggestions-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
-    gap: 30px;
-    margin-bottom: 40px;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 25px;
 }
 
 .suggestion-card {
-    background: rgba(20, 20, 30, 0.7);
+    background: rgba(20, 20, 30, 0.6);
     backdrop-filter: blur(8px);
     border-radius: 20px;
-    padding: 18px;
+    padding: 15px;
     text-align: center;
     transition: all 0.3s ease;
     border: 1px solid rgba(255,255,255,0.08);
@@ -180,49 +213,144 @@ h1 {
 
 .suggestion-card img {
     width: 100%;
-    height: 280px;
+    aspect-ratio: 2 / 3;
     object-fit: cover;
     border-radius: 14px;
-    margin-bottom: 15px;
+    margin-bottom: 12px;
 }
 
 .suggestion-card h4 {
-    font-size: 1.2rem;
-    margin: 12px 0;
-    font-weight: 600;
+    font-size: 1rem;
+    margin: 8px 0;
 }
 
 .suggestion-card a {
     color: #e50914;
     text-decoration: none;
     font-weight: 600;
-    transition: 0.2s;
-    display: inline-block;
-    margin-top: 8px;
+    font-size: 0.9rem;
 }
 
-.suggestion-card a:hover {
-    color: white;
-    transform: translateX(5px);
-}
-
-.other-link {
+/* ============= КНОПКА ПРЕДЛОЖИТЬ ============= */
+.suggest-film-container {
     text-align: center;
-    margin-top: 30px;
-    font-size: 1.1rem;
+    margin: 50px 0 30px;
 }
 
-.other-link a {
-    color: #ffffff;
+.suggest-btn {
+    background: rgba(255,255,255,0.1);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255,255,255,0.2);
+    padding: 14px 32px;
+    border-radius: 60px;
+    font-size: 1rem;
+    font-weight: 600;
+    color: white;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.suggest-btn:hover {
+    background: #e50914;
+    border-color: white;
+    transform: scale(1.02);
+}
+
+/* ============= КНОПКА ДРУГИХ ПРОЕКТОВ ============= */
+.other-projects-container {
+    text-align: center;
+    margin: 20px 0 0;
+}
+
+.other-projects-btn {
+    display: inline-block;
+    background: transparent;
+    border: 2px solid #e50914;
+    padding: 12px 28px;
+    border-radius: 60px;
+    color: white;
     text-decoration: none;
-    border-bottom: 2px solid #e50914;
-    padding-bottom: 4px;
+    font-weight: 600;
+    transition: all 0.3s ease;
+}
+
+.other-projects-btn:hover {
+    background: #e50914;
+    transform: translateY(-3px);
+}
+
+/* ============= МОДАЛЬНОЕ ОКНО ============= */
+.modal {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0,0,0,0.8);
+    backdrop-filter: blur(8px);
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+}
+
+.modal-content {
+    background: #1e1e2e;
+    border-radius: 32px;
+    padding: 40px;
+    max-width: 500px;
+    width: 90%;
+    border: 1px solid rgba(255,255,255,0.2);
+}
+
+.modal-content h3 {
+    font-size: 1.8rem;
+    margin-bottom: 10px;
+}
+
+.modal-hint {
+    color: #aaa;
+    margin-bottom: 25px;
+}
+
+.modal-content input,
+.modal-content textarea {
+    width: 100%;
+    padding: 14px;
+    margin-bottom: 20px;
+    background: #2a2a3a;
+    border: 1px solid #444;
+    border-radius: 16px;
+    color: white;
+    font-size: 1rem;
+}
+
+.modal-close {
+    float: right;
+    font-size: 28px;
+    cursor: pointer;
     transition: 0.2s;
 }
 
-.other-link a:hover {
+.modal-close:hover {
     color: #e50914;
-    border-bottom-color: white;
+}
+
+.submit-suggest-btn {
+    width: 100%;
+    padding: 14px;
+    background: linear-gradient(135deg, #e50914, #b00710);
+    border: none;
+    border-radius: 40px;
+    color: white;
+    font-weight: 700;
+    font-size: 1rem;
+    cursor: pointer;
+}
+
+.suggest-status {
+    margin-top: 15px;
+    text-align: center;
 }
 
 /* ============= СТРАНИЦА ПЛЕЕРА ============= */
@@ -232,130 +360,90 @@ h1 {
 
 .back-link {
     display: inline-flex;
-    align-items: center;
-    gap: 8px;
     color: #e50914;
     text-decoration: none;
-    font-weight: 600;
     margin-bottom: 30px;
-    transition: 0.2s;
-    font-size: 1.1rem;
+    font-weight: 600;
 }
 
 .back-link:hover {
     transform: translateX(-5px);
-    color: white;
-}
-
-.player-container h1 {
-    font-size: 2.5rem;
-    text-align: left;
-    background: none;
-    color: white;
-    -webkit-background-clip: unset;
-    background-clip: unset;
-    margin-bottom: 20px;
 }
 
 .video-wrapper {
-    background: #000000;
+    background: #000;
     border-radius: 28px;
     overflow: hidden;
-    box-shadow: 0 20px 40px rgba(0,0,0,0.5);
-    margin: 25px 0;
     aspect-ratio: 16 / 9;
+    margin: 20px 0;
 }
 
 video {
     width: 100%;
     height: 100%;
-    display: block;
 }
 
-/* Навигация по сезонам и сериям */
 .season-nav, .series-nav {
     display: flex;
-    gap: 15px;
+    gap: 12px;
     flex-wrap: wrap;
-    margin: 25px 0 20px;
+    margin: 20px 0;
 }
 
 .season-btn, .series-btn {
-    background: rgba(50, 50, 65, 0.8);
-    backdrop-filter: blur(5px);
-    border: 1px solid rgba(255,255,255,0.15);
-    color: white;
-    padding: 10px 24px;
+    background: #333;
+    border: none;
+    padding: 8px 20px;
     border-radius: 40px;
+    color: white;
     cursor: pointer;
-    font-size: 0.95rem;
-    font-weight: 500;
-    transition: all 0.2s ease;
-}
-
-.season-btn:hover, .series-btn:hover {
-    background: #e50914;
-    transform: scale(1.02);
 }
 
 .season-btn.active, .series-btn.active {
-    background: linear-gradient(135deg, #e50914, #b00710);
-    border-color: white;
-    box-shadow: 0 4px 12px rgba(229,9,20,0.4);
+    background: #e50914;
 }
 
-/* ============= АДАПТАЦИЯ ПОД ТЕЛЕФОНЫ ============= */
+/* ============= АДАПТАЦИЯ ПОД ТЕЛЕФОН ============= */
 @media (max-width: 768px) {
     body {
         padding: 20px 15px;
     }
     
     h1 {
-        font-size: 2.5rem;
+        font-size: 2.2rem;
     }
     
     .films-grid {
-        grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+        grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
         gap: 20px;
     }
     
-    .film-card img {
-        height: 300px;
+    .film-card h3 {
+        font-size: 1.1rem;
     }
     
-    .suggestions-grid {
-        grid-template-columns: repeat(auto-fill, minmax(170px, 1fr));
+    .film-description {
+        font-size: 0.75rem;
     }
     
-    .suggestion-card img {
-        height: 220px;
-    }
-    
-    .season-btn, .series-btn {
-        padding: 6px 16px;
+    .watch-btn {
+        padding: 8px 16px;
         font-size: 0.85rem;
     }
     
-    .player-container h1 {
-        font-size: 1.8rem;
+    .suggestions-grid {
+        grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+        gap: 15px;
+    }
+    
+    .modal-content {
+        padding: 25px;
     }
 }
 
-/* ============= ДОПОЛНИТЕЛЬНЫЕ ЭФФЕКТЫ ============= */
-::-webkit-scrollbar {
-    width: 10px;
-}
-
-::-webkit-scrollbar-track {
-    background: #1a1a1a;
-}
-
-::-webkit-scrollbar-thumb {
-    background: linear-gradient(135deg, #e50914, #b00710);
-    border-radius: 10px;
-}
-
-::selection {
-    background: #e50914;
-    color: white;
+@media (max-width: 480px) {
+    .films-grid {
+        grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+        gap: 15px;
+    }
 }
