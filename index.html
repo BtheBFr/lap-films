@@ -7,30 +7,21 @@
 </head>
 <body>
     <div class="container">
-        <h1>lap-films</h1>
-        <p class="subtitle">выбери фильм для просмотра</p>
+        <h1>🎬 lap-films</h1>
+        <p class="subtitle">выбери фильм или сериал</p>
         
-        <div class="film-list">
-            <!-- Карточка фильма 1 -->
-            <div class="film-card">
-                <h2>Ждун 2</h2>
-                <p>Продолжение истории знаменитого серого существа</p>
-                <a href="player.html?film=zhdun2" class="watch-btn">Смотреть</a>
-            </div>
+        <div class="films-grid" id="filmsGrid"></div>
 
-            <!-- Карточка фильма 2 -->
-            <div class="film-card">
-                <h2>Обсессия</h2>
-                <p>Психологический триллер о навязчивой идее</p>
-                <a href="player.html?film=obsessiya" class="watch-btn">Смотреть</a>
-            </div>
-        </div>
-
-        <!-- Футер со ссылкой -->
-        <footer>
-            <p>Посмотри наши другие проекты: <a href="#" id="otherProjectsLink">Другие проекты lap</a></p>
-        </footer>
+        <!-- БЛОК ПРЕДЛОЖЕНИЙ (внизу каждой страницы) -->
+        <section class="suggestions">
+            <h2>🔥 Посмотри наши другие проекты</h2>
+            <div class="suggestions-grid" id="suggestionsGrid"></div>
+            <p class="other-link">
+                🔗 <a href="#" id="otherProjectsLink">Другие проекты lap</a>
+            </p>
+        </section>
     </div>
+    <script src="films.js"></script>
     <script src="common.js"></script>
 </body>
 </html>
