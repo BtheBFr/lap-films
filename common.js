@@ -22,8 +22,8 @@ function getFileIdFromPath(path) {
 function getEmbedUrl(drivePath) {
     const fileId = getFileIdFromPath(drivePath);
     if (fileId) {
-        // Для телефонов используем usercontent.google.com
-        return `https://drive.usercontent.google.com/download?id=${fileId}&export=download&authuser=0`;
+        // Для ПЛЕЕРА (iframe) — preview
+        return `https://drive.google.com/file/d/${fileId}/preview`;
     }
     return drivePath;
 }
@@ -31,7 +31,8 @@ function getEmbedUrl(drivePath) {
 function getDownloadUrl(drivePath) {
     const fileId = getFileIdFromPath(drivePath);
     if (fileId) {
-        return `https://drive.google.com/uc?export=download&id=${fileId}`;
+        // Для СКАЧИВАНИЯ — export=download
+        return `https://drive.usercontent.google.com/download?id=${fileId}&export=download&authuser=0`;
     }
     return drivePath;
 }
