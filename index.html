@@ -2,38 +2,33 @@
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
-    <meta name="theme-color" content="#0a0a0a">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
     <title>lap-films — каталог</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
     <div class="container">
-        <header class="main-header">
-            <h1>lap-<span class="highlight">films</span></h1>
-            <div class="search-container">
-                <input type="text" id="searchInput" placeholder="🔍 Поиск фильмов или сериалов..." autocomplete="off">
-                <button id="searchClear" class="clear-btn" style="display: none;">✖</button>
-            </div>
-        </header>
+        <h1>lap-films</h1>
+        
+        <div class="search-container">
+            <input type="text" id="searchInput" placeholder="🔍 Поиск фильмов или сериалов..." autocomplete="off">
+            <button id="searchClear" class="clear-btn" style="display: none;">✖</button>
+        </div>
+        
+        <div class="films-grid" id="filmsGrid"></div>
+        
+        <div id="noResults" class="no-results" style="display: none;">
+            <p>Ничего не найдено</p>
+            <small>Попробуйте другие ключевые слова</small>
+        </div>
 
-        <main>
-            <div class="films-grid" id="filmsGrid"></div>
-            <div id="noResults" class="no-results" style="display: none;">
-                <p>Ничего не найдено</p>
-                <small>Попробуйте другие ключевые слова</small>
-            </div>
-        </main>
-
-        <footer class="main-footer">
-            <div class="buttons-row">
-                <button id="suggestFilmBtn" class="action-btn suggest-btn">📩 Предложить фильм / сериал</button>
-                <a href="#" id="otherProjectsLink" class="action-btn other-projects-btn">🔗 Другие проекты lap</a>
-            </div>
-        </footer>
+        <div class="buttons-row">
+            <button id="suggestFilmBtn" class="action-btn suggest-btn">📩 Предложить фильм / сериал</button>
+            <a href="#" id="otherProjectsLink" class="action-btn other-projects-btn">🔗 Другие проекты lap</a>
+        </div>
     </div>
 
-    <!-- МОДАЛЬНОЕ ОКНО ПРЕДЛОЖЕНИЙ -->
+    <!-- МОДАЛЬНОЕ ОКНО -->
     <div id="suggestModal" class="modal">
         <div class="modal-content">
             <span class="modal-close">&times;</span>
