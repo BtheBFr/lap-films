@@ -2,48 +2,55 @@
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
-    <meta name="theme-color" content="#0a0a0a">
-    <title>lap-films — просмотр</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <title>Плеер — lap-films</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <div class="container player-container">
-        <header class="player-header">
-            <a href="index.html" class="back-btn">← Назад</a>
-            <h1>lap-<span class="highlight">films</span></h1>
-        </header>
-
-        <main>
-            <!-- ВИДЕО ПЛЕЕР - IFRAME -->
-            <div class="video-wrapper">
-                <iframe id="driveIframe" 
-                        src="" 
-                        width="100%" 
-                        height="100%" 
-                        frameborder="0" 
-                        allow="autoplay; fullscreen"
-                        style="position: absolute; top: 0; left: 0; width: 100%; height: 100%;">
-                </iframe>
-            </div>
-            
-            <div class="episode-info" id="episodeInfo">
-                <h3 id="episodeTitle"></h3>
-                <div class="button-group">
+    <div class="player-page">
+        <a href="index.html" class="back-link">← Назад к каталогу</a>
+        
+        <div class="player-layout">
+            <div class="film-info-panel" id="filmInfoPanel">
+                <img id="filmPoster" src="" alt="Постер">
+                <p id="filmDescription" class="film-description-full"></p>
+                
+                <!-- КНОПКИ: ОЦЕНИТЬ И СКАЧАТЬ -->
+                <div class="film-actions">
                     <button id="rateBtn" class="rate-btn">⭐ Оценить фильм</button>
-                    <button id="downloadBtn" class="download-btn">📥 Скачать</button>
-                    <button id="copyLinkBtn" class="copy-btn">🔗 Копировать ссылку</button>
+                    <a id="downloadBtn" class="download-btn" href="#" download>⬇ Скачать фильм</a>
                 </div>
             </div>
             
-            <!-- БЛОК ОТЗЫВОВ -->
-            <div class="reviews-section">
-                <h3>💬 Отзывы и оценки</h3>
-                <div id="reviewsList" class="reviews-list">
-                    <div class="loading-text">Загрузка отзывов...</div>
+            <div class="player-panel">
+                <h1 id="filmTitle"></h1>
+                <div class="video-wrapper">
+                    <iframe id="driveIframe" 
+                            src="" 
+                            width="100%" 
+                            height="100%" 
+                            frameborder="0" 
+                            allow="autoplay; fullscreen"
+                            style="position: absolute; top: 0; left: 0; width: 100%; height: 100%;">
+                    </iframe>
                 </div>
+                <div id="seasonSeriesNav" class="season-series-nav"></div>
+                <button id="watchBtn" class="watch-btn-large">▶ Смотреть</button>
             </div>
-        </main>
+        </div>
+
+        <!-- БЛОК ОТЗЫВОВ -->
+        <div class="reviews-section">
+            <h3>💬 Отзывы и оценки</h3>
+            <div id="reviewsList" class="reviews-list">
+                <div class="loading-text">Загрузка отзывов...</div>
+            </div>
+        </div>
+
+        <div class="buttons-row player-buttons">
+            <button id="suggestFilmBtn" class="action-btn suggest-btn">📩 Предложить фильм / сериал</button>
+            <a href="#" id="otherProjectsLink" class="action-btn other-projects-btn">🔗 Другие проекты lap</a>
+        </div>
     </div>
 
     <!-- МОДАЛКА ОЦЕНКИ -->
@@ -64,7 +71,7 @@
         </div>
     </div>
 
-    <!-- МОДАЛКА ПРЕДЛОЖЕНИЙ -->
+    <!-- МОДАЛЬНОЕ ОКНО ПРЕДЛОЖЕНИЙ -->
     <div id="suggestModal" class="modal">
         <div class="modal-content">
             <span class="modal-close">&times;</span>
