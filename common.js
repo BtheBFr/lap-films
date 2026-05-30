@@ -1,10 +1,11 @@
 // ============= ПЕРЕМЕННЫЕ =============
 let currentFilmId = null;
 let allFilms = [];
+let currentRating = 0;
 
-// ↓↓↓ ВСТАВЬ СВОЮ ССЫЛКУ ИЗ APPS SCRIPT ↓↓↓
-const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycby86FMOsqBSKIP8qE_1T8W4G5mgINcSiV4z7TnIaVlHpvHR7YYROpSXrhMGO24yfT1C/exec";
-// ↑↑↑ ВСТАВЬ СВОЮ ССЫЛКУ ↑↑↑
+// ↓↓↓ ВСТАВЬ СВОИ ССЫЛКИ ИЗ APPS SCRIPT ↓↓↓
+const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/ВАШ_КОД/exec";
+const GOOGLE_RATINGS_URL = "https://script.google.com/macros/s/ВАШ_КОД_ДЛЯ_ОЦЕНОК/exec";
 
 // ============= ПОИСК =============
 function searchFilms(query) {
@@ -46,6 +47,148 @@ function renderFilmsGrid(filmsToRender) {
     });
 }
 
+// ============= ФОРМАТИРОВАНИЕ ДАТЫ =============
+function formatDate(dateString) {
+    if (!dateString) return null;
+    const date = new Date(dateString);
+    const day = date.getDate();
+    const month = date.toLocaleString('ru', { month: 'long' });
+    const year = date.getFullYear();
+    return `${day} ${month} ${year}`;
+}
+
+// ============= ЗАГРУЗКА ОТЗЫВОВ =============
+async function loadReviews(filmId) {
+    const container = document.getElementById('reviewsList');
+    if (!container) return;
+    
+    container.innerHTML = '<div class="loading-text">Загрузка отзывов...</div>';
+    
+    try {
+        const response = await fetch(`${GOOGLE_RATINGS_URL}?action=get&filmId=${filmId}`);
+        const reviews = await response.json();
+        
+        if (!reviews || reviews.length === 0) {
+            container.innerHTML = '<p class="empty-suggestions">Пока нет отзывов. Будьте первым!</p>';
+            return;
+        }
+        
+        // Вычисляем среднюю оценку
+        let totalRating = 0;
+        reviews.forEach(r => { if (r.rating) totalRating += parseInt(r.rating); });
+        const avgRating = reviews.length > 0 ? (totalRating / reviews.length).toFixed(1) : 0;
+        
+        let html = `<div class="average-rating">⭐ Средняя оценка: ${avgRating} / 5 (${reviews.length} оценок)</div>`;
+        
+        reviews.forEach(review => {
+            const stars = '★'.repeat(review.rating) + '☆'.repeat(5 - review.rating);
+            html += `
+                <div class="review-item">
+                    <div class="review-stars">${stars}</div>
+                    <div class="review-text">${escapeHtml(review.review || 'Без отзыва')}</div>
+                    <div class="review-date">${review.date || ''}</div>
+                </div>
+            `;
+        });
+        
+        container.innerHTML = html;
+    } catch (error) {
+        console.error('Ошибка загрузки отзывов:', error);
+        container.innerHTML = '<p class="empty-suggestions">Не удалось загрузить отзывы</p>';
+    }
+}
+
+// ============= ОТПРАВКА ОЦЕНКИ =============
+async function sendRating(filmId, filmTitle, rating, review) {
+    try {
+        await fetch(GOOGLE_RATINGS_URL, {
+            method: 'POST',
+            mode: 'no-cors',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                filmId: filmId,
+                filmTitle: filmTitle,
+                rating: rating,
+                review: review,
+                timestamp: new Date().toLocaleString('ru-RU')
+            })
+        });
+        return { success: true, message: "Спасибо за оценку!" };
+    } catch (error) {
+        return { success: false, message: "Ошибка отправки" };
+    }
+}
+
+// ============= ИНИЦИАЛИЗАЦИЯ МОДАЛКИ ОЦЕНКИ =============
+function initRatingModal(film) {
+    const modal = document.getElementById('rateModal');
+    const rateBtn = document.getElementById('rateBtn');
+    const closeSpan = document.querySelector('.rate-close');
+    const stars = document.querySelectorAll('#starsContainer span');
+    const submitBtn = document.getElementById('submitRatingBtn');
+    const reviewText = document.getElementById('reviewText');
+    const statusDiv = document.getElementById('ratingStatus');
+    
+    if (!rateBtn || !modal) return;
+    
+    // Обработка звезд
+    stars.forEach(star => {
+        star.addEventListener('click', () => {
+            currentRating = parseInt(star.dataset.rating);
+            stars.forEach((s, i) => {
+                if (i < currentRating) {
+                    s.innerHTML = '★';
+                    s.style.color = '#ffc107';
+                } else {
+                    s.innerHTML = '☆';
+                    s.style.color = '#555';
+                }
+            });
+        });
+    });
+    
+    rateBtn.onclick = () => {
+        modal.style.display = 'flex';
+        currentRating = 0;
+        stars.forEach(s => {
+            s.innerHTML = '☆';
+            s.style.color = '#555';
+        });
+        reviewText.value = '';
+        statusDiv.innerHTML = '';
+    };
+    
+    if (closeSpan) closeSpan.onclick = () => modal.style.display = 'none';
+    
+    window.onclick = (event) => {
+        if (event.target === modal) modal.style.display = 'none';
+    };
+    
+    submitBtn.onclick = async () => {
+        if (currentRating === 0) {
+            statusDiv.innerHTML = '<span style="color:#e50914">Поставьте оценку</span>';
+            return;
+        }
+        
+        statusDiv.innerHTML = '<span style="color:#ffaa00">Отправка...</span>';
+        submitBtn.disabled = true;
+        
+        const result = await sendRating(film.id, film.title, currentRating, reviewText.value);
+        
+        submitBtn.disabled = false;
+        
+        if (result.success) {
+            statusDiv.innerHTML = `<span style="color:#4caf50">${result.message}</span>`;
+            setTimeout(() => {
+                modal.style.display = 'none';
+                loadReviews(film.id);
+            }, 1500);
+        } else {
+            statusDiv.innerHTML = `<span style="color:#e50914">${result.message}</span>`;
+        }
+    };
+}
+
 // ============= ЛОГИКА ПЛЕЕРА =============
 function initPlayer() {
     const urlParams = new URLSearchParams(window.location.search);
@@ -67,13 +210,70 @@ function initPlayer() {
     const seasonSeriesNav = document.getElementById('seasonSeriesNav');
     const watchBtn = document.getElementById('watchBtn');
     const videoPlayer = document.getElementById('mainPlayer');
+    const videoWrapper = document.querySelector('.video-wrapper');
+    const downloadBtn = document.getElementById('downloadBtn');
     
     filmPoster.src = film.poster;
     filmDescription.textContent = film.description || 'Описание отсутствует';
     filmTitle.textContent = film.title;
     
-    if (film.seasons === "none") {
+    // Настройка кнопки скачивания
+    if (downloadBtn && film.downloadUrl) {
+        downloadBtn.href = film.downloadUrl;
+        downloadBtn.style.display = 'inline-flex';
+    } else if (downloadBtn) {
+        downloadBtn.style.display = 'none';
+    }
+    
+    // Загружаем отзывы
+    loadReviews(filmId);
+    
+    // Инициализируем модалку оценки
+    initRatingModal(film);
+    
+    // ============= ЕСЛИ ВИДЕО ЕЩЁ НЕТ =============
+    const hasVideo = film.videoUrl || (film.seasons !== "none" && Object.values(film.seasons).some(s => Object.values(s.series).some(ser => ser.videoUrl)));
+    
+    if (!hasVideo || film.comingSoon === true) {
+        let message = '';
+        if (film.releaseDate) {
+            message = `🎬 Премьера состоится ${formatDate(film.releaseDate)}`;
+        } else {
+            message = `🎬 Скоро будет`;
+        }
+        
+        if (videoWrapper) {
+            videoWrapper.innerHTML = `
+                <div class="coming-soon-message">
+                    <div class="coming-icon">🎬</div>
+                    <h2>${film.title}</h2>
+                    <p class="coming-text">${message}</p>
+                    <div class="coming-notify">🔔 Добавьте в закладки, чтобы не пропустить</div>
+                </div>
+            `;
+        }
+        if (seasonSeriesNav) seasonSeriesNav.innerHTML = '';
+        if (watchBtn) watchBtn.style.display = 'none';
+        return;
+    }
+    
+    // Восстанавливаем плеер
+    if (videoWrapper && videoWrapper.innerHTML.includes('coming-soon-message')) {
+        videoWrapper.innerHTML = `<video id="mainPlayer" controls width="100%" poster=""></video>`;
+    }
+    if (watchBtn) watchBtn.style.display = 'block';
+    
+    // Надпись про улучшенную версию
+    if (!film.betterVersionReady && film.betterVersionDate) {
+        seasonSeriesNav.innerHTML = `<div class="better-version-notice">🎥 Улучшенная версия выйдет ${formatDate(film.betterVersionDate)}</div>`;
+    } else if (!film.betterVersionReady && !film.betterVersionDate) {
+        seasonSeriesNav.innerHTML = `<div class="better-version-notice">🎥 Улучшенная версия скоро</div>`;
+    } else {
         seasonSeriesNav.innerHTML = '';
+    }
+    
+    // Обычная логика плеера
+    if (film.seasons === "none") {
         watchBtn.onclick = () => {
             videoPlayer.src = film.videoUrl;
             videoPlayer.poster = film.poster;
@@ -91,9 +291,7 @@ function initPlayer() {
             let html = `
                 <div class="season-nav">
                     ${Object.keys(film.seasons).map(sn => `
-                        <button class="season-btn ${sn == currentSeason ? 'active' : ''}" data-season="${sn}">
-                            Сезон ${sn}
-                        </button>
+                        <button class="season-btn ${sn == currentSeason ? 'active' : ''}" data-season="${sn}">Сезон ${sn}</button>
                     `).join('')}
                 </div>
                 <div class="series-nav">
@@ -104,7 +302,7 @@ function initPlayer() {
                     `).join('')}
                 </div>
             `;
-            seasonSeriesNav.innerHTML = html;
+            seasonSeriesNav.innerHTML = html + (seasonSeriesNav.querySelector('.better-version-notice')?.outerHTML || '');
             
             document.querySelectorAll('.season-btn').forEach(btn => {
                 btn.addEventListener('click', (e) => {
@@ -142,11 +340,8 @@ function updateUrlWithoutReload(filmId, season, series) {
     window.history.pushState({}, '', newUrl);
 }
 
-// ============= ОТПРАВКА В GOOGLE TABLES =============
+// ============= ОТПРАВКА В GOOGLE TABLES (ПРЕДЛОЖЕНИЯ) =============
 async function sendToGoogleSheets(filmName, comment) {
-    if (!GOOGLE_SCRIPT_URL || GOOGLE_SCRIPT_URL.includes("ВАШ_КОД")) {
-        return { success: false, message: "Форма временно недоступна" };
-    }
     try {
         await fetch(GOOGLE_SCRIPT_URL, {
             method: 'POST',
@@ -164,7 +359,6 @@ async function sendToGoogleSheets(filmName, comment) {
     }
 }
 
-// ============= ЗАГРУЗКА СПИСКА ПРЕДЛОЖЕННЫХ ФИЛЬМОВ =============
 async function loadSuggestedFilms() {
     const listContainer = document.getElementById('suggestedFilmsList');
     if (!listContainer) return;
@@ -187,19 +381,18 @@ async function loadSuggestedFilms() {
             </div>
         `).join('');
     } catch (error) {
-        console.error('Ошибка загрузки предложений:', error);
         listContainer.innerHTML = '<p class="empty-suggestions">Не удалось загрузить список</p>';
     }
 }
 
-// ============= МОДАЛЬНОЕ ОКНО =============
+// ============= МОДАЛЬНОЕ ОКНО ПРЕДЛОЖЕНИЙ =============
 function initModal() {
     const modal = document.getElementById('suggestModal');
     const openBtns = document.querySelectorAll('#suggestFilmBtn');
-    const closeSpan = document.querySelector('.modal-close');
-    const submitBtn = document.getElementById('submitSuggestionBtn');
+    const closeSpan = document.querySelector('#suggestModal .modal-close');
     const showSuggestedBtn = document.getElementById('showSuggestedBtn');
     const suggestedContainer = document.getElementById('suggestedFilmsContainer');
+    const submitBtn = document.getElementById('submitSuggestionBtn');
     const filmInput = document.getElementById('suggestFilmInput');
     const commentInput = document.getElementById('suggestCommentInput');
     const statusDiv = document.getElementById('suggestStatus');
@@ -207,7 +400,6 @@ function initModal() {
     
     if (!modal) return;
     
-    // Открытие модалки
     openBtns.forEach(btn => {
         if (btn) {
             btn.onclick = () => {
@@ -215,13 +407,11 @@ function initModal() {
                 if (filmInput) filmInput.value = '';
                 if (commentInput) commentInput.value = '';
                 if (statusDiv) statusDiv.innerHTML = '';
-                // Скрываем список при открытии
                 if (suggestedContainer) suggestedContainer.style.display = 'none';
             };
         }
     });
     
-    // Кнопка "Предложенные фильмы"
     if (showSuggestedBtn) {
         showSuggestedBtn.onclick = async () => {
             if (suggestedContainer) {
@@ -237,7 +427,6 @@ function initModal() {
         if (event.target === modal) modal.style.display = 'none';
     };
     
-    // Отправка предложения
     if (submitBtn) {
         submitBtn.onclick = async () => {
             const filmName = filmInput.value.trim();
@@ -259,7 +448,6 @@ function initModal() {
                 if (statusDiv) statusDiv.innerHTML = `<span style="color:#4caf50">${result.message}</span>`;
                 if (filmInput) filmInput.value = '';
                 if (commentInput) commentInput.value = '';
-                // Если список был открыт — обновляем его
                 if (suggestedContainer && suggestedContainer.style.display === 'block') {
                     await loadSuggestedFilms();
                 }
@@ -313,3 +501,13 @@ document.addEventListener('DOMContentLoaded', () => {
     
     initModal();
 });
+
+function escapeHtml(str) {
+    if (!str) return '';
+    return str.replace(/[&<>]/g, function(m) {
+        if (m === '&') return '&amp;';
+        if (m === '<') return '&lt;';
+        if (m === '>') return '&gt;';
+        return m;
+    });
+}
