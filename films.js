@@ -5,7 +5,7 @@ const FILMS_CATALOG = [
         title: "Ждун 2",
         searchTerms: ["ждун", "ждун2", "ждун 2", "zhdun", "zhdun2", "ждуг", "ждуний", "серый", "великан"],
         description: "Продолжение приключений серого великана. Ждун возвращается в новом захватывающем приключении!",
-        poster: "posters/ждун2.png",
+        poster: "posters/zhdun2.jpg",
         seasons: "none",
         videoUrl: "https://example.com/video/zhdun2.mp4"
     },
@@ -14,7 +14,7 @@ const FILMS_CATALOG = [
         title: "Обсессия",
         searchTerms: ["обсессия", "obsessiya", "obsessia", "одержимость", "триллер", "психологический"],
         description: "Психологический триллер о навязчивой идее, которая меняет всё.",
-        poster: "https://via.placeholder.com/300x450?text=Obsessiya",
+        poster: "posters/obsessiya.jpg",
         seasons: "none",
         videoUrl: "https://example.com/video/obsessiya.mp4"
     },
@@ -23,7 +23,7 @@ const FILMS_CATALOG = [
         title: "Тестовый сериал",
         searchTerms: ["тест", "сериал", "test", "serial"],
         description: "Пример сериала с несколькими сезонами и сериями",
-        poster: "https://via.placeholder.com/300x450?text=TestSerial",
+        poster: "posters/test-serial.jpg",
         seasons: {
             "1": {
                 title: "Сезон 1",
