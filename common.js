@@ -22,7 +22,8 @@ function getFileIdFromPath(path) {
 function getEmbedUrl(drivePath) {
     const fileId = getFileIdFromPath(drivePath);
     if (fileId) {
-        return `https://drive.google.com/file/d/${fileId}/preview`;
+        // Для телефонов используем usercontent.google.com
+        return `https://drive.usercontent.google.com/download?id=${fileId}&export=download&authuser=0`;
     }
     return drivePath;
 }
