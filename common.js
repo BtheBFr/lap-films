@@ -2,7 +2,9 @@
 let currentFilmId = null;
 let allFilms = [];
 
-const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/ВАШ_КОД/exec";
+// ↓↓↓ ВСТАВЬ СЮДА СВОЮ ССЫЛКУ ИЗ APPS SCRIPT ↓↓↓
+const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycby86FMOsqBSKIP8qE_1T8W4G5mgINcSiV4z7TnIaVlHpvHR7YYROpSXrhMGO24yfT1C/exec";
+// ↑↑↑ ВСТАВЬ СВОЮ ССЫЛКУ ↑↑↑
 
 // ============= ПОИСК =============
 function searchFilms(query) {
@@ -29,7 +31,6 @@ function renderFilmsGrid(filmsToRender) {
     const noResults = document.getElementById('noResults');
     if (noResults) noResults.style.display = 'none';
     
-    // Маленькие карточки, кликабельны целиком
     grid.innerHTML = filmsToRender.map(film => `
         <div class="film-card" data-id="${film.id}">
             <img src="${film.poster}" alt="${film.title}" loading="lazy">
@@ -37,7 +38,6 @@ function renderFilmsGrid(filmsToRender) {
         </div>
     `).join('');
     
-    // Клик по всей карточке
     document.querySelectorAll('.film-card').forEach(card => {
         card.addEventListener('click', (e) => {
             const id = card.dataset.id;
@@ -46,7 +46,7 @@ function renderFilmsGrid(filmsToRender) {
     });
 }
 
-// ============= ЛОГИКА ПЛЕЕРА (КАРТОЧКА СЛЕВА, ПЛЕЕР СПРАВА) =============
+// ============= ЛОГИКА ПЛЕЕРА =============
 function initPlayer() {
     const urlParams = new URLSearchParams(window.location.search);
     const filmId = urlParams.get('id');
@@ -61,7 +61,6 @@ function initPlayer() {
         return;
     }
 
-    // Левая панель: постер и описание
     const filmPoster = document.getElementById('filmPoster');
     const filmDescription = document.getElementById('filmDescription');
     const filmTitle = document.getElementById('filmTitle');
@@ -74,7 +73,6 @@ function initPlayer() {
     filmTitle.textContent = film.title;
     
     if (film.seasons === "none") {
-        // Фильм без серий
         seasonSeriesNav.innerHTML = '';
         watchBtn.onclick = () => {
             videoPlayer.src = film.videoUrl;
@@ -83,7 +81,6 @@ function initPlayer() {
         };
     } 
     else {
-        // Сериал с сезонами
         let currentSeason = urlParams.get('season') || Object.keys(film.seasons)[0];
         let currentSeries = urlParams.get('series') || Object.keys(film.seasons[currentSeason].series)[0];
         
@@ -109,7 +106,6 @@ function initPlayer() {
             `;
             seasonSeriesNav.innerHTML = html;
             
-            // Обработчики сезонов
             document.querySelectorAll('.season-btn').forEach(btn => {
                 btn.addEventListener('click', (e) => {
                     currentSeason = btn.dataset.season;
@@ -119,7 +115,6 @@ function initPlayer() {
                 });
             });
             
-            // Обработчики серий
             document.querySelectorAll('.series-btn').forEach(btn => {
                 btn.addEventListener('click', (e) => {
                     currentSeries = btn.dataset.series;
@@ -149,23 +144,49 @@ function updateUrlWithoutReload(filmId, season, series) {
 
 // ============= ОТПРАВКА В GOOGLE TABLES =============
 async function sendToGoogleSheets(filmName, comment) {
-    if (!GOOGLE_SCRIPT_URL || GOOGLE_SCRIPT_URL === "https://script.google.com/macros/s/ВАШ_КОД/exec") {
+    if (!GOOGLE_SCRIPT_URL || GOOGLE_SCRIPT_URL.includes("ВАШ_КОД")) {
         return { success: false, message: "Форма временно недоступна" };
     }
     try {
         await fetch(GOOGLE_SCRIPT_URL, {
             method: 'POST',
             mode: 'no-cors',
-            headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-            body: new URLSearchParams({
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
                 filmName: filmName,
                 comment: comment,
                 timestamp: new Date().toLocaleString('ru-RU')
             })
         });
-        return { success: true, message: "Спасибо! Предложение отправлено." };
+        return { success: true, message: "Спасибо! Фильм предложен." };
     } catch (error) {
         return { success: false, message: "Ошибка отправки" };
+    }
+}
+
+// ============= ЗАГРУЗКА СПИСКА ПРЕДЛОЖЕННЫХ ФИЛЬМОВ =============
+async function loadSuggestedFilms() {
+    const container = document.getElementById('suggestedFilmsList');
+    if (!container) return;
+    
+    try {
+        const response = await fetch(`${GOOGLE_SCRIPT_URL}?action=get`);
+        const films = await response.json();
+        
+        if (!films || films.length === 0) {
+            container.innerHTML = '<p class="empty-suggestions">Пока нет предложенных фильмов</p>';
+            return;
+        }
+        
+        container.innerHTML = films.map(film => `
+            <div class="suggested-film-item">
+                <span class="suggested-film-name">🎬 ${film.name}</span>
+                <span class="suggested-film-date">${film.date ? new Date(film.date).toLocaleDateString() : ''}</span>
+            </div>
+        `).join('');
+    } catch (error) {
+        console.error('Ошибка загрузки предложений:', error);
+        container.innerHTML = '<p class="empty-suggestions">Не удалось загрузить список</p>';
     }
 }
 
@@ -178,16 +199,18 @@ function initModal() {
     const filmInput = document.getElementById('suggestFilmInput');
     const commentInput = document.getElementById('suggestCommentInput');
     const statusDiv = document.getElementById('suggestStatus');
+    const loadingSpinner = document.getElementById('loadingSpinner');
     
     if (!modal) return;
     
     openBtns.forEach(btn => {
         if (btn) {
-            btn.onclick = () => {
+            btn.onclick = async () => {
                 modal.style.display = 'flex';
                 if (filmInput) filmInput.value = '';
                 if (commentInput) commentInput.value = '';
                 if (statusDiv) statusDiv.innerHTML = '';
+                await loadSuggestedFilms();
             };
         }
     });
@@ -205,11 +228,24 @@ function initModal() {
                 if (statusDiv) statusDiv.innerHTML = '<span style="color:#e50914">Введите название</span>';
                 return;
             }
+            
+            if (loadingSpinner) loadingSpinner.style.display = 'inline-block';
             if (statusDiv) statusDiv.innerHTML = '<span style="color:#ffaa00">Отправка...</span>';
+            if (submitBtn) submitBtn.disabled = true;
+            
             const result = await sendToGoogleSheets(filmName, commentInput.value);
+            
+            if (loadingSpinner) loadingSpinner.style.display = 'none';
+            if (submitBtn) submitBtn.disabled = false;
+            
             if (result.success) {
                 if (statusDiv) statusDiv.innerHTML = `<span style="color:#4caf50">${result.message}</span>`;
-                setTimeout(() => modal.style.display = 'none', 2000);
+                if (filmInput) filmInput.value = '';
+                if (commentInput) commentInput.value = '';
+                await loadSuggestedFilms();
+                setTimeout(() => {
+                    if (statusDiv) statusDiv.innerHTML = '';
+                }, 3000);
             } else {
                 if (statusDiv) statusDiv.innerHTML = `<span style="color:#e50914">${result.message}</span>`;
             }
@@ -221,7 +257,6 @@ function initModal() {
 document.addEventListener('DOMContentLoaded', () => {
     allFilms = [...FILMS_CATALOG];
     
-    // Главная страница
     if (document.getElementById('filmsGrid')) {
         renderFilmsGrid(allFilms);
         
@@ -247,15 +282,13 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
     
-    // Страница плеера
     if (document.getElementById('mainPlayer')) {
         initPlayer();
     }
     
-    // Ссылка на другие проекты (замени на свою)
     const otherLinks = document.querySelectorAll('#otherProjectsLink');
     otherLinks.forEach(link => {
-        if (link) link.href = '#'; // СЮДА ТВОЮ ССЫЛКУ
+        if (link) link.href = '#';
     });
     
     initModal();
