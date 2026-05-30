@@ -184,7 +184,7 @@ h1 {
     transform: translateY(-2px);
 }
 
-/* ============= СТРАНИЦА ПЛЕЕРА ============= */
+/* ============= СТРАНИЦА ПЛЕЕРА (ДЛЯ ПК) ============= */
 .player-layout {
     display: flex;
     gap: 40px;
@@ -679,7 +679,7 @@ h1 {
     font-size: 0.75rem;
 }
 
-/* ============= АДАПТАЦИЯ ПОД ТЕЛЕФОН ============= */
+/* ============= АДАПТАЦИЯ ПОД ТЕЛЕФОН (ТОЛЬКО ЗДЕСЬ МЕНЯЕМ ПОРЯДОК) ============= */
 @media (max-width: 768px) {
     body {
         padding: 20px 15px;
@@ -694,38 +694,6 @@ h1 {
         gap: 12px;
     }
     
-    .player-layout {
-        flex-direction: column;
-    }
-    
-    .film-info-panel {
-        display: flex;
-        flex-direction: row;
-        gap: 20px;
-        align-items: center;
-        flex-wrap: wrap;
-        text-align: left;
-    }
-    
-    .film-info-panel img {
-        max-width: 100px;
-        margin-bottom: 0;
-    }
-    
-    .film-description-full {
-        flex: 1;
-        margin-bottom: 0;
-    }
-    
-    .film-actions {
-        width: 100%;
-        justify-content: center;
-    }
-    
-    .player-panel h1 {
-        font-size: 1.5rem;
-    }
-    
     .buttons-row {
         gap: 12px;
     }
@@ -738,10 +706,8 @@ h1 {
     .modal-content {
         padding: 20px;
     }
-}
-/* ============= ТОЛЬКО ДЛЯ ТЕЛЕФОНОВ: МЕНЯЕМ ПОРЯДОК ============= */
-@media (max-width: 768px) {
-    /* На телефоне — всё в колонку */
+    
+    /* ============= ОСНОВНОЕ ИЗМЕНЕНИЕ: НА ТЕЛЕФОНЕ ПОСТЕР И КНОПКИ ВНИЗУ ============= */
     .player-layout {
         display: flex;
         flex-direction: column;
@@ -774,12 +740,14 @@ h1 {
         justify-content: center;
     }
     
-    /* Правая панель (название, плеер, улучшенная версия, кнопка смотреть) — наверху */
+    /* Правая панель (название, плеер, кнопка смотреть, улучшенная версия) — наверху */
     .player-panel {
         order: 1;
     }
     
     .player-panel h1 {
+        font-size: 1.5rem;
         margin-top: 0;
+        margin-bottom: 15px;
     }
 }
