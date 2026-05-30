@@ -6,7 +6,7 @@ const FILMS_CATALOG = [
         description: "Продолжение приключений серого великана",
         poster: "posters/ждун2.png",
         seasons: "none",
-        videoUrl: "https://drive.google.com/file/d/11dKW3RGr1td0_P8HWp_O7F5mGyFQSEZR/preview",
+        videoUrl: "https://drive.google.com/uc?export=download&id=11dKW3RGr1td0_P8HWp_O7F5mGyFQSEZR",
         downloadUrl: "https://drive.google.com/uc?export=download&id=11dKW3RGr1td0_P8HWp_O7F5mGyFQSEZR",
         betterVersionReady: false,
         betterVersionDate: "2026-04-07",
