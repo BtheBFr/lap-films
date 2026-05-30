@@ -7,31 +7,41 @@
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <div class="player-container">
+    <div class="player-page">
         <a href="index.html" class="back-link">← Назад к каталогу</a>
         
-        <div id="playerHeader"></div>
-        
-        <div class="video-wrapper">
-            <video id="mainPlayer" controls width="100%" poster="">
-                Ваш браузер не поддерживает видео.
-            </video>
+        <div class="player-layout">
+            <!-- ЛЕВАЯ КОЛОНКА: ПОСТЕР + ОПИСАНИЕ -->
+            <div class="film-info-panel" id="filmInfoPanel">
+                <img id="filmPoster" src="" alt="Постер">
+                <p id="filmDescription" class="film-description-full"></p>
+            </div>
+            
+            <!-- ПРАВАЯ КОЛОНКА: ПЛЕЕР И УПРАВЛЕНИЕ -->
+            <div class="player-panel">
+                <h1 id="filmTitle"></h1>
+                <div class="video-wrapper">
+                    <video id="mainPlayer" controls width="100%" poster="">
+                        Ваш браузер не поддерживает видео.
+                    </video>
+                </div>
+                <div id="seasonSeriesNav" class="season-series-nav"></div>
+                <button id="watchBtn" class="watch-btn-large">▶ Смотреть</button>
+            </div>
         </div>
 
-        <section class="suggestions">
-            <h2>🔥 Вам также может понравиться</h2>
-            <div class="suggestions-grid" id="suggestionsGrid"></div>
-        </section>
-
-        <div class="suggest-film-container">
-            <button id="suggestFilmBtn" class="suggest-btn">📩 Предложить фильм / сериал</button>
+        <!-- ДВЕ КНОПКИ РЯДОМ ВНИЗУ -->
+        <div class="buttons-row player-buttons">
+            <button id="suggestFilmBtn" class="action-btn suggest-btn">📩 Предложить фильм / сериал</button>
+            <a href="#" id="otherProjectsLink" class="action-btn other-projects-btn">🔗 Другие проекты lap</a>
         </div>
     </div>
 
+    <!-- МОДАЛЬНОЕ ОКНО -->
     <div id="suggestModal" class="modal">
         <div class="modal-content">
             <span class="modal-close">&times;</span>
-            <h3>📝 Предложить фильм или сериал</h3>
+            <h3>Предложить фильм или сериал</h3>
             <p class="modal-hint">Напишите название, и мы постараемся добавить!</p>
             <input type="text" id="suggestFilmInput" placeholder="Название фильма/сериала">
             <textarea id="suggestCommentInput" rows="3" placeholder="Комментарий (по желанию)"></textarea>
