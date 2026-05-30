@@ -9,9 +9,10 @@ let reviewsExpanded = {};
 const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycby86FMOsqBSKIP8qE_1T8W4G5mgINcSiV4z7TnIaVlHpvHR7YYROpSXrhMGO24yfT1C/exec";
 const GOOGLE_RATINGS_URL = "https://script.google.com/macros/s/AKfycbyQjl03vdNZEjtyab3faMS-wD22urPYlWqb_mJjX0l0b8qsYwiZDuVmjPLs4-UQ8jj5/exec";
 
-// ============= ФУНКЦИИ ДЛЯ GOOGLE DRIVE (IFRAME) =============
+// ============= ФУНКЦИИ ДЛЯ ВИДЕО (VK VIDEO + GOOGLE DRIVE) =============
 function getFileIdFromPath(path) {
     if (!path) return null;
+    // Для Google Drive
     let match = path.match(/[?&]id=([^&]+)/);
     if (match) return match[1];
     match = path.match(/\/d\/([^\/]+)/);
@@ -19,19 +20,24 @@ function getFileIdFromPath(path) {
     return null;
 }
 
-function getEmbedUrl(drivePath) {
-    const fileId = getFileIdFromPath(drivePath);
+function getEmbedUrl(videoPath) {
+    // Если это VK Video — возвращаем как есть (уже embed-ссылка)
+    if (videoPath && (videoPath.includes('vkvideo.ru/video_ext.php') || videoPath.includes('vk.com/video_ext.php'))) {
+        return videoPath;
+    }
+    
+    // Если это Google Drive — конвертируем в preview
+    const fileId = getFileIdFromPath(videoPath);
     if (fileId) {
-        // Для ПЛЕЕРА (iframe) — preview
         return `https://drive.google.com/file/d/${fileId}/preview`;
     }
-    return drivePath;
+    
+    return videoPath;
 }
 
 function getDownloadUrl(drivePath) {
     const fileId = getFileIdFromPath(drivePath);
     if (fileId) {
-        // Для СКАЧИВАНИЯ — export=download
         return `https://drive.usercontent.google.com/download?id=${fileId}&export=download&authuser=0`;
     }
     return drivePath;
@@ -51,12 +57,14 @@ function searchFilms(query) {
 function renderFilmsGrid(filmsToRender) {
     const grid = document.getElementById('filmsGrid');
     if (!grid) return;
+    
     if (filmsToRender.length === 0) {
         grid.innerHTML = '';
         const noResults = document.getElementById('noResults');
         if (noResults) noResults.style.display = 'block';
         return;
     }
+    
     const noResults = document.getElementById('noResults');
     if (noResults) noResults.style.display = 'none';
     
@@ -90,20 +98,28 @@ function renderFilmsGrid(filmsToRender) {
 
 // ============= ФОРМАТИРОВАНИЕ ДАТЫ =============
 function formatDate(dateString) {
-    if (!dateString) return null;
-    const date = new Date(dateString);
-    return `${date.getDate()} ${date.toLocaleString('ru', { month: 'long' })} ${date.getFullYear()}`;
+    if (!dateString || dateString === 'null') return null;
+    try {
+        const date = new Date(dateString);
+        if (isNaN(date.getTime())) return null;
+        return `${date.getDate()} ${date.toLocaleString('ru', { month: 'long' })} ${date.getFullYear()}`;
+    } catch(e) {
+        return null;
+    }
 }
 
 function formatDateForReview(dateString) {
     if (!dateString) return '';
     try {
         const date = new Date(dateString);
+        if (isNaN(date.getTime())) return dateString;
         return `${date.getDate()} ${date.toLocaleString('ru', { month: 'long' })} ${date.getFullYear()} в ${date.getHours().toString().padStart(2,'0')}:${date.getMinutes().toString().padStart(2,'0')}`;
-    } catch(e) { return dateString; }
+    } catch(e) { 
+        return dateString; 
+    }
 }
 
-// ============= ПРОВЕРКА, ОЦЕНИВАЛ ЛИ ПОЛЬЗОВАТЕЛЬ ЭТОТ ФИЛЬМ =============
+// ============= ПРОВЕРКА, ОЦЕНИВАЛ ЛИ ПОЛЬЗОВАТЕЛЬ =============
 function hasUserRated(filmId) {
     const rated = localStorage.getItem(`rated_${filmId}`);
     return rated === 'true';
@@ -177,7 +193,7 @@ function displayReviews(filmId) {
     }
 }
 
-// ============= ОТПРАВКА ОЦЕНКИ (С ПРОВЕРКОЙ) =============
+// ============= ОТПРАВКА ОЦЕНКИ =============
 async function sendRating(filmId, filmTitle, rating, review) {
     if (hasUserRated(filmId)) {
         return { success: false, message: "Вы уже оценили этот фильм. Спасибо!" };
@@ -185,7 +201,8 @@ async function sendRating(filmId, filmTitle, rating, review) {
     
     try {
         await fetch(GOOGLE_RATINGS_URL, {
-            method: 'POST', mode: 'no-cors',
+            method: 'POST', 
+            mode: 'no-cors',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ filmId, filmTitle, rating, review, timestamp: new Date().toLocaleString('ru-RU') })
         });
@@ -207,7 +224,6 @@ function initRatingModal(film) {
     
     if (!rateBtn || !modal) return;
     
-    // Если уже оценил — кнопка неактивна
     if (hasUserRated(film.id)) {
         rateBtn.disabled = true;
         rateBtn.style.opacity = '0.5';
@@ -282,9 +298,16 @@ function initRatingModal(film) {
 function initPlayer() {
     const urlParams = new URLSearchParams(window.location.search);
     const filmId = urlParams.get('id');
-    if (!filmId) { window.location.href = 'index.html'; return; }
+    if (!filmId) { 
+        window.location.href = 'index.html'; 
+        return; 
+    }
+    
     const film = allFilms.find(f => f.id === filmId);
-    if (!film) { window.location.href = 'index.html'; return; }
+    if (!film) { 
+        window.location.href = 'index.html'; 
+        return; 
+    }
     
     document.getElementById('filmTitle').textContent = film.title;
     document.getElementById('filmPoster').src = film.poster;
@@ -292,7 +315,7 @@ function initPlayer() {
     
     const downloadBtn = document.getElementById('downloadBtn');
     if (downloadBtn && film.downloadUrl) {
-        downloadBtn.href = film.downloadUrl;
+        downloadBtn.href = getDownloadUrl(film.downloadUrl);
         downloadBtn.style.display = 'inline-flex';
     } else if (downloadBtn) {
         downloadBtn.style.display = 'none';
@@ -302,8 +325,13 @@ function initPlayer() {
     initRatingModal(film);
     
     const seasonNav = document.getElementById('seasonSeriesNav');
-    if (!film.betterVersionReady && film.betterVersionDate) {
-        seasonNav.innerHTML = `<div class="better-version-notice">🎥 Улучшенная версия выйдет ${formatDate(film.betterVersionDate)}</div>`;
+    if (!film.betterVersionReady && film.betterVersionDate && film.betterVersionDate !== 'null') {
+        const formattedDate = formatDate(film.betterVersionDate);
+        if (formattedDate) {
+            seasonNav.innerHTML = `<div class="better-version-notice">🎥 Улучшенная версия выйдет ${formattedDate}</div>`;
+        } else {
+            seasonNav.innerHTML = `<div class="better-version-notice">🎥 Улучшенная версия скоро</div>`;
+        }
     } else if (!film.betterVersionReady && film.betterVersionDate === null) {
         seasonNav.innerHTML = `<div class="better-version-notice">🎥 Улучшенная версия скоро</div>`;
     } else {
@@ -312,9 +340,11 @@ function initPlayer() {
     
     const watchBtn = document.getElementById('watchBtn');
     const iframe = document.getElementById('driveIframe');
+    
     if (watchBtn && iframe && film.videoUrl) {
         watchBtn.onclick = () => {
-            iframe.src = getEmbedUrl(film.videoUrl);
+            const embedUrl = getEmbedUrl(film.videoUrl);
+            iframe.src = embedUrl;
         };
     }
 }
@@ -323,7 +353,8 @@ function initPlayer() {
 async function sendToGoogleSheets(filmName, comment) {
     try {
         await fetch(GOOGLE_SCRIPT_URL, {
-            method: 'POST', mode: 'no-cors',
+            method: 'POST', 
+            mode: 'no-cors',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ filmName, comment, timestamp: new Date().toLocaleString('ru-RU') })
         });
@@ -336,6 +367,7 @@ async function sendToGoogleSheets(filmName, comment) {
 async function loadSuggestedFilms() {
     const container = document.getElementById('suggestedFilmsList');
     if (!container) return;
+    
     container.innerHTML = '<div class="loading-text">Загрузка...</div>';
     try {
         const response = await fetch(`${GOOGLE_SCRIPT_URL}?action=get`);
@@ -427,6 +459,7 @@ document.addEventListener('DOMContentLoaded', () => {
         renderFilmsGrid(allFilms);
         const searchInput = document.getElementById('searchInput');
         const clearBtn = document.getElementById('searchClear');
+        
         if (searchInput) {
             searchInput.addEventListener('input', e => {
                 const val = e.target.value;
@@ -434,6 +467,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 renderFilmsGrid(searchFilms(val));
             });
         }
+        
         if (clearBtn) {
             clearBtn.addEventListener('click', () => {
                 if (searchInput) searchInput.value = '';
