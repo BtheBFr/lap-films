@@ -10,33 +10,38 @@
     <div class="player-page">
         <a href="index.html" class="back-link">← Назад к каталогу</a>
         
+        <!-- НАЗВАНИЕ (сверху для всех) -->
+        <h1 id="filmTitle" class="film-title-main"></h1>
+        
+        <!-- ПЛЕЕР -->
+        <div class="video-wrapper">
+            <iframe id="driveIframe" 
+                    src="" 
+                    width="100%" 
+                    height="100%" 
+                    frameborder="0" 
+                    allow="autoplay; fullscreen"
+                    style="position: absolute; top: 0; left: 0; width: 100%; height: 100%;">
+            </iframe>
+        </div>
+        
+        <!-- УЛУЧШЕННАЯ ВЕРСИЯ (под плеером) -->
+        <div id="seasonSeriesNav" class="season-series-nav"></div>
+        
+        <!-- ДВЕ КОЛОНКИ: на ПК — постер слева, кнопки под ним; на телефоне — постер сверху, кнопки рядом -->
         <div class="player-layout">
             <div class="film-info-panel" id="filmInfoPanel">
                 <img id="filmPoster" src="" alt="Постер">
                 <p id="filmDescription" class="film-description-full"></p>
-                <div class="film-actions">
-                    <button id="rateBtn" class="rate-btn">⭐ Оценить фильм</button>
-                    <a id="downloadBtn" class="download-btn" href="#" download>⬇ Скачать фильм</a>
-                </div>
             </div>
             
-            <div class="player-panel">
-                <h1 id="filmTitle"></h1>
-                <div class="video-wrapper">
-                    <iframe id="driveIframe" 
-                        src="" 
-                        width="100%" 
-                        height="100%" 
-                        frameborder="0" 
-                        allow="autoplay; fullscreen"
-                        style="position: absolute; top: 0; left: 0; width: 100%; height: 100%;">
-                    </iframe>
-                </div>
-                <div id="seasonSeriesNav" class="season-series-nav"></div>
-                <button id="watchBtn" class="watch-btn-large">▶ Смотреть</button>
+            <div class="actions-panel">
+                <button id="rateBtn" class="rate-btn">⭐ Оценить фильм</button>
+                <a id="downloadBtn" class="download-btn" href="#" download>⬇ Скачать фильм</a>
             </div>
         </div>
 
+        <!-- БЛОК ОТЗЫВОВ -->
         <div class="reviews-section">
             <h3>💬 Отзывы и оценки</h3>
             <div id="reviewsList" class="reviews-list">
@@ -68,7 +73,7 @@
         </div>
     </div>
 
-    <!-- МОДАЛЬНОЕ ОКНО ПРЕДЛОЖЕНИЙ (такое же, как на главной) -->
+    <!-- МОДАЛЬНОЕ ОКНО ПРЕДЛОЖЕНИЙ -->
     <div id="suggestModal" class="modal">
         <div class="modal-content">
             <span class="modal-close">&times;</span>
