@@ -9,7 +9,7 @@ const FILMS_CATALOG = [
         videoUrl: "https://drive.usercontent.google.com/download?id=11dKW3RGr1td0_P8HWp_O7F5mGyFQSEZR&export=download&authuser=0",
         downloadUrl: "https://drive.usercontent.google.com/download?id=11dKW3RGr1td0_P8HWp_O7F5mGyFQSEZR&export=download&authuser=0",
         betterVersionReady: false,
-        betterVersionDate: "null",
+        betterVersionDate: null,
         releaseDate: null,
         comingSoon: false
     },
