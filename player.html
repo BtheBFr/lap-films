@@ -14,6 +14,12 @@
             <div class="film-info-panel" id="filmInfoPanel">
                 <img id="filmPoster" src="" alt="Постер">
                 <p id="filmDescription" class="film-description-full"></p>
+                
+                <!-- КНОПКИ: ОЦЕНИТЬ И СКАЧАТЬ -->
+                <div class="film-actions">
+                    <button id="rateBtn" class="rate-btn">⭐ Оценить фильм</button>
+                    <a id="downloadBtn" class="download-btn" href="#" download>⬇ Скачать фильм</a>
+                </div>
             </div>
             
             <div class="player-panel">
@@ -28,30 +34,51 @@
             </div>
         </div>
 
+        <!-- БЛОК ОТЗЫВОВ -->
+        <div class="reviews-section">
+            <h3>💬 Отзывы и оценки</h3>
+            <div id="reviewsList" class="reviews-list">
+                <div class="loading-text">Загрузка отзывов...</div>
+            </div>
+        </div>
+
         <div class="buttons-row player-buttons">
             <button id="suggestFilmBtn" class="action-btn suggest-btn">📩 Предложить фильм / сериал</button>
             <a href="#" id="otherProjectsLink" class="action-btn other-projects-btn">🔗 Другие проекты lap</a>
         </div>
     </div>
 
-    <!-- МОДАЛЬНОЕ ОКНО -->
+    <!-- МОДАЛКА ОЦЕНКИ -->
+    <div id="rateModal" class="modal">
+        <div class="modal-content rate-modal">
+            <span class="modal-close rate-close">&times;</span>
+            <h3>⭐ Оценить фильм</h3>
+            <div class="stars-container" id="starsContainer">
+                <span data-rating="1">☆</span>
+                <span data-rating="2">☆</span>
+                <span data-rating="3">☆</span>
+                <span data-rating="4">☆</span>
+                <span data-rating="5">☆</span>
+            </div>
+            <textarea id="reviewText" rows="3" placeholder="Ваш отзыв (по желанию)"></textarea>
+            <button id="submitRatingBtn" class="submit-suggest-btn">Отправить оценку</button>
+            <div id="ratingStatus" class="suggest-status"></div>
+        </div>
+    </div>
+
+    <!-- МОДАЛЬНОЕ ОКНО ПРЕДЛОЖЕНИЙ -->
     <div id="suggestModal" class="modal">
         <div class="modal-content">
             <span class="modal-close">&times;</span>
             <h3>📝 Предложить фильм или сериал</h3>
-            
             <input type="text" id="suggestFilmInput" placeholder="Название фильма/сериала">
             <textarea id="suggestCommentInput" rows="2" placeholder="Комментарий (по желанию)"></textarea>
-            
             <button id="submitSuggestionBtn" class="submit-suggest-btn">
                 <span id="loadingSpinner" class="spinner" style="display: none;"></span>
                 Отправить предложение
             </button>
-            
             <div id="suggestStatus" class="suggest-status"></div>
-            
             <button id="showSuggestedBtn" class="show-suggested-btn">📋 Предложенные фильмы</button>
-            
             <div id="suggestedFilmsContainer" style="display: none;">
                 <div class="suggestions-divider"></div>
                 <h4 class="suggested-title">📋 Список предложенных фильмов</h4>
