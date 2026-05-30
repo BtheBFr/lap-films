@@ -5,7 +5,7 @@ const FILMS_CATALOG = [
         title: "Ждун 2",
         searchTerms: ["ждун", "ждун2", "ждун 2", "zhdun", "zhdun2", "ждуг", "ждуний", "серый", "великан"],
         description: "Продолжение приключений серого великана. Ждун возвращается в новом захватывающем приключении!",
-        poster: "posters/zhdun2.jpg",
+        poster: "posters/ждун2.png",
         seasons: "none",
         videoUrl: "https://example.com/video/zhdun2.mp4"
     },
