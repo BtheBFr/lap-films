@@ -2,25 +2,59 @@
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
     <title>lap-films — каталог</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
     <div class="container">
         <h1>🎬 lap-films</h1>
-        <p class="subtitle">выбери фильм или сериал</p>
         
+        <!-- ПОИСК СВЕРХУ -->
+        <div class="search-container">
+            <input type="text" id="searchInput" placeholder="🔍 Поиск фильмов или сериалов..." autocomplete="off">
+            <button id="searchClear" class="clear-btn" style="display: none;">✖</button>
+        </div>
+        
+        <!-- СЕТКА ФИЛЬМОВ -->
         <div class="films-grid" id="filmsGrid"></div>
+        
+        <!-- СООБЩЕНИЕ "НИЧЕГО НЕ НАЙДЕНО" -->
+        <div id="noResults" class="no-results" style="display: none;">
+            <p>😕 Ничего не найдено</p>
+            <small>Попробуйте другие ключевые слова</small>
+        </div>
 
-        <!-- БЛОК ПРЕДЛОЖЕНИЙ (внизу каждой страницы) -->
-        <section class="suggestions">
+        <!-- БЛОК ПРЕДЛОЖЕНИЙ (внизу, без дублей) -->
+        <section class="suggestions" id="suggestionsSection">
             <h2>🔥 Посмотри наши другие проекты</h2>
             <div class="suggestions-grid" id="suggestionsGrid"></div>
-            <p class="other-link">
-                🔗 <a href="#" id="otherProjectsLink">Другие проекты lap</a>
-            </p>
         </section>
+
+        <!-- КНОПКА "ПРЕДЛОЖИТЬ ФИЛЬМ/СЕРИАЛ" -->
+        <div class="suggest-film-container">
+            <button id="suggestFilmBtn" class="suggest-btn">📩 Предложить фильм / сериал</button>
+        </div>
+
+        <!-- ССЫЛКА НА ДРУГИЕ ПРОЕКТЫ (КНОПКА) -->
+        <div class="other-projects-container">
+            <a href="#" id="otherProjectsLink" class="other-projects-btn">🔗 Посмотри наши другие проекты</a>
+        </div>
     </div>
+
+    <!-- МОДАЛЬНОЕ ОКНО ДЛЯ ПРЕДЛОЖЕНИЯ -->
+    <div id="suggestModal" class="modal">
+        <div class="modal-content">
+            <span class="modal-close">&times;</span>
+            <h3>📝 Предложить фильм или сериал</h3>
+            <p class="modal-hint">Напишите название, и мы постараемся добавить!</p>
+            <input type="text" id="suggestFilmInput" placeholder="Название фильма/сериала" autocomplete="off">
+            <textarea id="suggestCommentInput" rows="3" placeholder="Комментарий (по желанию)"></textarea>
+            <button id="submitSuggestionBtn" class="submit-suggest-btn">Отправить предложение</button>
+            <div id="suggestStatus" class="suggest-status"></div>
+        </div>
+    </div>
+
     <script src="films.js"></script>
     <script src="common.js"></script>
 </body>
