@@ -10,13 +10,11 @@
     <div class="container">
         <h1>lap-films</h1>
         
-        <!-- ПОИСК -->
         <div class="search-container">
             <input type="text" id="searchInput" placeholder="🔍 Поиск фильмов или сериалов..." autocomplete="off">
             <button id="searchClear" class="clear-btn" style="display: none;">✖</button>
         </div>
         
-        <!-- СЕТКА МАЛЕНЬКИХ КАРТОЧЕК -->
         <div class="films-grid" id="filmsGrid"></div>
         
         <div id="noResults" class="no-results" style="display: none;">
@@ -24,23 +22,34 @@
             <small>Попробуйте другие ключевые слова</small>
         </div>
 
-        <!-- ДВЕ КНОПКИ РЯДОМ -->
         <div class="buttons-row">
             <button id="suggestFilmBtn" class="action-btn suggest-btn">📩 Предложить фильм / сериал</button>
             <a href="#" id="otherProjectsLink" class="action-btn other-projects-btn">🔗 Другие проекты lap</a>
         </div>
     </div>
 
-    <!-- МОДАЛЬНОЕ ОКНО ДЛЯ ПРЕДЛОЖЕНИЯ -->
+    <!-- МОДАЛЬНОЕ ОКНО -->
     <div id="suggestModal" class="modal">
         <div class="modal-content">
             <span class="modal-close">&times;</span>
-            <h3>Предложить фильм или сериал</h3>
-            <p class="modal-hint">Напишите название, и мы постараемся добавить!</p>
+            <h3>📝 Предложить фильм или сериал</h3>
+            
             <input type="text" id="suggestFilmInput" placeholder="Название фильма/сериала">
-            <textarea id="suggestCommentInput" rows="3" placeholder="Комментарий (по желанию)"></textarea>
-            <button id="submitSuggestionBtn" class="submit-suggest-btn">Отправить предложение</button>
+            <textarea id="suggestCommentInput" rows="2" placeholder="Комментарий (по желанию)"></textarea>
+            
+            <button id="submitSuggestionBtn" class="submit-suggest-btn">
+                <span id="loadingSpinner" class="spinner" style="display: none;"></span>
+                Отправить предложение
+            </button>
+            
             <div id="suggestStatus" class="suggest-status"></div>
+            
+            <div class="suggestions-divider"></div>
+            
+            <h4 class="suggested-title">📋 Предложенные фильмы</h4>
+            <div id="suggestedFilmsList" class="suggested-films-list">
+                <div class="loading-text">Загрузка...</div>
+            </div>
         </div>
     </div>
 
