@@ -9,7 +9,7 @@ let reviewsExpanded = {};
 const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycby86FMOsqBSKIP8qE_1T8W4G5mgINcSiV4z7TnIaVlHpvHR7YYROpSXrhMGO24yfT1C/exec";
 const GOOGLE_RATINGS_URL = "https://script.google.com/macros/s/AKfycbyQjl03vdNZEjtyab3faMS-wD22urPYlWqb_mJjX0l0b8qsYwiZDuVmjPLs4-UQ8jj5/exec";
 
-// ============= ФУНКЦИИ ДЛЯ ВИДЕО (VK VIDEO + GOOGLE DRIVE) =============
+// ============= ФУНКЦИИ ДЛЯ ВИДЕО (VK VIDEO / RUTUBE / GOOGLE DRIVE) =============
 function getFileIdFromPath(path) {
     if (!path) return null;
     // Для Google Drive
@@ -21,8 +21,15 @@ function getFileIdFromPath(path) {
 }
 
 function getEmbedUrl(videoPath) {
+    if (!videoPath) return '';
+    
     // Если это VK Video — возвращаем как есть (уже embed-ссылка)
-    if (videoPath && (videoPath.includes('vkvideo.ru/video_ext.php') || videoPath.includes('vk.com/video_ext.php'))) {
+    if (videoPath.includes('vkvideo.ru/video_ext.php') || videoPath.includes('vk.com/video_ext.php')) {
+        return videoPath;
+    }
+    
+    // Если это Rutube — возвращаем как есть (уже embed-ссылка)
+    if (videoPath.includes('rutube.ru/play/embed/')) {
         return videoPath;
     }
     
