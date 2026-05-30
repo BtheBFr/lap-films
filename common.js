@@ -3,22 +3,17 @@ let currentFilmId = null;
 let allFilms = [];
 
 // ============= НАСТРОЙКА GOOGLE TABLES =============
-// ВАЖНО: ЗАМЕНИТЕ ЭТУ ССЫЛКУ НА ВАШУ
-// Как получить ссылку: 
-// 1. Создайте Google Таблицу
-// 2. Инструменты -> Редактор скриптов
-// 3. Вставьте код Apps Script (ссылка внизу инструкции)
-// 4. Опубликуйте как веб-приложение
+// ЗАМЕНИ НА СВОЮ ССЫЛКУ ПОСЛЕ НАСТРОЙКИ
 const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/ВАШ_КОД/exec";
 
-// ============= ПОИСК =============
+// ============= ПОИСК (по title И searchTerms) =============
 function searchFilms(query) {
     if (!query.trim()) return allFilms;
     const lowerQuery = query.toLowerCase().trim();
     return allFilms.filter(film => {
         // Поиск по названию
         if (film.title.toLowerCase().includes(lowerQuery)) return true;
-        // Поиск по searchTerms
+        // Поиск по searchTerms (ключевым словам)
         if (film.searchTerms && film.searchTerms.some(term => term.toLowerCase().includes(lowerQuery))) return true;
         return false;
     });
@@ -30,13 +25,14 @@ function renderFilmsGrid(filmsToRender) {
     
     if (filmsToRender.length === 0) {
         grid.innerHTML = '';
-        document.getElementById('noResults').style.display = 'block';
+        const noResults = document.getElementById('noResults');
+        if (noResults) noResults.style.display = 'block';
         return;
     }
     
-    document.getElementById('noResults').style.display = 'none';
+    const noResults = document.getElementById('noResults');
+    if (noResults) noResults.style.display = 'none';
     
-    // Фиксированная высота для карточек
     grid.innerHTML = filmsToRender.map(film => `
         <div class="film-card" data-id="${film.id}">
             <img src="${film.poster}" alt="${film.title}" loading="lazy">
@@ -52,7 +48,6 @@ function renderFilmsGrid(filmsToRender) {
 // ============= ПРЕДЛОЖЕНИЯ (БЕЗ ДУБЛЕЙ) =============
 function getRandomSuggestions(excludeId, count = 4) {
     let others = allFilms.filter(f => f.id !== excludeId);
-    // Перемешиваем
     for (let i = others.length - 1; i > 0; i--) {
         const j = Math.floor(Math.random() * (i + 1));
         [others[i], others[j]] = [others[j], others[i]];
@@ -157,12 +152,11 @@ function updateUrlWithoutReload(filmId, season, series) {
 // ============= ОТПРАВКА В GOOGLE TABLES =============
 async function sendToGoogleSheets(filmName, comment) {
     if (!GOOGLE_SCRIPT_URL || GOOGLE_SCRIPT_URL === "https://script.google.com/macros/s/ВАШ_КОД/exec") {
-        console.warn("Google Sheets не настроен");
-        return { success: false, message: "Форма временно недоступна. Попробуйте позже." };
+        return { success: false, message: "Форма временно недоступна" };
     }
     
     try {
-        const response = await fetch(GOOGLE_SCRIPT_URL, {
+        await fetch(GOOGLE_SCRIPT_URL, {
             method: 'POST',
             mode: 'no-cors',
             headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
@@ -172,10 +166,9 @@ async function sendToGoogleSheets(filmName, comment) {
                 timestamp: new Date().toLocaleString('ru-RU')
             })
         });
-        return { success: true, message: "Спасибо! Ваше предложение отправлено." };
+        return { success: true, message: "Спасибо! Предложение отправлено." };
     } catch (error) {
-        console.error("Ошибка:", error);
-        return { success: false, message: "Ошибка отправки. Попробуйте позже." };
+        return { success: false, message: "Ошибка отправки" };
     }
 }
 
@@ -193,14 +186,12 @@ function initModal() {
     
     openBtn.onclick = () => {
         modal.style.display = 'flex';
-        filmInput.value = '';
-        commentInput.value = '';
-        statusDiv.innerHTML = '';
+        if (filmInput) filmInput.value = '';
+        if (commentInput) commentInput.value = '';
+        if (statusDiv) statusDiv.innerHTML = '';
     }
     
-    if (closeSpan) {
-        closeSpan.onclick = () => modal.style.display = 'none';
-    }
+    if (closeSpan) closeSpan.onclick = () => modal.style.display = 'none';
     
     window.onclick = (event) => {
         if (event.target === modal) modal.style.display = 'none';
@@ -210,16 +201,16 @@ function initModal() {
         submitBtn.onclick = async () => {
             const filmName = filmInput.value.trim();
             if (!filmName) {
-                statusDiv.innerHTML = '<span style="color:#e50914">Пожалуйста, введите название</span>';
+                if (statusDiv) statusDiv.innerHTML = '<span style="color:#e50914">Введите название</span>';
                 return;
             }
-            statusDiv.innerHTML = '<span style="color:#ffaa00">Отправка...</span>';
+            if (statusDiv) statusDiv.innerHTML = '<span style="color:#ffaa00">Отправка...</span>';
             const result = await sendToGoogleSheets(filmName, commentInput.value);
             if (result.success) {
-                statusDiv.innerHTML = `<span style="color:#4caf50">${result.message}</span>`;
+                if (statusDiv) statusDiv.innerHTML = `<span style="color:#4caf50">${result.message}</span>`;
                 setTimeout(() => modal.style.display = 'none', 2000);
             } else {
-                statusDiv.innerHTML = `<span style="color:#e50914">${result.message}</span>`;
+                if (statusDiv) statusDiv.innerHTML = `<span style="color:#e50914">${result.message}</span>`;
             }
         };
     }
@@ -234,7 +225,6 @@ document.addEventListener('DOMContentLoaded', () => {
         renderFilmsGrid(allFilms);
         renderSuggestions('suggestionsGrid', null);
         
-        // Поиск
         const searchInput = document.getElementById('searchInput');
         const clearBtn = document.getElementById('searchClear');
         
@@ -244,16 +234,15 @@ document.addEventListener('DOMContentLoaded', () => {
                 if (clearBtn) clearBtn.style.display = query ? 'block' : 'none';
                 const filtered = searchFilms(query);
                 renderFilmsGrid(filtered);
-                // Предложения не трогаем, они всегда остаются
             });
         }
         
         if (clearBtn) {
             clearBtn.addEventListener('click', () => {
-                searchInput.value = '';
+                if (searchInput) searchInput.value = '';
                 clearBtn.style.display = 'none';
                 renderFilmsGrid(allFilms);
-                searchInput.focus();
+                if (searchInput) searchInput.focus();
             });
         }
     }
@@ -263,12 +252,11 @@ document.addEventListener('DOMContentLoaded', () => {
         initPlayer();
     }
     
-    // Ссылка на другие проекты (кнопка)
+    // Ссылка на другие проекты (ЗАМЕНИ НА СВОЮ)
     const otherLink = document.getElementById('otherProjectsLink');
     if (otherLink) {
-        otherLink.href = '#'; // СЮДА ВАША ССЫЛКА
+        otherLink.href = '#'; // СЮДА ТВОЮ ССЫЛКУ
     }
     
-    // Модальное окно
     initModal();
 });
