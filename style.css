@@ -500,3 +500,132 @@ video {
     background: #e50914;
     border-color: white;
 }
+/* ============= КНОПКИ ОЦЕНИТЬ И СКАЧАТЬ ============= */
+.film-actions {
+    display: flex;
+    gap: 15px;
+    margin-top: 25px;
+    justify-content: center;
+    flex-wrap: wrap;
+}
+
+.rate-btn, .download-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 20px;
+    border-radius: 40px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    text-decoration: none;
+    font-size: 0.9rem;
+}
+
+.rate-btn {
+    background: rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    color: white;
+}
+
+.rate-btn:hover {
+    background: #ffc107;
+    color: #1a1a2e;
+}
+
+.download-btn {
+    background: rgba(76, 175, 80, 0.2);
+    border: 1px solid #4caf50;
+    color: #4caf50;
+}
+
+.download-btn:hover {
+    background: #4caf50;
+    color: white;
+}
+
+/* ============= ЗВЕЗДЫ ДЛЯ ОЦЕНКИ ============= */
+.stars-container {
+    display: flex;
+    gap: 10px;
+    justify-content: center;
+    margin: 20px 0;
+}
+
+.stars-container span {
+    font-size: 2.5rem;
+    cursor: pointer;
+    transition: 0.2s;
+    color: #555;
+}
+
+.stars-container span:hover {
+    transform: scale(1.1);
+}
+
+.rate-modal {
+    max-width: 400px;
+    text-align: center;
+}
+
+/* ============= ОТЗЫВЫ ============= */
+.reviews-section {
+    margin-top: 50px;
+    padding-top: 30px;
+    border-top: 2px solid rgba(255, 255, 255, 0.1);
+}
+
+.reviews-section h3 {
+    font-size: 1.5rem;
+    margin-bottom: 20px;
+}
+
+.reviews-list {
+    background: rgba(30, 30, 40, 0.4);
+    border-radius: 20px;
+    padding: 20px;
+}
+
+.average-rating {
+    font-size: 1.2rem;
+    margin-bottom: 20px;
+    padding-bottom: 15px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.review-item {
+    padding: 15px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.review-item:last-child {
+    border-bottom: none;
+}
+
+.review-stars {
+    color: #ffc107;
+    font-size: 1rem;
+    margin-bottom: 8px;
+}
+
+.review-text {
+    color: #ddd;
+    font-size: 0.9rem;
+    line-height: 1.4;
+    margin-bottom: 5px;
+}
+
+.review-date {
+    color: #777;
+    font-size: 0.7rem;
+}
+
+.better-version-notice {
+    background: rgba(229, 9, 20, 0.2);
+    border: 1px solid #e50914;
+    border-radius: 40px;
+    padding: 10px 20px;
+    text-align: center;
+    margin: 15px 0;
+    font-size: 0.9rem;
+}
