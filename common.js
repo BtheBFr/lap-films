@@ -4,9 +4,35 @@ let allFilms = [];
 let currentRating = 0;
 let reviewsCache = {};
 
-// ↓↓↓ ВСТАВЬ СВОИ ССЫЛКИ ИЗ APPS SCRIPT ↓↓↓
+// ↓↓↓ ТВОИ ССЫЛКИ (УЖЕ ВСТАВЛЕНЫ) ↓↓↓
 const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycby86FMOsqBSKIP8qE_1T8W4G5mgINcSiV4z7TnIaVlHpvHR7YYROpSXrhMGO24yfT1C/exec";
 const GOOGLE_RATINGS_URL = "https://script.google.com/macros/s/AKfycbyQjl03vdNZEjtyab3faMS-wD22urPYlWqb_mJjX0l0b8qsYwiZDuVmjPLs4-UQ8jj5/exec";
+
+// ============= ФУНКЦИИ ДЛЯ GOOGLE DRIVE =============
+function getFileIdFromPath(path) {
+    if (!path) return null;
+    let match = path.match(/[?&]id=([^&]+)/);
+    if (match) return match[1];
+    match = path.match(/\/d\/([^\/]+)/);
+    if (match) return match[1];
+    return null;
+}
+
+function getEmbedUrl(drivePath) {
+    const fileId = getFileIdFromPath(drivePath);
+    if (fileId) {
+        return `https://drive.google.com/file/d/${fileId}/preview`;
+    }
+    return drivePath;
+}
+
+function getDownloadUrl(drivePath) {
+    const fileId = getFileIdFromPath(drivePath);
+    if (fileId) {
+        return `https://drive.google.com/uc?export=download&id=${fileId}`;
+    }
+    return drivePath;
+}
 
 // ============= ПОИСК =============
 function searchFilms(query) {
@@ -229,51 +255,61 @@ function initPlayer() {
         return;
     }
 
-    const filmTitle = document.getElementById('filmTitle');
-    const filmPoster = document.getElementById('filmPoster');
-    const filmDescription = document.getElementById('filmDescription');
-    const seasonSeriesNav = document.getElementById('seasonSeriesNav');
-    const watchBtn = document.getElementById('watchBtn');
-    const videoPlayer = document.getElementById('mainPlayer');
+    const episodeTitle = document.getElementById('episodeTitle');
     const downloadBtn = document.getElementById('downloadBtn');
+    const copyLinkBtn = document.getElementById('copyLinkBtn');
+    const driveIframe = document.getElementById('driveIframe');
     
-    filmTitle.textContent = film.title;
-    filmPoster.src = film.poster;
-    filmDescription.textContent = film.description || 'Описание отсутствует';
+    episodeTitle.textContent = film.title;
     
     // Настройка скачивания
     if (downloadBtn && film.downloadUrl) {
-        downloadBtn.href = film.downloadUrl;
-        downloadBtn.style.display = 'inline-flex';
-    } else if (downloadBtn) {
-        downloadBtn.style.display = 'none';
+        const newDownloadBtn = downloadBtn.cloneNode(true);
+        downloadBtn.parentNode.replaceChild(newDownloadBtn, downloadBtn);
+        newDownloadBtn.addEventListener('click', () => {
+            const downloadUrl = getDownloadUrl(film.downloadUrl);
+            window.open(downloadUrl, '_blank');
+        });
+    }
+    
+    // Копирование ссылки
+    if (copyLinkBtn) {
+        const newCopyBtn = copyLinkBtn.cloneNode(true);
+        copyLinkBtn.parentNode.replaceChild(newCopyBtn, copyLinkBtn);
+        newCopyBtn.addEventListener('click', async () => {
+            const url = window.location.href;
+            try {
+                await navigator.clipboard.writeText(url);
+                showNotification('✅ Ссылка скопирована!');
+            } catch (err) {
+                showNotification('❌ Ошибка копирования');
+            }
+        });
+    }
+    
+    // Загрузка видео в iframe
+    if (film.videoUrl && driveIframe) {
+        const embedUrl = getEmbedUrl(film.videoUrl);
+        driveIframe.src = embedUrl;
     }
     
     // Загружаем отзывы
     loadReviews(filmId);
+    
+    // Инициализируем модалку оценки
     initRatingModal(film);
-    
-    // Надпись про улучшенную версию
-    if (!film.betterVersionReady && film.betterVersionDate) {
-        seasonSeriesNav.innerHTML = `<div class="better-version-notice">🎥 Улучшенная версия выйдет ${formatDate(film.betterVersionDate)}</div>`;
-    } else if (!film.betterVersionReady && !film.betterVersionDate) {
-        seasonSeriesNav.innerHTML = `<div class="better-version-notice">🎥 Улучшенная версия скоро</div>`;
-    } else {
-        seasonSeriesNav.innerHTML = '';
-    }
-    
-    // Кнопка смотреть
-    if (film.seasons === "none") {
-        watchBtn.onclick = () => {
-            if (film.videoUrl) {
-                videoPlayer.src = film.videoUrl;
-                videoPlayer.poster = film.poster;
-                videoPlayer.play();
-            } else {
-                alert('Видео временно недоступно');
-            }
-        };
-    }
+}
+
+function showNotification(message) {
+    const notification = document.createElement('div');
+    notification.className = 'notification';
+    notification.textContent = message;
+    document.body.appendChild(notification);
+    setTimeout(() => notification.classList.add('show'), 10);
+    setTimeout(() => {
+        notification.classList.remove('show');
+        setTimeout(() => notification.remove(), 300);
+    }, 3000);
 }
 
 // ============= ПРЕДЛОЖЕНИЯ =============
@@ -312,7 +348,7 @@ async function loadSuggestedFilms() {
         
         listContainer.innerHTML = films.map(film => `
             <div class="suggested-film-item">
-                <span class="suggested-film-name">🎬 ${film.name}</span>
+                <span class="suggested-film-name">🎬 ${escapeHtml(film.name)}</span>
                 <span class="suggested-film-date">${film.date ? new Date(film.date).toLocaleDateString() : ''}</span>
             </div>
         `).join('');
@@ -425,7 +461,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
     
-    if (document.getElementById('mainPlayer')) {
+    if (document.getElementById('driveIframe')) {
         initPlayer();
     }
     
