@@ -5,7 +5,7 @@ let currentRating = 0;
 
 // ↓↓↓ ВСТАВЬ СВОИ ССЫЛКИ ИЗ APPS SCRIPT ↓↓↓
 const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/ВАШ_КОД/exec";
-const GOOGLE_RATINGS_URL = "https://script.google.com/macros/s/ВАШ_КОД_ДЛЯ_ОЦЕНОК/exec";
+const GOOGLE_RATINGS_URL = "https://script.google.com/macros/s/AKfycbyQjl03vdNZEjtyab3faMS-wD22urPYlWqb_mJjX0l0b8qsYwiZDuVmjPLs4-UQ8jj5/exec";
 
 // ============= ПОИСК =============
 function searchFilms(query) {
