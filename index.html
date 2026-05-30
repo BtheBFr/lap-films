@@ -25,30 +25,30 @@
             <small>Попробуйте другие ключевые слова</small>
         </div>
 
-        <!-- БЛОК ПРЕДЛОЖЕНИЙ (внизу, без дублей) -->
-        <section class="suggestions" id="suggestionsSection">
+        <!-- БЛОК ПРЕДЛОЖЕНИЙ -->
+        <section class="suggestions">
             <h2>🔥 Посмотри наши другие проекты</h2>
             <div class="suggestions-grid" id="suggestionsGrid"></div>
         </section>
 
-        <!-- КНОПКА "ПРЕДЛОЖИТЬ ФИЛЬМ/СЕРИАЛ" -->
+        <!-- КНОПКА "ПРЕДЛОЖИТЬ" -->
         <div class="suggest-film-container">
             <button id="suggestFilmBtn" class="suggest-btn">📩 Предложить фильм / сериал</button>
         </div>
 
-        <!-- ССЫЛКА НА ДРУГИЕ ПРОЕКТЫ (КНОПКА) -->
+        <!-- КНОПКА ДРУГИХ ПРОЕКТОВ (БЕЗ ПОДЧЕРКИВАНИЯ) -->
         <div class="other-projects-container">
             <a href="#" id="otherProjectsLink" class="other-projects-btn">🔗 Посмотри наши другие проекты</a>
         </div>
     </div>
 
-    <!-- МОДАЛЬНОЕ ОКНО ДЛЯ ПРЕДЛОЖЕНИЯ -->
+    <!-- МОДАЛЬНОЕ ОКНО -->
     <div id="suggestModal" class="modal">
         <div class="modal-content">
             <span class="modal-close">&times;</span>
             <h3>📝 Предложить фильм или сериал</h3>
             <p class="modal-hint">Напишите название, и мы постараемся добавить!</p>
-            <input type="text" id="suggestFilmInput" placeholder="Название фильма/сериала" autocomplete="off">
+            <input type="text" id="suggestFilmInput" placeholder="Название фильма/сериала">
             <textarea id="suggestCommentInput" rows="3" placeholder="Комментарий (по желанию)"></textarea>
             <button id="submitSuggestionBtn" class="submit-suggest-btn">Отправить предложение</button>
             <div id="suggestStatus" class="suggest-status"></div>
