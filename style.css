@@ -247,9 +247,14 @@ h1 {
     color: #ffc107;
 }
 
-.rate-btn:hover {
+.rate-btn:hover:not(:disabled) {
     background: #ffc107;
     color: #1a1a2e;
+}
+
+.rate-btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
 }
 
 .download-btn {
@@ -478,6 +483,28 @@ h1 {
     color: #888;
     padding: 20px;
     font-size: 0.85rem;
+}
+
+/* ============= КНОПКА "ПОКАЗАТЬ ВСЕ" / "СВЕРНУТЬ" ============= */
+.toggle-reviews-btn {
+    display: block;
+    width: 100%;
+    padding: 10px;
+    margin-top: 15px;
+    background: rgba(255, 255, 255, 0.08);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 30px;
+    color: #ffc107;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    text-align: center;
+}
+
+.toggle-reviews-btn:hover {
+    background: #ffc107;
+    color: #1a1a2e;
+    border-color: #ffc107;
 }
 
 /* ============= МОДАЛЬНЫЕ ОКНА ============= */
