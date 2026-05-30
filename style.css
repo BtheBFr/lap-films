@@ -482,3 +482,21 @@ video {
         font-size: 0.85rem;
     }
 }
+/* ============= КНОПКА "ПРЕДЛОЖЕННЫЕ ФИЛЬМЫ" ============= */
+.show-suggested-btn {
+    width: 100%;
+    padding: 12px;
+    background: rgba(255, 255, 255, 0.08);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 40px;
+    color: white;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    margin-top: 10px;
+}
+
+.show-suggested-btn:hover {
+    background: #e50914;
+    border-color: white;
+}
