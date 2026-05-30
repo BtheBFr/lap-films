@@ -14,8 +14,6 @@
             <div class="film-info-panel" id="filmInfoPanel">
                 <img id="filmPoster" src="" alt="Постер">
                 <p id="filmDescription" class="film-description-full"></p>
-                
-                <!-- КНОПКИ: ОЦЕНИТЬ И СКАЧАТЬ -->
                 <div class="film-actions">
                     <button id="rateBtn" class="rate-btn">⭐ Оценить фильм</button>
                     <a id="downloadBtn" class="download-btn" href="#" download>⬇ Скачать фильм</a>
@@ -26,12 +24,12 @@
                 <h1 id="filmTitle"></h1>
                 <div class="video-wrapper">
                     <iframe id="driveIframe" 
-                            src="" 
-                            width="100%" 
-                            height="100%" 
-                            frameborder="0" 
-                            allow="autoplay; fullscreen"
-                            style="position: absolute; top: 0; left: 0; width: 100%; height: 100%;">
+                        src="" 
+                        width="100%" 
+                        height="100%" 
+                        frameborder="0" 
+                        allow="autoplay; fullscreen"
+                        style="position: absolute; top: 0; left: 0; width: 100%; height: 100%;">
                     </iframe>
                 </div>
                 <div id="seasonSeriesNav" class="season-series-nav"></div>
@@ -39,7 +37,6 @@
             </div>
         </div>
 
-        <!-- БЛОК ОТЗЫВОВ -->
         <div class="reviews-section">
             <h3>💬 Отзывы и оценки</h3>
             <div id="reviewsList" class="reviews-list">
@@ -71,7 +68,7 @@
         </div>
     </div>
 
-    <!-- МОДАЛЬНОЕ ОКНО ПРЕДЛОЖЕНИЙ -->
+    <!-- МОДАЛЬНОЕ ОКНО ПРЕДЛОЖЕНИЙ (такое же, как на главной) -->
     <div id="suggestModal" class="modal">
         <div class="modal-content">
             <span class="modal-close">&times;</span>
