@@ -1,97 +1,361 @@
-body {
-    font-family: system-ui, -apple-system, sans-serif;
-    background: #0a0a0a;
-    color: white;
+/* ============= ГЛОБАЛЬНЫЕ СТИЛИ ============= */
+* {
     margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Segoe UI', 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Roboto', sans-serif;
+    background: linear-gradient(135deg, #0a0a0a 0%, #1a1a2e 100%);
+    color: #ffffff;
+    min-height: 100vh;
     padding: 40px 20px;
 }
+
 .container, .player-container {
-    max-width: 1000px;
+    max-width: 1400px;
     margin: 0 auto;
+    animation: fadeIn 0.6s ease-out;
 }
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* ============= ЗАГОЛОВКИ ============= */
 h1 {
-    font-size: 3rem;
+    font-size: 4rem;
+    font-weight: 800;
     text-align: center;
-    margin-bottom: 0;
+    background: linear-gradient(135deg, #fff, #e50914);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+    margin-bottom: 10px;
+    letter-spacing: -1px;
 }
+
 .subtitle {
     text-align: center;
-    opacity: 0.7;
-    margin-bottom: 40px;
+    color: #aaaaaa;
+    font-size: 1.2rem;
+    margin-bottom: 50px;
+    border-bottom: 1px solid rgba(255,255,255,0.1);
+    display: inline-block;
+    width: auto;
+    margin-left: auto;
+    margin-right: auto;
+    padding-bottom: 15px;
 }
-.film-list {
-    display: flex;
-    gap: 30px;
-    justify-content: center;
-    flex-wrap: wrap;
-    margin: 50px 0;
+
+/* ============= СЕТКА ФИЛЬМОВ ============= */
+.films-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 35px;
+    margin: 50px 0 60px;
 }
+
 .film-card {
-    background: #1e1e1e;
-    border-radius: 20px;
-    padding: 30px;
-    width: 250px;
-    text-align: center;
+    background: rgba(30, 30, 40, 0.6);
+    backdrop-filter: blur(10px);
+    border-radius: 24px;
+    overflow: hidden;
+    transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    border: 1px solid rgba(255,255,255,0.1);
+    cursor: pointer;
+    position: relative;
 }
+
+.film-card:hover {
+    transform: translateY(-12px) scale(1.02);
+    box-shadow: 0 20px 40px rgba(229, 9, 20, 0.3);
+    border-color: rgba(229, 9, 20, 0.5);
+}
+
+.film-card img {
+    width: 100%;
+    height: 400px;
+    object-fit: cover;
+    transition: transform 0.4s ease;
+}
+
+.film-card:hover img {
+    transform: scale(1.05);
+}
+
+.film-card h3 {
+    font-size: 1.6rem;
+    margin: 20px 20px 10px;
+    font-weight: 700;
+}
+
+.film-card p {
+    color: #bbbbbb;
+    margin: 0 20px 20px;
+    font-size: 0.95rem;
+    line-height: 1.4;
+}
+
 .watch-btn {
     display: inline-block;
-    background: #e50914;
+    background: linear-gradient(135deg, #e50914, #b00710);
+    color: white;
+    text-decoration: none;
+    padding: 12px 28px;
+    border-radius: 40px;
+    margin: 0 20px 25px;
+    font-weight: 600;
+    transition: all 0.3s ease;
+    border: none;
+    cursor: pointer;
+    text-align: center;
+    font-size: 1rem;
+}
+
+.watch-btn:hover {
+    transform: scale(1.05);
+    box-shadow: 0 5px 15px rgba(229, 9, 20, 0.4);
+    background: linear-gradient(135deg, #ff1a24, #e50914);
+}
+
+/* ============= БЛОК ПРЕДЛОЖЕНИЙ (внизу) ============= */
+.suggestions {
+    margin-top: 80px;
+    padding-top: 50px;
+    border-top: 2px solid rgba(255,255,255,0.1);
+    background: rgba(0,0,0,0.3);
+    border-radius: 40px;
+    padding: 50px 30px;
+}
+
+.suggestions h2 {
+    font-size: 2rem;
+    margin-bottom: 35px;
+    text-align: center;
+    font-weight: 600;
+    position: relative;
+}
+
+.suggestions h2::after {
+    content: '';
+    display: block;
+    width: 80px;
+    height: 4px;
+    background: linear-gradient(90deg, #e50914, transparent);
+    margin: 15px auto 0;
+    border-radius: 2px;
+}
+
+.suggestions-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+    gap: 30px;
+    margin-bottom: 40px;
+}
+
+.suggestion-card {
+    background: rgba(20, 20, 30, 0.7);
+    backdrop-filter: blur(8px);
+    border-radius: 20px;
+    padding: 18px;
+    text-align: center;
+    transition: all 0.3s ease;
+    border: 1px solid rgba(255,255,255,0.08);
+}
+
+.suggestion-card:hover {
+    transform: translateY(-5px);
+    background: rgba(30, 30, 45, 0.9);
+    border-color: #e50914;
+}
+
+.suggestion-card img {
+    width: 100%;
+    height: 280px;
+    object-fit: cover;
+    border-radius: 14px;
+    margin-bottom: 15px;
+}
+
+.suggestion-card h4 {
+    font-size: 1.2rem;
+    margin: 12px 0;
+    font-weight: 600;
+}
+
+.suggestion-card a {
+    color: #e50914;
+    text-decoration: none;
+    font-weight: 600;
+    transition: 0.2s;
+    display: inline-block;
+    margin-top: 8px;
+}
+
+.suggestion-card a:hover {
+    color: white;
+    transform: translateX(5px);
+}
+
+.other-link {
+    text-align: center;
+    margin-top: 30px;
+    font-size: 1.1rem;
+}
+
+.other-link a {
+    color: #ffffff;
+    text-decoration: none;
+    border-bottom: 2px solid #e50914;
+    padding-bottom: 4px;
+    transition: 0.2s;
+}
+
+.other-link a:hover {
+    color: #e50914;
+    border-bottom-color: white;
+}
+
+/* ============= СТРАНИЦА ПЛЕЕРА ============= */
+.player-container {
+    max-width: 1200px;
+}
+
+.back-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    color: #e50914;
+    text-decoration: none;
+    font-weight: 600;
+    margin-bottom: 30px;
+    transition: 0.2s;
+    font-size: 1.1rem;
+}
+
+.back-link:hover {
+    transform: translateX(-5px);
+    color: white;
+}
+
+.player-container h1 {
+    font-size: 2.5rem;
+    text-align: left;
+    background: none;
+    color: white;
+    -webkit-background-clip: unset;
+    background-clip: unset;
+    margin-bottom: 20px;
+}
+
+.video-wrapper {
+    background: #000000;
+    border-radius: 28px;
+    overflow: hidden;
+    box-shadow: 0 20px 40px rgba(0,0,0,0.5);
+    margin: 25px 0;
+    aspect-ratio: 16 / 9;
+}
+
+video {
+    width: 100%;
+    height: 100%;
+    display: block;
+}
+
+/* Навигация по сезонам и сериям */
+.season-nav, .series-nav {
+    display: flex;
+    gap: 15px;
+    flex-wrap: wrap;
+    margin: 25px 0 20px;
+}
+
+.season-btn, .series-btn {
+    background: rgba(50, 50, 65, 0.8);
+    backdrop-filter: blur(5px);
+    border: 1px solid rgba(255,255,255,0.15);
     color: white;
     padding: 10px 24px;
     border-radius: 40px;
-    text-decoration: none;
-    margin-top: 20px;
-}
-footer {
-    margin-top: 60px;
-    text-align: center;
-    border-top: 1px solid #333;
-    padding-top: 30px;
-}
-.back-link {
-    display: inline-block;
-    margin-bottom: 20px;
-    color: #e50914;
-}
-video {
-    border-radius: 16px;
-    background: black;
-}
-.films-grid, .suggestions-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-    gap: 25px;
-    margin: 40px 0;
-}
-.film-card, .suggestion-card {
-    background: #1a1a1a;
-    border-radius: 16px;
-    padding: 15px;
-    text-align: center;
-}
-.film-card img, .suggestion-card img {
-    width: 100%;
-    border-radius: 12px;
-}
-.season-nav, .series-nav {
-    display: flex;
-    gap: 12px;
-    flex-wrap: wrap;
-    margin: 20px 0;
-}
-.season-btn, .series-btn {
-    background: #333;
-    border: none;
-    color: white;
-    padding: 8px 20px;
-    border-radius: 40px;
     cursor: pointer;
+    font-size: 0.95rem;
+    font-weight: 500;
+    transition: all 0.2s ease;
 }
-.season-btn.active, .series-btn.active {
+
+.season-btn:hover, .series-btn:hover {
     background: #e50914;
+    transform: scale(1.02);
 }
-.suggestions {
-    margin-top: 60px;
-    border-top: 1px solid #333;
-    padding-top: 40px;
+
+.season-btn.active, .series-btn.active {
+    background: linear-gradient(135deg, #e50914, #b00710);
+    border-color: white;
+    box-shadow: 0 4px 12px rgba(229,9,20,0.4);
+}
+
+/* ============= АДАПТАЦИЯ ПОД ТЕЛЕФОНЫ ============= */
+@media (max-width: 768px) {
+    body {
+        padding: 20px 15px;
+    }
+    
+    h1 {
+        font-size: 2.5rem;
+    }
+    
+    .films-grid {
+        grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+        gap: 20px;
+    }
+    
+    .film-card img {
+        height: 300px;
+    }
+    
+    .suggestions-grid {
+        grid-template-columns: repeat(auto-fill, minmax(170px, 1fr));
+    }
+    
+    .suggestion-card img {
+        height: 220px;
+    }
+    
+    .season-btn, .series-btn {
+        padding: 6px 16px;
+        font-size: 0.85rem;
+    }
+    
+    .player-container h1 {
+        font-size: 1.8rem;
+    }
+}
+
+/* ============= ДОПОЛНИТЕЛЬНЫЕ ЭФФЕКТЫ ============= */
+::-webkit-scrollbar {
+    width: 10px;
+}
+
+::-webkit-scrollbar-track {
+    background: #1a1a1a;
+}
+
+::-webkit-scrollbar-thumb {
+    background: linear-gradient(135deg, #e50914, #b00710);
+    border-radius: 10px;
+}
+
+::selection {
+    background: #e50914;
+    color: white;
 }
