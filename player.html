@@ -7,14 +7,25 @@
 </head>
 <body>
     <div class="player-container">
-        <a href="index.html" class="back-link">← Назад к фильмам</a>
-        <h1 id="filmTitle"></h1>
+        <a href="index.html" class="back-link">← Назад к каталогу</a>
+        
+        <!-- Заголовок и навигация по сезонам/сериям -->
+        <div id="playerHeader"></div>
+        
+        <!-- Сам плеер -->
         <div class="video-wrapper">
-            <video id="filmPlayer" controls width="100%" poster="poster.jpg">
+            <video id="mainPlayer" controls width="100%" poster="">
                 Ваш браузер не поддерживает видео.
             </video>
         </div>
+
+        <!-- Тот же блок предложений внизу -->
+        <section class="suggestions">
+            <h2>🎥 Вам также может понравиться</h2>
+            <div class="suggestions-grid" id="suggestionsGrid"></div>
+        </section>
     </div>
+    <script src="films.js"></script>
     <script src="common.js"></script>
 </body>
 </html>
