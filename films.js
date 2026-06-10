@@ -20,7 +20,7 @@ const FILMS_CATALOG = [
         description: "Психологический триллер",
         poster: "posters/obsessiya.jpg",
         seasons: "none",
-        videoUrl: "https://drive.google.com/uc?export=download&id=ВАШ_ID_2",
+        videoUrl: null,
         downloadUrl: "https://drive.google.com/uc?export=download&id=ВАШ_ID_2",
         betterVersionReady: false,
         betterVersionDate: null,
@@ -58,4 +58,227 @@ const FILMS_CATALOG = [
 ];
 
 
+// ============= ВСЕ ВОЗМОЖНЫЕ ВАРИАНТЫ (ЗАКОММЕНТИРОВАНЫ) =============
 
+/*
+// 1. ФИЛЬМ ТОЛЬКО С ПРОСМОТРОМ (VK VIDEO)
+{
+    id: "example1",
+    title: "Пример 1",
+    searchTerms: ["пример1", "example1"],
+    description: "Только просмотр через VK Video, без скачивания",
+    poster: "posters/example1.jpg",
+    seasons: "none",
+    videoUrl: "https://vkvideo.ru/video_ext.php?oid=-XXX&id=XXX&hash=XXX&hd=4",
+    downloadUrl: null,
+    betterVersionReady: false,
+    betterVersionDate: null,
+    releaseDate: null,
+    comingSoon: false
+},
+
+// 2. ФИЛЬМ ТОЛЬКО С ПРОСМОТРОМ (RUTUBE)
+{
+    id: "example2",
+    title: "Пример 2",
+    searchTerms: ["пример2", "example2"],
+    description: "Только просмотр через Rutube",
+    poster: "posters/example2.jpg",
+    seasons: "none",
+    videoUrl: "https://rutube.ru/play/embed/XXXXXXXXXXXXXX/",
+    downloadUrl: null,
+    betterVersionReady: false,
+    betterVersionDate: null,
+    releaseDate: null,
+    comingSoon: false
+},
+
+// 3. ФИЛЬМ ТОЛЬКО С ПРОСМОТРОМ (GOOGLE DRIVE)
+{
+    id: "example3",
+    title: "Пример 3",
+    searchTerms: ["пример3", "example3"],
+    description: "Только просмотр через Google Drive",
+    poster: "posters/example3.jpg",
+    seasons: "none",
+    videoUrl: "https://drive.usercontent.google.com/download?id=ВАШ_ID&export=download&authuser=0",
+    downloadUrl: null,
+    betterVersionReady: false,
+    betterVersionDate: null,
+    releaseDate: null,
+    comingSoon: false
+},
+
+// 4. ФИЛЬМ С ПРОСМОТРОМ И СКАЧИВАНИЕМ (VK + GOOGLE)
+{
+    id: "example4",
+    title: "Пример 4",
+    searchTerms: ["пример4", "example4"],
+    description: "Просмотр через VK, скачивание через Google Drive",
+    poster: "posters/example4.jpg",
+    seasons: "none",
+    videoUrl: "https://vkvideo.ru/video_ext.php?oid=-XXX&id=XXX&hash=XXX&hd=4",
+    downloadUrl: "https://drive.usercontent.google.com/download?id=ВАШ_ID&export=download&authuser=0",
+    betterVersionReady: false,
+    betterVersionDate: null,
+    releaseDate: null,
+    comingSoon: false
+},
+
+// 5. ФИЛЬМ С УЛУЧШЕННОЙ ВЕРСИЕЙ (КОНКРЕТНАЯ ДАТА)
+{
+    id: "example5",
+    title: "Пример 5",
+    searchTerms: ["пример5", "example5"],
+    description: "Сейчас плохая версия, улучшенная выйдет 15 июля",
+    poster: "posters/example5.jpg",
+    seasons: "none",
+    videoUrl: "https://vkvideo.ru/video_ext.php?oid=-XXX&id=XXX&hash=XXX&hd=3",
+    downloadUrl: "https://drive.usercontent.google.com/download?id=ВАШ_ID&export=download&authuser=0",
+    betterVersionReady: false,
+    betterVersionDate: "2026-07-15",
+    releaseDate: null,
+    comingSoon: false
+},
+
+// 6. ФИЛЬМ С УЛУЧШЕННОЙ ВЕРСИЕЙ (СКОРО, БЕЗ ДАТЫ)
+{
+    id: "example6",
+    title: "Пример 6",
+    searchTerms: ["пример6", "example6"],
+    description: "Сейчас плохая версия, улучшенная скоро",
+    poster: "posters/example6.jpg",
+    seasons: "none",
+    videoUrl: "https://vkvideo.ru/video_ext.php?oid=-XXX&id=XXX&hash=XXX&hd=3",
+    downloadUrl: "https://drive.usercontent.google.com/download?id=ВАШ_ID&export=download&authuser=0",
+    betterVersionReady: false,
+    betterVersionDate: null,
+    releaseDate: null,
+    comingSoon: false
+},
+
+// 7. ФИЛЬМ, КОТОРЫЙ ВЫЙДЕТ ПОЗЖЕ (КОНКРЕТНАЯ ДАТА)
+{
+    id: "example7",
+    title: "Пример 7",
+    searchTerms: ["пример7", "example7"],
+    description: "Премьера 1 сентября 2026",
+    poster: "posters/example7.jpg",
+    seasons: "none",
+    videoUrl: null,
+    downloadUrl: null,
+    betterVersionReady: false,
+    betterVersionDate: null,
+    releaseDate: "2026-09-01",
+    comingSoon: true
+},
+
+// 8. ФИЛЬМ, КОТОРЫЙ ВЫЙДЕТ СКОРО (ДАТЫ НЕТ)
+{
+    id: "example8",
+    title: "Пример 8",
+    searchTerms: ["пример8", "example8"],
+    description: "Скоро будет",
+    poster: "posters/example8.jpg",
+    seasons: "none",
+    videoUrl: null,
+    downloadUrl: null,
+    betterVersionReady: false,
+    betterVersionDate: null,
+    releaseDate: null,
+    comingSoon: true
+},
+
+// 9. СЕРИАЛ С СЕЗОНАМИ И СЕРИЯМИ
+{
+    id: "example9",
+    title: "Пример сериала",
+    searchTerms: ["сериал", "example9"],
+    description: "Сериал с несколькими сезонами",
+    poster: "posters/example9.jpg",
+    seasons: {
+        "1": {
+            title: "Сезон 1",
+            series: {
+                "1": { title: "Серия 1 - Начало", videoUrl: "https://vkvideo.ru/video_ext.php?oid=-XXX&id=XXX&hash=XXX&hd=4" },
+                "2": { title: "Серия 2 - Продолжение", videoUrl: "https://vkvideo.ru/video_ext.php?oid=-XXX&id=XXX&hash=XXX&hd=4" },
+                "3": { title: "Серия 3 - Финал", videoUrl: "https://vkvideo.ru/video_ext.php?oid=-XXX&id=XXX&hash=XXX&hd=4" }
+            }
+        },
+        "2": {
+            title: "Сезон 2",
+            series: {
+                "1": { title: "Серия 1", videoUrl: "https://vkvideo.ru/video_ext.php?oid=-XXX&id=XXX&hash=XXX&hd=4" },
+                "2": { title: "Серия 2", videoUrl: "https://vkvideo.ru/video_ext.php?oid=-XXX&id=XXX&hash=XXX&hd=4" }
+            }
+        }
+    },
+    downloadUrl: null,
+    betterVersionReady: false,
+    betterVersionDate: "2026-08-01",
+    releaseDate: null,
+    comingSoon: false
+},
+
+// 10. СЕРИАЛ С СЕЗОНАМИ + СКАЧИВАНИЕ
+{
+    id: "example10",
+    title: "Сериал со скачиванием",
+    searchTerms: ["сериалскачать", "example10"],
+    description: "Сериал, где серии можно скачать",
+    poster: "posters/example10.jpg",
+    seasons: {
+        "1": {
+            title: "Сезон 1",
+            series: {
+                "1": { 
+                    title: "Серия 1", 
+                    videoUrl: "https://vkvideo.ru/video_ext.php?oid=-XXX&id=XXX&hash=XXX&hd=4",
+                    downloadUrl: "https://drive.usercontent.google.com/download?id=ВАШ_ID_1&export=download&authuser=0"
+                },
+                "2": { 
+                    title: "Серия 2", 
+                    videoUrl: "https://vkvideo.ru/video_ext.php?oid=-XXX&id=XXX&hash=XXX&hd=4",
+                    downloadUrl: "https://drive.usercontent.google.com/download?id=ВАШ_ID_2&export=download&authuser=0"
+                }
+            }
+        }
+    },
+    betterVersionReady: false,
+    betterVersionDate: null,
+    releaseDate: null,
+    comingSoon: false
+},
+
+// 11. ФИЛЬМ, ГДЕ УЖЕ ХОРОШАЯ ВЕРСИЯ (БЕЗ НАДПИСИ)
+{
+    id: "example11",
+    title: "Хорошая версия",
+    searchTerms: ["хорошая", "example11"],
+    description: "Уже доступна хорошая версия",
+    poster: "posters/example11.jpg",
+    seasons: "none",
+    videoUrl: "https://vkvideo.ru/video_ext.php?oid=-XXX&id=XXX&hash=XXX&hd=4",
+    downloadUrl: "https://drive.usercontent.google.com/download?id=ВАШ_ID&export=download&authuser=0",
+    betterVersionReady: true,
+    betterVersionDate: null,
+    releaseDate: null,
+    comingSoon: false
+},
+
+// 12. ФИЛЬМ ТОЛЬКО ДЛЯ СКАЧИВАНИЯ (БЕЗ ПРОСМОТРА)
+{
+    id: "example12",
+    title: "Только скачать",
+    searchTerms: ["скачать", "download"],
+    description: "Фильм только для скачивания",
+    poster: "posters/example12.jpg",
+    seasons: "none",
+    videoUrl: null,
+    downloadUrl: "https://drive.usercontent.google.com/download?id=ВАШ_ID&export=download&authuser=0",
+    betterVersionReady: false,
+    betterVersionDate: null,
+    releaseDate: null,
+    comingSoon: false
+}
+*/
