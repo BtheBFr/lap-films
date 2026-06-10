@@ -65,7 +65,12 @@ function renderFilmsGrid(filmsToRender) {
     const grid = document.getElementById('filmsGrid');
     if (!grid) return;
     
-    if (filmsToRender.length === 0) {
+    // СОРТИРУЕМ ПО АЛФАВИТУ (по полю title)
+    const sortedFilms = [...filmsToRender].sort((a, b) => {
+        return a.title.localeCompare(b.title, 'ru');
+    });
+    
+    if (sortedFilms.length === 0) {
         grid.innerHTML = '';
         const noResults = document.getElementById('noResults');
         if (noResults) noResults.style.display = 'block';
@@ -75,7 +80,7 @@ function renderFilmsGrid(filmsToRender) {
     const noResults = document.getElementById('noResults');
     if (noResults) noResults.style.display = 'none';
     
-    grid.innerHTML = filmsToRender.map(film => {
+    grid.innerHTML = sortedFilms.map(film => {
         let comingBadge = '';
         if (film.comingSoon === true) {
             if (film.releaseDate) {
