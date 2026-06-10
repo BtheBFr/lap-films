@@ -42,6 +42,20 @@ const FILMS_CATALOG = [
         comingSoon: false
     },
     {
+        id: "cheburashka",
+        title: "Чебурашка",
+        searchTerms: ["чебурашка", "ушастый", "cheburashka", "чебурвашка"],
+        description: "На небольшой приморский городок обрушивается дождь из апельсинов, а вместе с фруктами с неба падает неизвестный науке мохнатый непоседливый зверёк. Одержимое апельсинами животное оказывается в домике нелюдимого старика-садовника Геннадия, который из вредности решает оставить его жить у себя, так как местная богачка жаждет заполучить необычного зверя для своей избалованной внучки. Также эта коварная женщина, владелица кондитерской фабрики, пытается выведать секрет шоколада у хозяйки маленького магазинчика — дочери Геннадия, много лет обиженной на отца.",
+        poster: "posters/чебурашка.png",
+        seasons: "none",
+        videoUrl: "https://drive.usercontent.google.com/download?id=11dKW3RGr1td0_P8HWp_O7F5mGyFQSEZR&export=download&authuser=0",
+        downloadUrl: null,
+        betterVersionReady: true,
+        betterVersionDate: null,
+        releaseDate: null,
+        comingSoon: false
+    },
+    {
         id: "obsessiya",
         title: "Обсессия",
         searchTerms: ["обсессия", "obsessiya", "одержимость"],
