@@ -21,7 +21,7 @@ const FILMS_CATALOG = [
         poster: "posters/obsessiya.jpg",
         seasons: "none",
         videoUrl: null,
-        downloadUrl: "https://drive.google.com/uc?export=download&id=ВАШ_ID_2",
+        downloadUrl: null,
         betterVersionReady: false,
         betterVersionDate: null,
         releaseDate: null,
