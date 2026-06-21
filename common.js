@@ -9,40 +9,80 @@ let reviewsExpanded = {};
 const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycby86FMOsqBSKIP8qE_1T8W4G5mgINcSiV4z7TnIaVlHpvHR7YYROpSXrhMGO24yfT1C/exec";
 const GOOGLE_RATINGS_URL = "https://script.google.com/macros/s/AKfycbyQjl03vdNZEjtyab3faMS-wD22urPYlWqb_mJjX0l0b8qsYwiZDuVmjPLs4-UQ8jj5/exec";
 
-// ============= ФУНКЦИИ ДЛЯ ВИДЕО (VK VIDEO / RUTUBE / GOOGLE DRIVE) =============
-function getFileIdFromPath(path) {
-    if (!path) return null;
-    // Для Google Drive
-    let match = path.match(/[?&]id=([^&]+)/);
-    if (match) return match[1];
-    match = path.match(/\/d\/([^\/]+)/);
-    if (match) return match[1];
-    return null;
-}
-
+// ============= ФУНКЦИИ ДЛЯ ВИДЕО (ТОЛЬКО YOUTUBE И GOOGLE DRIVE) =============
 function getEmbedUrl(videoPath) {
     if (!videoPath) return '';
     
-    // Если это VK Video — возвращаем как есть (уже embed-ссылка)
-    if (videoPath.includes('vkvideo.ru/video_ext.php') || videoPath.includes('vk.com/video_ext.php')) {
+    // 1. YouTube
+    if (videoPath.includes('youtube.com/watch') || videoPath.includes('youtu.be/')) {
+        return convertToYouTubeEmbed(videoPath);
+    }
+    if (videoPath.includes('youtube.com/embed/')) {
         return videoPath;
     }
     
-    // Если это Rutube — возвращаем как есть (уже embed-ссылка)
-    if (videoPath.includes('rutube.ru/play/embed/')) {
-        return videoPath;
+    // 2. Google Drive
+    if (videoPath.includes('drive.google.com') || videoPath.includes('drive.usercontent.google.com')) {
+        return convertToDriveEmbed(videoPath);
     }
     
-    // Если это Google Drive — конвертируем в preview
-    const fileId = getFileIdFromPath(videoPath);
+    // 3. Всё остальное игнорируем
+    return '';
+}
+
+function convertToYouTubeEmbed(url) {
+    let videoId = null;
+    
+    // youtube.com/watch?v=ID
+    let match = url.match(/[?&]v=([^&]+)/);
+    if (match) videoId = match[1];
+    
+    // youtu.be/ID
+    if (!videoId) {
+        match = url.match(/youtu\.be\/([^?&]+)/);
+        if (match) videoId = match[1];
+    }
+    
+    if (videoId) {
+        return `https://www.youtube.com/embed/${videoId}`;
+    }
+    return url;
+}
+
+function convertToDriveEmbed(url) {
+    let fileId = null;
+    
+    // drive.google.com/file/d/ID/view
+    let match = url.match(/\/d\/([^\/]+)/);
+    if (match) fileId = match[1];
+    
+    // ?id=ID
+    if (!fileId) {
+        match = url.match(/[?&]id=([^&]+)/);
+        if (match) fileId = match[1];
+    }
+    
     if (fileId) {
         return `https://drive.google.com/file/d/${fileId}/preview`;
     }
+    return url;
+}
+
+function getFileIdFromPath(path) {
+    if (!path) return null;
     
-    return videoPath;
+    let match = path.match(/[?&]id=([^&]+)/);
+    if (match) return match[1];
+    
+    match = path.match(/\/d\/([^\/]+)/);
+    if (match) return match[1];
+    
+    return null;
 }
 
 function getDownloadUrl(drivePath) {
+    if (!drivePath) return null;
+    
     const fileId = getFileIdFromPath(drivePath);
     if (fileId) {
         return `https://drive.usercontent.google.com/download?id=${fileId}&export=download&authuser=0`;
@@ -65,7 +105,6 @@ function renderFilmsGrid(filmsToRender) {
     const grid = document.getElementById('filmsGrid');
     if (!grid) return;
     
-    // СОРТИРУЕМ ПО АЛФАВИТУ (по полю title)
     const sortedFilms = [...filmsToRender].sort((a, b) => {
         return a.title.localeCompare(b.title, 'ru');
     });
@@ -141,7 +180,7 @@ function markAsRated(filmId) {
     localStorage.setItem(`rated_${filmId}`, 'true');
 }
 
-// ============= ОТЗЫВЫ С КНОПКОЙ "БОЛЬШЕ" / "СВЕРНУТЬ" =============
+// ============= ОТЗЫВЫ =============
 async function loadReviews(filmId) {
     const container = document.getElementById('reviewsList');
     if (!container) return;
@@ -325,12 +364,16 @@ function initPlayer() {
     document.getElementById('filmPoster').src = film.poster;
     document.getElementById('filmDescription').textContent = film.description || '';
     
+    // Кнопка скачивания — только для Google Drive
     const downloadBtn = document.getElementById('downloadBtn');
-    if (downloadBtn && film.downloadUrl) {
-        downloadBtn.href = getDownloadUrl(film.downloadUrl);
-        downloadBtn.style.display = 'inline-flex';
-    } else if (downloadBtn) {
-        downloadBtn.style.display = 'none';
+    if (downloadBtn) {
+        // Если это Google Drive и есть ссылка — показываем
+        if (film.downloadUrl && film.videoUrl && film.videoUrl.includes('drive.google.com')) {
+            downloadBtn.href = getDownloadUrl(film.downloadUrl);
+            downloadBtn.style.display = 'inline-flex';
+        } else {
+            downloadBtn.style.display = 'none';
+        }
     }
     
     loadReviews(filmId);
