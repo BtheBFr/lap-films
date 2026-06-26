@@ -98,7 +98,6 @@ const FILMS_CATALOG = [
         comingSoon: false,
         category: "film",
         subcategory: "comedy",
-        // === СИКВЕЛ-ГРУППА ===
         sequelGroup: "cheburashka",
         sequelOrder: 1
     },
@@ -121,7 +120,7 @@ const FILMS_CATALOG = [
         sequelOrder: 2
     },
 
-    // ---------- ЖДУН (без сиквелов, но можно добавить) ----------
+    // ---------- ЖДУН ----------
     {
         id: "zhdun",
         title: "Ждун",
@@ -137,7 +136,6 @@ const FILMS_CATALOG = [
         comingSoon: false,
         category: "film",
         subcategory: "comedy"
-        // sequelGroup нет, значит отдельный фильм
     },
     {
         id: "zhdun2",
@@ -156,7 +154,7 @@ const FILMS_CATALOG = [
         subcategory: "sequel"
     },
 
-    // ---------- ДРУГИЕ ФИЛЬМЫ ----------
+    // ---------- ДРУГИЕ ----------
     {
         id: "obsessiya",
         title: "Обсессия",
@@ -173,7 +171,6 @@ const FILMS_CATALOG = [
         category: "film",
         subcategory: "thriller"
     }
-    // Добавляйте новые фильмы сюда
 ];
 
 // ================================================================
