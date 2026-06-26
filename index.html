@@ -18,18 +18,31 @@
             <input type="text" id="searchInput" placeholder="🔍 Поиск фильмов или сериалов..." autocomplete="off">
             <button id="searchClear" class="clear-btn" style="display: none;">✖</button>
         </div>
-        <div class="top-carousel-container" id="topCarousel" style="display: none;">
-            <h2 class="section-title">🔥 Топ фильмов</h2>
-            <div class="top-carousel-wrapper">
-                <div class="top-carousel" id="topCarouselList"></div>
+
+        <!-- БЛОК ЛУЧШИХ ФИЛЬМОВ -->
+        <div class="best-films-container" id="bestFilmsContainer" style="display: none;">
+            <h2 class="section-title">⭐ Лучшие</h2>
+            <div class="best-films-wrapper" id="bestFilmsWrapper"></div>
+            <div class="best-nav">
+                <button id="bestPrev" disabled>◀ Назад</button>
+                <span id="bestPageInfo">1 / 1</span>
+                <button id="bestNext" disabled>Вперёд ▶</button>
             </div>
         </div>
+
+        <!-- КНОПКА КАТЕГОРИЙ -->
         <button id="categoryToggleBtn" class="category-toggle-btn">🎬 Выбрать категорию</button>
+
+        <!-- ОТОБРАЖЕНИЕ ФИЛЬТРОВ -->
+        <div id="filtersInfo" class="filters-info"></div>
+
+        <!-- СЕТКА ФИЛЬМОВ -->
         <div class="films-grid" id="filmsGrid"></div>
         <div id="noResults" class="no-results" style="display: none;">
             <p>Ничего не найдено</p>
             <small>Попробуйте другие ключевые слова</small>
         </div>
+
         <div class="buttons-row">
             <button id="suggestFilmBtn" class="action-btn suggest-btn">📩 Предложить фильм / сериал</button>
             <a href="#" id="otherProjectsLink" class="action-btn other-projects-btn">🔗 Другие проекты lap</a>
