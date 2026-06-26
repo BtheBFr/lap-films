@@ -47,7 +47,6 @@ function getEmbedUrl(videoPath) {
         if (videoId) {
             return `https://geo.dailymotion.com/player.html?video=${videoId}&quality=1080`;
         }
-        // Если не удалось извлечь ID, возвращаем как есть (может, уже embed)
         return videoPath;
     }
     // Google Drive
@@ -97,7 +96,7 @@ function getDownloadUrl(drivePath) {
     return drivePath;
 }
 
-// ============= ФИЛЬТРЫ =============
+// ============= ФИЛЬТРЫ (с поддержкой массивов) =============
 function searchFilms(query) {
     if (!query.trim()) return allFilms;
     const lower = query.toLowerCase().trim();
@@ -110,8 +109,23 @@ function searchFilms(query) {
 function filterFilms(films) {
     let result = [...films];
     if (currentCategory) {
-        result = result.filter(f => f.category === currentCategory);
-        if (currentSubcategory) result = result.filter(f => f.subcategory === currentSubcategory);
+        result = result.filter(f => {
+            // Если у фильма категория – массив, проверяем вхождение
+            if (Array.isArray(f.category)) {
+                return f.category.includes(currentCategory);
+            } else {
+                return f.category === currentCategory;
+            }
+        });
+        if (currentSubcategory) {
+            result = result.filter(f => {
+                if (Array.isArray(f.subcategory)) {
+                    return f.subcategory.includes(currentSubcategory);
+                } else {
+                    return f.subcategory === currentSubcategory;
+                }
+            });
+        }
     }
     return result;
 }
@@ -332,8 +346,20 @@ function initPlayer() {
         }
     }
 
-    // Загружаем видео
-    loadVideo();
+    // Загружаем видео (только если нет сезонов, иначе оставляем iframe пустым)
+    if (!film.seasons) {
+        loadVideo();
+    } else {
+        // Для сериалов оставляем iframe пустым, видео запускается по кнопке "Смотреть"
+        const iframe = document.getElementById('driveIframe');
+        if (iframe) iframe.src = '';
+        const watchBtn = document.getElementById('watchBtn');
+        if (watchBtn) {
+            watchBtn.onclick = function() {
+                loadVideo();
+            };
+        }
+    }
 
     // Кнопки "Предыдущая серия", "Следующая серия", "Выбрать серию"
     initNavigationButtons();
@@ -359,15 +385,37 @@ function initPlayer() {
         });
     }
 
+    // Убеждаемся, что загрузка скрывается
     setTimeout(() => hideLoading(), 1500);
 }
 
-// --- Обновление информации о фильме ---
+// --- Обновление информации о фильме (включая категории в описании) ---
 function updateFilmInfo() {
     if (!currentFilm) return;
     document.getElementById('filmPoster').src = currentFilm.poster;
-    document.getElementById('filmDescription').textContent = currentFilm.description || '';
 
+    // Формируем описание с категориями
+    let descriptionText = currentFilm.description || '';
+    let categoryInfo = '';
+    if (currentFilm.category) {
+        const cats = Array.isArray(currentFilm.category) ? currentFilm.category : [currentFilm.category];
+        const subcats = Array.isArray(currentFilm.subcategory) ? currentFilm.subcategory : (currentFilm.subcategory ? [currentFilm.subcategory] : []);
+        const catLabels = cats.map(c => CATEGORIES[c]?.label || c).join(', ');
+        const subLabels = subcats.map(s => {
+            // Ищем подкатегорию в каждой категории (для простоты возьмём первую)
+            for (let c of cats) {
+                if (CATEGORIES[c] && CATEGORIES[c].subcategories && CATEGORIES[c].subcategories[s]) {
+                    return CATEGORIES[c].subcategories[s];
+                }
+            }
+            return s;
+        }).join(', ');
+        categoryInfo = `\n\n📂 Категория: ${catLabels}`;
+        if (subLabels) categoryInfo += `\n🏷️ Подкатегория: ${subLabels}`;
+    }
+    document.getElementById('filmDescription').textContent = descriptionText + categoryInfo;
+
+    // Заголовок с сезоном/серией
     let title = currentFilm.title;
     if (currentSeasonKey && currentSeriesKey && currentFilm.seasons) {
         const seasonTitle = currentFilm.seasons[currentSeasonKey]?.title || `Сезон ${currentSeasonKey}`;
@@ -376,6 +424,7 @@ function updateFilmInfo() {
     }
     document.getElementById('filmTitle').textContent = title;
 
+    // Кнопка скачивания
     const downloadBtn = document.getElementById('downloadBtn');
     if (downloadBtn) {
         if (currentFilm.downloadUrl && currentFilm.videoUrl && currentFilm.videoUrl.includes('drive.google.com')) {
@@ -448,7 +497,7 @@ function renderSeasonSeriesNav() {
                 currentSeasonKey = sKey;
                 currentSeriesKey = srKey;
                 updateFilmInfo();
-                loadVideo();
+                loadVideo(); // при выборе серии сразу загружаем видео
                 renderSeasonSeriesNav();
                 updateNavButtonsState();
                 document.getElementById('seasonModal').style.display = 'none';
@@ -529,7 +578,7 @@ function goToPrevEpisode() {
     }
 }
 
-// --- Переход на следующую серию (сразу запускает видео) ---
+// --- Переход на следующую серию ---
 function goToNextEpisode() {
     if (!currentFilm.seasons) return;
     const seasonsKeys = Object.keys(currentFilm.seasons).sort();
@@ -662,7 +711,19 @@ function switchSequel(id) {
         } else {
             document.getElementById('seasonSeriesNav').innerHTML = '';
         }
-        loadVideo();
+        // Для фильмов без сезонов загружаем видео, для сериалов – нет
+        if (!newFilm.seasons) {
+            loadVideo();
+        } else {
+            const iframe = document.getElementById('driveIframe');
+            if (iframe) iframe.src = '';
+            const watchBtn = document.getElementById('watchBtn');
+            if (watchBtn) {
+                watchBtn.onclick = function() {
+                    loadVideo();
+                };
+            }
+        }
         initNavigationButtons();
         const sequelNav = document.getElementById('sequelNav');
         if (sequelNav) {
