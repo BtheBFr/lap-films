@@ -16,6 +16,8 @@
         <div class="player-layout">
             <div class="film-info-panel" id="filmInfoPanel">
                 <img id="filmPoster" src="" alt="Постер">
+                <!-- БЛОК ДЛЯ КАТЕГОРИЙ (отдельно) -->
+                <div id="filmCategories" class="film-categories"></div>
                 <p id="filmDescription" class="film-description-full"></p>
                 <div class="film-actions">
                     <button id="rateBtn" class="rate-btn">⭐ Оценить фильм</button>
@@ -30,9 +32,9 @@
                 </div>
                 <div id="seasonSeriesNav" class="season-series-nav"></div>
                 <div class="nav-buttons">
-                    <button id="prevEpisodeBtn" class="prev-btn" disabled>◀ Предыдущая</button>
-                    <button id="chooseSeriesBtn" class="choose-btn">📋 Выбрать серию</button>
-                    <button id="nextEpisodeBtn" class="next-btn" disabled>Следующая ▶</button>
+                    <button id="prevEpisodeBtn" class="prev-btn" disabled style="display: none;">◀ Предыдущая</button>
+                    <button id="chooseSeriesBtn" class="choose-btn" style="display: none;">📋 Выбрать серию</button>
+                    <button id="nextEpisodeBtn" class="next-btn" disabled style="display: none;">Следующая ▶</button>
                 </div>
                 <button id="watchBtn" class="watch-btn-large">▶ Смотреть</button>
             </div>
