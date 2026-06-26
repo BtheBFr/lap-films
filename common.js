@@ -5,6 +5,10 @@ let allReviewsData = {};
 let reviewsExpanded = {};
 let currentCategory = null;
 let currentSubcategory = null;
+let currentFilm = null;           // текущий объект фильма
+let currentSeasonKey = null;
+let currentSeriesKey = null;
+let isSeasonModalOpen = false;
 
 // ↓↓↓ ТВОИ ССЫЛКИ ↓↓↓
 const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycby86FMOsqBSKIP8qE_1T8W4G5mgINcSiV4z7TnIaVlHpvHR7YYROpSXrhMGO24yfT1C/exec";
@@ -20,13 +24,15 @@ function hideLoading() {
     if (overlay) overlay.style.display = 'none';
 }
 
-// ============= ВИДЕО-ПЛЕЕР =============
+// ============= ВИДЕО-ПЛЕЕР (с поддержкой 1080p для Dailymotion) =============
 function getEmbedUrl(videoPath) {
     if (!videoPath) return '';
+    // YouTube
     if (videoPath.includes('youtube.com/watch') || videoPath.includes('youtu.be/')) {
         return convertToYouTubeEmbed(videoPath);
     }
     if (videoPath.includes('youtube.com/embed/')) return videoPath;
+    // Dailymotion – преобразуем в geo-ссылку с качеством 1080
     if (videoPath.includes('dailymotion.com') || videoPath.includes('dai.ly')) {
         let videoId = null;
         let match = videoPath.match(/dailymotion\.com\/video\/([a-zA-Z0-9]+)/);
@@ -35,9 +41,17 @@ function getEmbedUrl(videoPath) {
             match = videoPath.match(/dai\.ly\/([a-zA-Z0-9]+)/);
             if (match) videoId = match[1];
         }
-        if (videoId) return `https://www.dailymotion.com/embed/video/${videoId}`;
+        if (!videoId) {
+            match = videoPath.match(/[?&]video=([^&]+)/);
+            if (match) videoId = match[1];
+        }
+        if (videoId) {
+            return `https://geo.dailymotion.com/player.html?video=${videoId}&quality=1080`;
+        }
+        // Если не удалось извлечь ID, возвращаем как есть (может, уже embed)
         return videoPath;
     }
+    // Google Drive
     if (videoPath.includes('drive.google.com') || videoPath.includes('drive.usercontent.google.com')) {
         return convertToDriveEmbed(videoPath);
     }
@@ -245,7 +259,9 @@ function openCategoryModal() {
     }
 }
 
-// ============= ПЛЕЕР =============
+// ============= ПЛЕЕР (СЕРИАЛЫ, СИКВЕЛЫ, НАВИГАЦИЯ) =============
+
+// --- Инициализация плеера ---
 function initPlayer() {
     showLoading();
     const urlParams = new URLSearchParams(window.location.search);
@@ -254,9 +270,43 @@ function initPlayer() {
     const film = allFilms.find(f => f.id === filmId);
     if (!film) { window.location.href = 'index.html'; return; }
 
-    loadFilmPart(film);
+    currentFilm = film;
 
-    // Сиквелы – теперь только один блок (над плеером)
+    // Определяем начальные сезон и серию (если есть)
+    if (film.seasons && typeof film.seasons === 'object') {
+        const seasonsKeys = Object.keys(film.seasons).sort();
+        if (seasonsKeys.length > 0) {
+            currentSeasonKey = seasonsKeys[0];
+            const seriesKeys = Object.keys(film.seasons[currentSeasonKey].series).sort();
+            if (seriesKeys.length > 0) {
+                currentSeriesKey = seriesKeys[0];
+            }
+        }
+    } else {
+        currentSeasonKey = null;
+        currentSeriesKey = null;
+    }
+
+    // Загружаем информацию о фильме (постер, описание, заголовок)
+    updateFilmInfo();
+
+    // Создаём навигацию по сезонам/сериям (если есть)
+    if (film.seasons) {
+        renderSeasonSeriesNav();
+    } else {
+        // Если нет сезонов, показываем улучшенную версию (если есть)
+        const seasonNav = document.getElementById('seasonSeriesNav');
+        if (!film.betterVersionReady && film.betterVersionDate && film.betterVersionDate !== 'null') {
+            const formatted = formatDate(film.betterVersionDate);
+            seasonNav.innerHTML = `<div class="better-version-notice">🎥 Улучшенная версия выйдет ${formatted || 'скоро'}</div>`;
+        } else if (!film.betterVersionReady && film.betterVersionDate === null) {
+            seasonNav.innerHTML = `<div class="better-version-notice">🎥 Улучшенная версия скоро</div>`;
+        } else {
+            seasonNav.innerHTML = '';
+        }
+    }
+
+    // Сиквелы (только один блок над плеером)
     const sequelNav = document.getElementById('sequelNav');
     if (sequelNav) {
         if (film.sequelGroup) {
@@ -280,58 +330,214 @@ function initPlayer() {
         }
     }
 
-    // Кнопка "Следующая серия"
-    const nextBtn = document.getElementById('nextEpisodeBtn');
-    if (nextBtn) {
-        if (film.seasons && typeof film.seasons === 'object' && Object.keys(film.seasons).length > 0) {
-            nextBtn.style.display = 'inline-flex';
-            window._currentFilm = film;
-            window._currentSeason = null;
-            window._currentSeries = null;
-            const seasonParam = urlParams.get('season');
-            const seriesParam = urlParams.get('series');
-            if (seasonParam && seriesParam && film.seasons[seasonParam] && film.seasons[seasonParam].series[seriesParam]) {
-                window._currentSeason = seasonParam;
-                window._currentSeries = seriesParam;
-            } else {
-                const seasonsKeys = Object.keys(film.seasons).sort();
-                if (seasonsKeys.length > 0) {
-                    const firstSeason = seasonsKeys[0];
-                    const seriesKeys = Object.keys(film.seasons[firstSeason].series).sort();
-                    if (seriesKeys.length > 0) {
-                        window._currentSeason = firstSeason;
-                        window._currentSeries = seriesKeys[0];
-                    }
-                }
-            }
-            nextBtn.onclick = function() {
-                goToNextEpisode(film);
-            };
-        } else {
-            nextBtn.style.display = 'none';
-        }
-    }
+    // Загружаем видео
+    loadVideo();
 
-    // Увеличил время загрузки до 2.5 секунд
-    setTimeout(() => hideLoading(), 2500);
+    // Кнопки "Предыдущая серия", "Следующая серия", "Выбрать серию"
+    initNavigationButtons();
+
+    // Загружаем отзывы и модалку оценки
+    loadReviews(film.id);
+    initRatingModal(film);
+
+    setTimeout(() => hideLoading(), 1500);
 }
 
-function goToNextEpisode(film) {
-    if (!film.seasons) return;
-    const seasonsKeys = Object.keys(film.seasons).sort();
+// --- Обновление информации о фильме (постер, описание, заголовок) ---
+function updateFilmInfo() {
+    if (!currentFilm) return;
+    document.getElementById('filmPoster').src = currentFilm.poster;
+    document.getElementById('filmDescription').textContent = currentFilm.description || '';
+
+    // Формируем заголовок с учётом сезона/серии
+    let title = currentFilm.title;
+    if (currentSeasonKey && currentSeriesKey && currentFilm.seasons) {
+        const seasonTitle = currentFilm.seasons[currentSeasonKey]?.title || `Сезон ${currentSeasonKey}`;
+        const seriesTitle = currentFilm.seasons[currentSeasonKey]?.series[currentSeriesKey]?.title || `Серия ${currentSeriesKey}`;
+        title += ` — ${seasonTitle}, ${seriesTitle}`;
+    }
+    document.getElementById('filmTitle').textContent = title;
+
+    // Кнопка скачивания
+    const downloadBtn = document.getElementById('downloadBtn');
+    if (downloadBtn) {
+        if (currentFilm.downloadUrl && currentFilm.videoUrl && currentFilm.videoUrl.includes('drive.google.com')) {
+            downloadBtn.href = getDownloadUrl(currentFilm.downloadUrl);
+            downloadBtn.style.display = 'inline-flex';
+        } else {
+            downloadBtn.style.display = 'none';
+        }
+    }
+}
+
+// --- Загрузка видео в iframe ---
+function loadVideo() {
+    const iframe = document.getElementById('driveIframe');
+    const watchBtn = document.getElementById('watchBtn');
+    if (!iframe) return;
+
+    let videoUrl = null;
+    if (currentSeasonKey && currentSeriesKey && currentFilm.seasons) {
+        videoUrl = currentFilm.seasons[currentSeasonKey]?.series[currentSeriesKey]?.videoUrl;
+    } else if (currentFilm.videoUrl) {
+        videoUrl = currentFilm.videoUrl;
+    }
+
+    if (videoUrl) {
+        const embedUrl = getEmbedUrl(videoUrl);
+        iframe.src = embedUrl;
+        watchBtn.onclick = function() {
+            iframe.src = '';
+            setTimeout(() => { iframe.src = embedUrl; }, 100);
+        };
+        watchBtn.style.display = 'block';
+    } else {
+        watchBtn.style.display = 'none';
+    }
+}
+
+// --- Отрисовка навигации по сезонам/сериям (в модалке) ---
+function renderSeasonSeriesNav() {
+    const modalContent = document.getElementById('seasonModalContent');
+    if (!modalContent) return;
+
+    if (!currentFilm.seasons) {
+        modalContent.innerHTML = '<p>Нет сезонов</p>';
+        return;
+    }
+
+    const seasonsKeys = Object.keys(currentFilm.seasons).sort();
+    let html = '';
+    seasonsKeys.forEach(sKey => {
+        const season = currentFilm.seasons[sKey];
+        html += `<div class="season-group">`;
+        html += `<h4 class="season-title">${season.title || 'Сезон '+sKey}</h4>`;
+        const seriesKeys = Object.keys(season.series).sort();
+        html += `<div class="series-list">`;
+        seriesKeys.forEach(srKey => {
+            const isActive = (sKey === currentSeasonKey && srKey === currentSeriesKey);
+            html += `<button class="series-select-btn ${isActive ? 'active' : ''}" data-season="${sKey}" data-series="${srKey}">${season.series[srKey].title || 'Серия '+srKey}</button>`;
+        });
+        html += `</div>`;
+        html += `</div>`;
+    });
+    modalContent.innerHTML = html;
+
+    // Обработчики кликов по сериям
+    modalContent.querySelectorAll('.series-select-btn').forEach(btn => {
+        btn.addEventListener('click', function() {
+            const sKey = this.dataset.season;
+            const srKey = this.dataset.series;
+            if (sKey && srKey && currentFilm.seasons[sKey] && currentFilm.seasons[sKey].series[srKey]) {
+                currentSeasonKey = sKey;
+                currentSeriesKey = srKey;
+                // Обновляем всё
+                updateFilmInfo();
+                loadVideo();
+                // Обновляем активные кнопки в модалке
+                renderSeasonSeriesNav();
+                // Обновляем кнопки навигации (пред/след)
+                updateNavButtonsState();
+                // Закрываем модалку
+                document.getElementById('seasonModal').style.display = 'none';
+                isSeasonModalOpen = false;
+            }
+        });
+    });
+}
+
+// --- Инициализация кнопок навигации (предыдущая/следующая/выбрать серию) ---
+function initNavigationButtons() {
+    const prevBtn = document.getElementById('prevEpisodeBtn');
+    const nextBtn = document.getElementById('nextEpisodeBtn');
+    const chooseBtn = document.getElementById('chooseSeriesBtn');
+
+    if (prevBtn) {
+        prevBtn.onclick = function() {
+            goToPrevEpisode();
+        };
+    }
+    if (nextBtn) {
+        nextBtn.onclick = function() {
+            goToNextEpisode();
+        };
+    }
+    if (chooseBtn) {
+        chooseBtn.onclick = function() {
+            openSeasonModal();
+        };
+    }
+
+    // Обновляем состояние кнопок (активны/неактивны)
+    updateNavButtonsState();
+}
+
+// --- Переход на предыдущую серию ---
+function goToPrevEpisode() {
+    if (!currentFilm.seasons) return;
+    const seasonsKeys = Object.keys(currentFilm.seasons).sort();
     if (seasonsKeys.length === 0) return;
 
-    let currentSeason = window._currentSeason;
-    let currentSeries = window._currentSeries;
+    let currentSeason = currentSeasonKey;
+    let currentSeries = currentSeriesKey;
 
     if (!currentSeason || !currentSeries) {
+        // Если не задано, берём первый сезон, первую серию
         currentSeason = seasonsKeys[0];
-        const seriesKeys = Object.keys(film.seasons[currentSeason].series).sort();
+        const seriesKeys = Object.keys(currentFilm.seasons[currentSeason].series).sort();
         if (seriesKeys.length === 0) return;
         currentSeries = seriesKeys[0];
     }
 
-    const seasonObj = film.seasons[currentSeason];
+    const seasonObj = currentFilm.seasons[currentSeason];
+    const seriesKeys = Object.keys(seasonObj.series).sort();
+    const currentIndex = seriesKeys.indexOf(currentSeries);
+    let prevSeries = null;
+    let prevSeason = currentSeason;
+
+    if (currentIndex > 0) {
+        prevSeries = seriesKeys[currentIndex - 1];
+    } else {
+        // Переходим на предыдущий сезон (последняя серия)
+        const currentSeasonIndex = seasonsKeys.indexOf(currentSeason);
+        if (currentSeasonIndex > 0) {
+            prevSeason = seasonsKeys[currentSeasonIndex - 1];
+            const prevSeriesKeys = Object.keys(currentFilm.seasons[prevSeason].series).sort();
+            if (prevSeriesKeys.length > 0) {
+                prevSeries = prevSeriesKeys[prevSeriesKeys.length - 1];
+            }
+        }
+    }
+
+    if (prevSeries) {
+        currentSeasonKey = prevSeason;
+        currentSeriesKey = prevSeries;
+        updateFilmInfo();
+        loadVideo();
+        renderSeasonSeriesNav(); // обновить модалку (если открыта)
+        updateNavButtonsState();
+    } else {
+        alert('Это первая серия!');
+    }
+}
+
+// --- Переход на следующую серию (исправлено: сразу запускается видео) ---
+function goToNextEpisode() {
+    if (!currentFilm.seasons) return;
+    const seasonsKeys = Object.keys(currentFilm.seasons).sort();
+    if (seasonsKeys.length === 0) return;
+
+    let currentSeason = currentSeasonKey;
+    let currentSeries = currentSeriesKey;
+
+    if (!currentSeason || !currentSeries) {
+        currentSeason = seasonsKeys[0];
+        const seriesKeys = Object.keys(currentFilm.seasons[currentSeason].series).sort();
+        if (seriesKeys.length === 0) return;
+        currentSeries = seriesKeys[0];
+    }
+
+    const seasonObj = currentFilm.seasons[currentSeason];
     const seriesKeys = Object.keys(seasonObj.series).sort();
     const currentIndex = seriesKeys.indexOf(currentSeries);
     let nextSeries = null;
@@ -343,7 +549,7 @@ function goToNextEpisode(film) {
         const currentSeasonIndex = seasonsKeys.indexOf(currentSeason);
         if (currentSeasonIndex < seasonsKeys.length - 1) {
             nextSeason = seasonsKeys[currentSeasonIndex + 1];
-            const nextSeriesKeys = Object.keys(film.seasons[nextSeason].series).sort();
+            const nextSeriesKeys = Object.keys(currentFilm.seasons[nextSeason].series).sort();
             if (nextSeriesKeys.length > 0) {
                 nextSeries = nextSeriesKeys[0];
             }
@@ -351,169 +557,129 @@ function goToNextEpisode(film) {
     }
 
     if (nextSeries) {
-        window._currentSeason = nextSeason;
-        window._currentSeries = nextSeries;
-        const newVideoUrl = film.seasons[nextSeason].series[nextSeries].videoUrl;
-        if (newVideoUrl) {
-            const iframe = document.getElementById('driveIframe');
-            if (iframe) {
-                iframe.src = getEmbedUrl(newVideoUrl);
-            }
-            updateSeasonSeriesUI(film, nextSeason, nextSeries);
-        }
+        currentSeasonKey = nextSeason;
+        currentSeriesKey = nextSeries;
+        // Обновляем всё и сразу загружаем видео (без дополнительных кликов)
+        updateFilmInfo();
+        loadVideo();
+        renderSeasonSeriesNav();
+        updateNavButtonsState();
     } else {
         alert('Это последняя серия!');
     }
 }
 
-function updateSeasonSeriesUI(film, seasonKey, seriesKey) {
-    const seasonBtns = document.querySelectorAll('.season-btn');
-    const seriesBtns = document.querySelectorAll('.series-btn');
-    seasonBtns.forEach(btn => {
-        btn.classList.toggle('active', btn.dataset.season === seasonKey);
-    });
-    seriesBtns.forEach(btn => {
-        btn.classList.toggle('active', btn.dataset.series === seriesKey);
-    });
+// --- Обновление состояния кнопок (пред/след) ---
+function updateNavButtonsState() {
+    const prevBtn = document.getElementById('prevEpisodeBtn');
+    const nextBtn = document.getElementById('nextEpisodeBtn');
+    if (!prevBtn || !nextBtn) return;
+
+    if (!currentFilm.seasons) {
+        prevBtn.style.display = 'none';
+        nextBtn.style.display = 'none';
+        return;
+    }
+
+    prevBtn.style.display = 'inline-flex';
+    nextBtn.style.display = 'inline-flex';
+
+    // Проверяем, есть ли предыдущая/следующая серия
+    const seasonsKeys = Object.keys(currentFilm.seasons).sort();
+    if (seasonsKeys.length === 0) return;
+
+    let currentSeason = currentSeasonKey;
+    let currentSeries = currentSeriesKey;
+    if (!currentSeason || !currentSeries) {
+        prevBtn.disabled = true;
+        nextBtn.disabled = false;
+        return;
+    }
+
+    const seasonObj = currentFilm.seasons[currentSeason];
+    const seriesKeys = Object.keys(seasonObj.series).sort();
+    const currentIndex = seriesKeys.indexOf(currentSeries);
+
+    // Предыдущая
+    if (currentIndex > 0) {
+        prevBtn.disabled = false;
+    } else {
+        const currentSeasonIndex = seasonsKeys.indexOf(currentSeason);
+        if (currentSeasonIndex > 0) {
+            prevBtn.disabled = false;
+        } else {
+            prevBtn.disabled = true;
+        }
+    }
+
+    // Следующая
+    if (currentIndex < seriesKeys.length - 1) {
+        nextBtn.disabled = false;
+    } else {
+        const currentSeasonIndex = seasonsKeys.indexOf(currentSeason);
+        if (currentSeasonIndex < seasonsKeys.length - 1) {
+            nextBtn.disabled = false;
+        } else {
+            nextBtn.disabled = true;
+        }
+    }
 }
 
+// --- Открытие модалки выбора сезона/серии ---
+function openSeasonModal() {
+    const modal = document.getElementById('seasonModal');
+    if (!modal) return;
+    renderSeasonSeriesNav();
+    modal.style.display = 'flex';
+    isSeasonModalOpen = true;
+}
+
+// --- Переключение сиквела ---
 function switchSequel(id) {
     const newFilm = allFilms.find(f => f.id === id);
     if (newFilm) {
         history.pushState(null, '', `?id=${newFilm.id}`);
-        loadFilmPart(newFilm);
+        currentFilm = newFilm;
+        // Сбрасываем сезон/серию
+        if (newFilm.seasons) {
+            const seasonsKeys = Object.keys(newFilm.seasons).sort();
+            if (seasonsKeys.length > 0) {
+                currentSeasonKey = seasonsKeys[0];
+                const seriesKeys = Object.keys(newFilm.seasons[currentSeasonKey].series).sort();
+                if (seriesKeys.length > 0) {
+                    currentSeriesKey = seriesKeys[0];
+                }
+            }
+        } else {
+            currentSeasonKey = null;
+            currentSeriesKey = null;
+        }
+        // Обновляем всю страницу
+        updateFilmInfo();
+        if (newFilm.seasons) {
+            renderSeasonSeriesNav();
+        } else {
+            document.getElementById('seasonSeriesNav').innerHTML = '';
+        }
+        loadVideo();
+        initNavigationButtons();
+        // Обновить активные кнопки сиквелов
         const sequelNav = document.getElementById('sequelNav');
         if (sequelNav) {
             sequelNav.querySelectorAll('.sequel-btn').forEach(b => b.classList.remove('active'));
             const activeBtn = sequelNav.querySelector(`.sequel-btn[data-id="${newFilm.id}"]`);
             if (activeBtn) activeBtn.classList.add('active');
         }
-        window._currentFilm = newFilm;
-        window._currentSeason = null;
-        window._currentSeries = null;
-        const nextBtn = document.getElementById('nextEpisodeBtn');
-        if (nextBtn) {
-            if (newFilm.seasons && typeof newFilm.seasons === 'object' && Object.keys(newFilm.seasons).length > 0) {
-                nextBtn.style.display = 'inline-flex';
-                const seasonsKeys = Object.keys(newFilm.seasons).sort();
-                if (seasonsKeys.length > 0) {
-                    const firstSeason = seasonsKeys[0];
-                    const seriesKeys = Object.keys(newFilm.seasons[firstSeason].series).sort();
-                    if (seriesKeys.length > 0) {
-                        window._currentSeason = firstSeason;
-                        window._currentSeries = seriesKeys[0];
-                    }
-                }
-                nextBtn.onclick = function() {
-                    goToNextEpisode(newFilm);
-                };
-            } else {
-                nextBtn.style.display = 'none';
-            }
-        }
+        // Загрузить отзывы для нового фильма
+        loadReviews(newFilm.id);
+        initRatingModal(newFilm);
+        // Закрыть модалку сезонов, если открыта
+        document.getElementById('seasonModal').style.display = 'none';
+        isSeasonModalOpen = false;
     }
 }
 
-function loadFilmPart(film) {
-    document.getElementById('filmTitle').textContent = film.title;
-    document.getElementById('filmPoster').src = film.poster;
-    document.getElementById('filmDescription').textContent = film.description || '';
-
-    const downloadBtn = document.getElementById('downloadBtn');
-    if (downloadBtn) {
-        if (film.downloadUrl && film.videoUrl && film.videoUrl.includes('drive.google.com')) {
-            downloadBtn.href = getDownloadUrl(film.downloadUrl);
-            downloadBtn.style.display = 'inline-flex';
-        } else {
-            downloadBtn.style.display = 'none';
-        }
-    }
-
-    loadReviews(film.id);
-    initRatingModal(film);
-
-    const seasonNav = document.getElementById('seasonSeriesNav');
-    if (film.seasons && typeof film.seasons === 'object' && Object.keys(film.seasons).length > 0) {
-        const seasonsKeys = Object.keys(film.seasons).sort();
-        let html = '<div class="season-nav">';
-        seasonsKeys.forEach(sKey => {
-            html += `<button class="season-btn ${sKey === window._currentSeason ? 'active' : ''}" data-season="${sKey}">${film.seasons[sKey].title || 'Сезон '+sKey}</button>`;
-        });
-        html += '</div>';
-        if (window._currentSeason && film.seasons[window._currentSeason]) {
-            const seriesKeys = Object.keys(film.seasons[window._currentSeason].series).sort();
-            html += '<div class="series-nav">';
-            seriesKeys.forEach(srKey => {
-                html += `<button class="series-btn ${srKey === window._currentSeries ? 'active' : ''}" data-series="${srKey}">${film.seasons[window._currentSeason].series[srKey].title || 'Серия '+srKey}</button>`;
-            });
-            html += '</div>';
-        }
-        seasonNav.innerHTML = html;
-        seasonNav.querySelectorAll('.season-btn').forEach(btn => {
-            btn.addEventListener('click', function() {
-                const sKey = this.dataset.season;
-                if (film.seasons[sKey]) {
-                    window._currentSeason = sKey;
-                    const seriesKeys = Object.keys(film.seasons[sKey].series).sort();
-                    if (seriesKeys.length > 0) {
-                        window._currentSeries = seriesKeys[0];
-                        const videoUrl = film.seasons[sKey].series[window._currentSeries].videoUrl;
-                        if (videoUrl) {
-                            const iframe = document.getElementById('driveIframe');
-                            if (iframe) iframe.src = getEmbedUrl(videoUrl);
-                        }
-                        loadFilmPart(film);
-                    }
-                }
-            });
-        });
-        seasonNav.querySelectorAll('.series-btn').forEach(btn => {
-            btn.addEventListener('click', function() {
-                const srKey = this.dataset.series;
-                if (window._currentSeason && film.seasons[window._currentSeason] && film.seasons[window._currentSeason].series[srKey]) {
-                    window._currentSeries = srKey;
-                    const videoUrl = film.seasons[window._currentSeason].series[srKey].videoUrl;
-                    if (videoUrl) {
-                        const iframe = document.getElementById('driveIframe');
-                        if (iframe) iframe.src = getEmbedUrl(videoUrl);
-                    }
-                    seasonNav.querySelectorAll('.series-btn').forEach(b => b.classList.toggle('active', b.dataset.series === srKey));
-                }
-            });
-        });
-    } else {
-        if (!film.betterVersionReady && film.betterVersionDate && film.betterVersionDate !== 'null') {
-            const formatted = formatDate(film.betterVersionDate);
-            seasonNav.innerHTML = `<div class="better-version-notice">🎥 Улучшенная версия выйдет ${formatted || 'скоро'}</div>`;
-        } else if (!film.betterVersionReady && film.betterVersionDate === null) {
-            seasonNav.innerHTML = `<div class="better-version-notice">🎥 Улучшенная версия скоро</div>`;
-        } else {
-            seasonNav.innerHTML = '';
-        }
-    }
-
-    const iframe = document.getElementById('driveIframe');
-    const watchBtn = document.getElementById('watchBtn');
-    if (iframe) {
-        let videoUrl = null;
-        if (film.seasons && window._currentSeason && window._currentSeries) {
-            videoUrl = film.seasons[window._currentSeason]?.series[window._currentSeries]?.videoUrl;
-        } else if (film.videoUrl) {
-            videoUrl = film.videoUrl;
-        }
-        if (videoUrl) {
-            const embedUrl = getEmbedUrl(videoUrl);
-            iframe.src = embedUrl;
-            watchBtn.onclick = function() {
-                iframe.src = '';
-                setTimeout(() => { iframe.src = embedUrl; }, 100);
-            };
-        } else {
-            watchBtn.style.display = 'none';
-        }
-    }
-}
-
+// ============= ФОРМАТИРОВАНИЕ ДАТЫ =============
 function formatDate(dateString) {
     if (!dateString || dateString === 'null') return null;
     try {
@@ -799,8 +965,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 if (searchInput) searchInput.focus();
             });
         }
-        // Увеличил время загрузки до 2.5 секунд
-        setTimeout(() => hideLoading(), 2500);
+        setTimeout(() => hideLoading(), 1500);
     }
 
     if (document.getElementById('driveIframe')) {
