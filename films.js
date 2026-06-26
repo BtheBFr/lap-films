@@ -1,4 +1,107 @@
+// ================================================================
+// КАТЕГОРИИ И ПОДКАТЕГОРИИ (глобальное определение сверху)
+// ================================================================
+const CATEGORIES = {
+    film: {
+        label: "🎬 Фильмы",
+        subcategories: {
+            action: "Боевик",
+            comedy: "Комедия",
+            drama: "Драма",
+            thriller: "Триллер",
+            horror: "Ужасы",
+            adventure: "Приключения",
+            fantasy: "Фэнтези",
+            sciFi: "Фантастика",
+            romance: "Мелодрама",
+            detective: "Детектив",
+            documentary: "Документальный",
+            other: "Другое"
+        }
+    },
+    serial: {
+        label: "📺 Сериалы",
+        subcategories: {
+            action: "Боевик",
+            comedy: "Комедия",
+            drama: "Драма",
+            thriller: "Триллер",
+            horror: "Ужасы",
+            adventure: "Приключения",
+            fantasy: "Фэнтези",
+            sciFi: "Фантастика",
+            romance: "Мелодрама",
+            detective: "Детектив",
+            documentary: "Документальный",
+            other: "Другое"
+        }
+    },
+    cartoon: {
+        label: "🐱 Мультфильмы",
+        subcategories: {
+            animated: "Анимация",
+            anime: "Аниме",
+            family: "Семейный",
+            other: "Другое"
+        }
+    },
+    sequel: {
+        label: "📌 Сиквелы / Продолжения",
+        subcategories: {
+            sequel: "Сиквел",
+            prequel: "Приквел",
+            spinOff: "Спин-офф",
+            other: "Другое"
+        }
+    },
+    short: {
+        label: "⏳ Короткометражки",
+        subcategories: {
+            short: "Короткометражный",
+            other: "Другое"
+        }
+    },
+    other: {
+        label: "📂 Другое",
+        subcategories: {
+            other: "Разное"
+        }
+    }
+};
+
+// ================================================================
+// ТОП-ФИЛЬМЫ (список ID) – добавляйте сюда id фильмов для ленты
+// ================================================================
+const TOP_FILMS_IDS = [
+    "cheburashka2",
+    "zhdun",
+    // добавьте сюда другие id
+];
+
+// ================================================================
+// КАТАЛОГ ФИЛЬМОВ
+// ================================================================
 const FILMS_CATALOG = [
+    // ---------- ЧЕБУРАШКА (группа сиквелов) ----------
+    {
+        id: "cheburashka",
+        title: "Чебурашка",
+        searchTerms: ["чебурашка", "ушастый", "cheburashka", "чебурвашка"],
+        description: "На небольшой приморский городок обрушивается дождь из апельсинов, а вместе с фруктами с неба падает неизвестный науке мохнатый непоседливый зверёк. Одержимое апельсинами животное оказывается в домике нелюдимого старика-садовника Геннадия, который из вредности решает оставить его жить у себя, так как местная богачка жаждет заполучить необычного зверя для своей избалованной внучки. Также эта коварная женщина, владелица кондитерской фабрики, пытается выведать секрет шоколада у хозяйки маленького магазинчика — дочери Геннадия, много лет обиженной на отца.",
+        poster: "posters/чебурашка.png",
+        seasons: "none",
+        videoUrl: "https://drive.usercontent.google.com/download?id=11dKW3RGr1td0_P8HWp_O7F5mGyFQSEZR&export=download&authuser=0",
+        downloadUrl: null,
+        betterVersionReady: true,
+        betterVersionDate: null,
+        releaseDate: null,
+        comingSoon: false,
+        category: "film",
+        subcategory: "comedy",
+        // === СИКВЕЛ-ГРУППА ===
+        sequelGroup: "cheburashka",
+        sequelOrder: 1
+    },
     {
         id: "cheburashka2",
         title: "Чебурашка 2",
@@ -11,8 +114,14 @@ const FILMS_CATALOG = [
         betterVersionReady: true,
         betterVersionDate: null,
         releaseDate: null,
-        comingSoon: false
+        comingSoon: false,
+        category: "film",
+        subcategory: "comedy",
+        sequelGroup: "cheburashka",
+        sequelOrder: 2
     },
+
+    // ---------- ЖДУН (без сиквелов, но можно добавить) ----------
     {
         id: "zhdun",
         title: "Ждун",
@@ -25,7 +134,10 @@ const FILMS_CATALOG = [
         betterVersionReady: true,
         betterVersionDate: null,
         releaseDate: null,
-        comingSoon: false
+        comingSoon: false,
+        category: "film",
+        subcategory: "comedy"
+        // sequelGroup нет, значит отдельный фильм
     },
     {
         id: "zhdun2",
@@ -39,22 +151,12 @@ const FILMS_CATALOG = [
         betterVersionReady: false,
         betterVersionDate: "2026-04-07",
         releaseDate: null,
-        comingSoon: false
+        comingSoon: false,
+        category: "sequel",
+        subcategory: "sequel"
     },
-    {
-        id: "cheburashka",
-        title: "Чебурашка",
-        searchTerms: ["чебурашка", "ушастый", "cheburashka", "чебурвашка"],
-        description: "На небольшой приморский городок обрушивается дождь из апельсинов, а вместе с фруктами с неба падает неизвестный науке мохнатый непоседливый зверёк. Одержимое апельсинами животное оказывается в домике нелюдимого старика-садовника Геннадия, который из вредности решает оставить его жить у себя, так как местная богачка жаждет заполучить необычного зверя для своей избалованной внучки. Также эта коварная женщина, владелица кондитерской фабрики, пытается выведать секрет шоколада у хозяйки маленького магазинчика — дочери Геннадия, много лет обиженной на отца.",
-        poster: "posters/чебурашка.png",
-        seasons: "none",
-        videoUrl: "https://drive.usercontent.google.com/download?id=11dKW3RGr1td0_P8HWp_O7F5mGyFQSEZR&export=download&authuser=0",
-        downloadUrl: null,
-        betterVersionReady: true,
-        betterVersionDate: null,
-        releaseDate: null,
-        comingSoon: false
-    },
+
+    // ---------- ДРУГИЕ ФИЛЬМЫ ----------
     {
         id: "obsessiya",
         title: "Обсессия",
@@ -67,12 +169,16 @@ const FILMS_CATALOG = [
         betterVersionReady: false,
         betterVersionDate: null,
         releaseDate: null,
-        comingSoon: false
+        comingSoon: false,
+        category: "film",
+        subcategory: "thriller"
     }
+    // Добавляйте новые фильмы сюда
 ];
 
-
-// ============= ВСЕ ВОЗМОЖНЫЕ ВАРИАНТЫ (ЗАКОММЕНТИРОВАНЫ) =============
+// ================================================================
+// ЗАКОММЕНТИРОВАННЫЕ ПРИМЕРЫ ВСЕХ ВОЗМОЖНЫХ ВАРИАНТОВ
+// ================================================================
 
 /*
 // 1. ФИЛЬМ ТОЛЬКО С ПРОСМОТРОМ (VK VIDEO)
@@ -88,7 +194,9 @@ const FILMS_CATALOG = [
     betterVersionReady: false,
     betterVersionDate: null,
     releaseDate: null,
-    comingSoon: false
+    comingSoon: false,
+    category: "film",
+    subcategory: "action"
 },
 
 // 2. ФИЛЬМ ТОЛЬКО С ПРОСМОТРОМ (RUTUBE)
@@ -104,7 +212,9 @@ const FILMS_CATALOG = [
     betterVersionReady: false,
     betterVersionDate: null,
     releaseDate: null,
-    comingSoon: false
+    comingSoon: false,
+    category: "film",
+    subcategory: "action"
 },
 
 // 3. ФИЛЬМ ТОЛЬКО С ПРОСМОТРОМ (GOOGLE DRIVE)
@@ -120,7 +230,9 @@ const FILMS_CATALOG = [
     betterVersionReady: false,
     betterVersionDate: null,
     releaseDate: null,
-    comingSoon: false
+    comingSoon: false,
+    category: "film",
+    subcategory: "action"
 },
 
 // 4. ФИЛЬМ С ПРОСМОТРОМ И СКАЧИВАНИЕМ (VK + GOOGLE)
@@ -136,7 +248,9 @@ const FILMS_CATALOG = [
     betterVersionReady: false,
     betterVersionDate: null,
     releaseDate: null,
-    comingSoon: false
+    comingSoon: false,
+    category: "film",
+    subcategory: "action"
 },
 
 // 5. ФИЛЬМ С УЛУЧШЕННОЙ ВЕРСИЕЙ (КОНКРЕТНАЯ ДАТА)
@@ -152,7 +266,9 @@ const FILMS_CATALOG = [
     betterVersionReady: false,
     betterVersionDate: "2026-07-15",
     releaseDate: null,
-    comingSoon: false
+    comingSoon: false,
+    category: "film",
+    subcategory: "action"
 },
 
 // 6. ФИЛЬМ С УЛУЧШЕННОЙ ВЕРСИЕЙ (СКОРО, БЕЗ ДАТЫ)
@@ -168,7 +284,9 @@ const FILMS_CATALOG = [
     betterVersionReady: false,
     betterVersionDate: null,
     releaseDate: null,
-    comingSoon: false
+    comingSoon: false,
+    category: "film",
+    subcategory: "action"
 },
 
 // 7. ФИЛЬМ, КОТОРЫЙ ВЫЙДЕТ ПОЗЖЕ (КОНКРЕТНАЯ ДАТА)
@@ -184,7 +302,9 @@ const FILMS_CATALOG = [
     betterVersionReady: false,
     betterVersionDate: null,
     releaseDate: "2026-09-01",
-    comingSoon: true
+    comingSoon: true,
+    category: "film",
+    subcategory: "action"
 },
 
 // 8. ФИЛЬМ, КОТОРЫЙ ВЫЙДЕТ СКОРО (ДАТЫ НЕТ)
@@ -200,7 +320,9 @@ const FILMS_CATALOG = [
     betterVersionReady: false,
     betterVersionDate: null,
     releaseDate: null,
-    comingSoon: true
+    comingSoon: true,
+    category: "film",
+    subcategory: "action"
 },
 
 // 9. СЕРИАЛ С СЕЗОНАМИ И СЕРИЯМИ
@@ -231,7 +353,9 @@ const FILMS_CATALOG = [
     betterVersionReady: false,
     betterVersionDate: "2026-08-01",
     releaseDate: null,
-    comingSoon: false
+    comingSoon: false,
+    category: "serial",
+    subcategory: "drama"
 },
 
 // 10. СЕРИАЛ С СЕЗОНАМИ + СКАЧИВАНИЕ
@@ -261,7 +385,9 @@ const FILMS_CATALOG = [
     betterVersionReady: false,
     betterVersionDate: null,
     releaseDate: null,
-    comingSoon: false
+    comingSoon: false,
+    category: "serial",
+    subcategory: "drama"
 },
 
 // 11. ФИЛЬМ, ГДЕ УЖЕ ХОРОШАЯ ВЕРСИЯ (БЕЗ НАДПИСИ)
@@ -277,7 +403,9 @@ const FILMS_CATALOG = [
     betterVersionReady: true,
     betterVersionDate: null,
     releaseDate: null,
-    comingSoon: false
+    comingSoon: false,
+    category: "film",
+    subcategory: "action"
 },
 
 // 12. ФИЛЬМ ТОЛЬКО ДЛЯ СКАЧИВАНИЯ (БЕЗ ПРОСМОТРА)
@@ -293,6 +421,8 @@ const FILMS_CATALOG = [
     betterVersionReady: false,
     betterVersionDate: null,
     releaseDate: null,
-    comingSoon: false
+    comingSoon: false,
+    category: "film",
+    subcategory: "action"
 }
 */
