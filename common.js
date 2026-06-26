@@ -131,7 +131,7 @@ function filterFilms(films) {
 
 // ============= ГЛАВНАЯ СТРАНИЦА =============
 
-// --- ОТОБРАЖЕНИЕ ФИЛЬТРОВ ---
+// --- ОТОБРАЖЕНИЕ ФИЛЬТРОВ (с подкатегорией) ---
 function renderFiltersInfo() {
     const container = document.getElementById('filtersInfo');
     if (!container) return;
@@ -289,7 +289,8 @@ function initPlayer() {
     currentFilm = film;
 
     // Определяем начальные сезон и серию (если есть)
-    if (film.seasons && typeof film.seasons === 'object') {
+    // Проверяем, что seasons – это объект, а не строка "none"
+    if (film.seasons && typeof film.seasons === 'object' && !Array.isArray(film.seasons)) {
         const seasonsKeys = Object.keys(film.seasons).sort();
         if (seasonsKeys.length > 0) {
             currentSeasonKey = seasonsKeys[0];
@@ -307,7 +308,7 @@ function initPlayer() {
     updateFilmInfo();
 
     // Создаём навигацию по сезонам/сериям (если есть)
-    if (film.seasons) {
+    if (film.seasons && typeof film.seasons === 'object' && !Array.isArray(film.seasons)) {
         renderSeasonSeriesNav();
     } else {
         const seasonNav = document.getElementById('seasonSeriesNav');
@@ -354,11 +355,12 @@ function initPlayer() {
     }
 
     // Кнопки "Предыдущая серия", "Следующая серия", "Выбрать серию"
-    // Показываем кнопки только если есть сезоны
-    if (film.seasons && typeof film.seasons === 'object') {
+    // Показываем только если есть сезоны (объект, не строка)
+    const hasSeasons = (film.seasons && typeof film.seasons === 'object' && !Array.isArray(film.seasons));
+    if (hasSeasons) {
         initNavigationButtons();
     } else {
-        // Скрываем все кнопки навигации, если нет сезонов
+        // Скрываем все кнопки навигации
         const prevBtn = document.getElementById('prevEpisodeBtn');
         const nextBtn = document.getElementById('nextEpisodeBtn');
         const chooseBtn = document.getElementById('chooseSeriesBtn');
@@ -399,31 +401,39 @@ function updateFilmInfo() {
 
     // Заголовок с сезоном/серией
     let title = currentFilm.title;
-    if (currentSeasonKey && currentSeriesKey && currentFilm.seasons) {
+    if (currentSeasonKey && currentSeriesKey && currentFilm.seasons && typeof currentFilm.seasons === 'object') {
         const seasonTitle = currentFilm.seasons[currentSeasonKey]?.title || `Сезон ${currentSeasonKey}`;
         const seriesTitle = currentFilm.seasons[currentSeasonKey]?.series[currentSeriesKey]?.title || `Серия ${currentSeriesKey}`;
         title += ` — ${seasonTitle}, ${seriesTitle}`;
     }
     document.getElementById('filmTitle').textContent = title;
 
-    // --- Отображаем категории отдельно ---
+    // --- Отображаем категории отдельно (с человеческими названиями) ---
     const categoryContainer = document.getElementById('filmCategories');
     if (categoryContainer) {
         let catHtml = '';
         if (currentFilm.category || currentFilm.subcategory) {
             const cats = Array.isArray(currentFilm.category) ? currentFilm.category : (currentFilm.category ? [currentFilm.category] : []);
             const subcats = Array.isArray(currentFilm.subcategory) ? currentFilm.subcategory : (currentFilm.subcategory ? [currentFilm.subcategory] : []);
-            let catLabels = cats.map(c => CATEGORIES[c]?.label || c).filter(Boolean);
+            // Получаем человеческие названия категорий
+            let catLabels = cats.map(c => {
+                // Если категория – это ключ, ищем в CATEGORIES
+                if (CATEGORIES[c]) return CATEGORIES[c].label;
+                // Иначе, может быть уже строка с эмодзи? оставляем как есть
+                return c;
+            }).filter(Boolean);
+            // Получаем человеческие названия подкатегорий
             let subLabels = [];
             subcats.forEach(s => {
-                // Ищем в каждой категории
+                let found = false;
                 for (let c of cats) {
                     if (CATEGORIES[c] && CATEGORIES[c].subcategories && CATEGORIES[c].subcategories[s]) {
                         subLabels.push(CATEGORIES[c].subcategories[s]);
+                        found = true;
                         break;
                     }
                 }
-                if (subLabels.length === 0 && s) subLabels.push(s); // если не нашли, показываем как есть
+                if (!found && s) subLabels.push(s); // если не нашли, показываем как есть
             });
             if (catLabels.length) {
                 catHtml += `<span class="cat-tag">📂 ${catLabels.join(', ')}</span>`;
@@ -453,7 +463,7 @@ function loadVideo() {
     if (!iframe) return;
 
     let videoUrl = null;
-    if (currentSeasonKey && currentSeriesKey && currentFilm.seasons) {
+    if (currentSeasonKey && currentSeriesKey && currentFilm.seasons && typeof currentFilm.seasons === 'object') {
         videoUrl = currentFilm.seasons[currentSeasonKey]?.series[currentSeriesKey]?.videoUrl;
     } else if (currentFilm.videoUrl) {
         videoUrl = currentFilm.videoUrl;
@@ -470,7 +480,7 @@ function renderSeasonSeriesNav() {
     const modalContent = document.getElementById('seasonModalContent');
     if (!modalContent) return;
 
-    if (!currentFilm.seasons) {
+    if (!currentFilm.seasons || typeof currentFilm.seasons !== 'object' || Array.isArray(currentFilm.seasons)) {
         modalContent.innerHTML = '<p>Нет сезонов</p>';
         return;
     }
@@ -543,7 +553,7 @@ function initNavigationButtons() {
 
 // --- Переход на предыдущую серию ---
 function goToPrevEpisode() {
-    if (!currentFilm.seasons) return;
+    if (!currentFilm.seasons || typeof currentFilm.seasons !== 'object') return;
     const seasonsKeys = Object.keys(currentFilm.seasons).sort();
     if (seasonsKeys.length === 0) return;
 
@@ -580,7 +590,6 @@ function goToPrevEpisode() {
         currentSeasonKey = prevSeason;
         currentSeriesKey = prevSeries;
         updateFilmInfo();
-        // Если видео уже загружено, перезагружаем
         const iframe = document.getElementById('driveIframe');
         if (iframe && iframe.src) {
             loadVideo();
@@ -594,7 +603,7 @@ function goToPrevEpisode() {
 
 // --- Переход на следующую серию ---
 function goToNextEpisode() {
-    if (!currentFilm.seasons) return;
+    if (!currentFilm.seasons || typeof currentFilm.seasons !== 'object') return;
     const seasonsKeys = Object.keys(currentFilm.seasons).sort();
     if (seasonsKeys.length === 0) return;
 
@@ -648,7 +657,7 @@ function updateNavButtonsState() {
     const nextBtn = document.getElementById('nextEpisodeBtn');
     if (!prevBtn || !nextBtn) return;
 
-    if (!currentFilm.seasons) {
+    if (!currentFilm.seasons || typeof currentFilm.seasons !== 'object') {
         prevBtn.style.display = 'none';
         nextBtn.style.display = 'none';
         return;
@@ -709,7 +718,8 @@ function switchSequel(id) {
     if (newFilm) {
         history.pushState(null, '', `?id=${newFilm.id}`);
         currentFilm = newFilm;
-        if (newFilm.seasons) {
+        // Определяем сезоны
+        if (newFilm.seasons && typeof newFilm.seasons === 'object' && !Array.isArray(newFilm.seasons)) {
             const seasonsKeys = Object.keys(newFilm.seasons).sort();
             if (seasonsKeys.length > 0) {
                 currentSeasonKey = seasonsKeys[0];
@@ -723,12 +733,13 @@ function switchSequel(id) {
             currentSeriesKey = null;
         }
         updateFilmInfo();
-        if (newFilm.seasons) {
+        // Обновляем навигацию сезонов
+        const hasSeasons = (newFilm.seasons && typeof newFilm.seasons === 'object' && !Array.isArray(newFilm.seasons));
+        if (hasSeasons) {
             renderSeasonSeriesNav();
             initNavigationButtons();
         } else {
             document.getElementById('seasonSeriesNav').innerHTML = '';
-            // Скрываем кнопки навигации
             const prevBtn = document.getElementById('prevEpisodeBtn');
             const nextBtn = document.getElementById('nextEpisodeBtn');
             const chooseBtn = document.getElementById('chooseSeriesBtn');
@@ -739,7 +750,7 @@ function switchSequel(id) {
         // Сбрасываем iframe
         const iframe = document.getElementById('driveIframe');
         if (iframe) iframe.src = '';
-        // Обновляем кнопку "Смотреть" – теперь она будет загружать видео для нового фильма
+        // Обновляем кнопку "Смотреть"
         const watchBtn = document.getElementById('watchBtn');
         if (watchBtn) {
             watchBtn.onclick = function() {
