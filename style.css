@@ -73,7 +73,7 @@ h1 {
     background: #e50914;
 }
 
-/* ============= ТОП-ЛЕНТА (бесконечная) ============= */
+/* ============= ТОП-ЛЕНТА (бесконечная, движение влево) ============= */
 .section-title {
     font-size: 1.6rem;
     margin: 20px 0 15px;
@@ -158,19 +158,19 @@ h1 {
     color: #fff;
 }
 
-/* ============= КАТЕГОРИИ ============= */
+/* ============= КАТЕГОРИИ (с разделителем) ============= */
 .category-container {
     margin: 10px 0 20px;
     text-align: center;
 }
-.category-main-list, .category-sub-list {
+.category-main-list {
     display: flex;
     flex-wrap: wrap;
     gap: 8px;
     justify-content: center;
-    margin-bottom: 8px;
+    margin-bottom: 5px;
 }
-.category-main-btn, .category-sub-btn {
+.category-main-btn {
     padding: 6px 16px;
     border-radius: 30px;
     border: 1px solid rgba(255,255,255,0.15);
@@ -180,11 +180,45 @@ h1 {
     cursor: pointer;
     transition: background 0.2s, color 0.2s;
 }
-.category-main-btn:hover, .category-sub-btn:hover {
+.category-main-btn:hover {
     background: rgba(255,255,255,0.1);
     color: #fff;
 }
-.category-main-btn.active, .category-sub-btn.active {
+.category-main-btn.active {
+    background: #e50914;
+    color: #fff;
+    border-color: #e50914;
+}
+
+/* Разделитель между главными и подкатегориями */
+.category-divider {
+    width: 60%;
+    height: 1px;
+    background: linear-gradient(to right, transparent, rgba(255,255,255,0.3), transparent);
+    margin: 8px auto 12px;
+}
+
+.category-sub-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    justify-content: center;
+}
+.category-sub-btn {
+    padding: 5px 14px;
+    border-radius: 30px;
+    border: 1px solid rgba(255,255,255,0.1);
+    background: rgba(255,255,255,0.03);
+    color: #888;
+    font-size: 0.75rem;
+    cursor: pointer;
+    transition: background 0.2s, color 0.2s;
+}
+.category-sub-btn:hover {
+    background: rgba(255,255,255,0.08);
+    color: #fff;
+}
+.category-sub-btn.active {
     background: #e50914;
     color: #fff;
     border-color: #e50914;
@@ -686,91 +720,154 @@ h1 {
     font-size: 0.75rem;
 }
 
-/* ============= АДАПТАЦИЯ ПОД ТЕЛЕФОН ============= */
+/* ============================================================ */
+/* ============= МОБИЛЬНАЯ АДАПТАЦИЯ (ВСЕ ИСПРАВЛЕНИЯ) ============= */
+/* ============================================================ */
+
+/* Общие мобильные настройки */
 @media (max-width: 768px) {
     body {
         padding: 15px 10px;
+        font-size: 14px;
     }
     h1 {
-        font-size: 2rem;
+        font-size: 1.8rem;
+        margin-bottom: 20px;
     }
+
+    /* Топ-лента: карточки меньше, едут влево */
+    .top-film-item {
+        flex: 0 0 110px;
+    }
+    .top-film-item img {
+        border-radius: 10px;
+    }
+    .top-film-title {
+        font-size: 0.75rem;
+    }
+    .top-carousel {
+        gap: 12px;
+    }
+
+    /* Сетка фильмов: сдвиг вправо, чтобы не перекрывал алфавит */
     .films-grid {
         grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
         gap: 10px;
-        margin-right: 30px; /* чтобы алфавит не перекрывал */
+        margin-right: 30px;
+        margin-left: 0;
     }
     .film-card h3 {
-        font-size: 0.8rem;
-    }
-    .buttons-row {
-        gap: 12px;
-    }
-    .action-btn {
-        padding: 8px 18px;
-        font-size: 0.85rem;
-    }
-    .modal-content {
-        padding: 20px;
+        font-size: 0.75rem;
     }
 
-    /* Плеер на телефоне */
+    /* Категории: сдвиг вправо */
+    .category-container {
+        margin-right: 30px;
+        margin-left: 0;
+    }
+    .search-container {
+        margin-right: 30px;
+        margin-left: 0;
+        max-width: 100%;
+    }
+
+    /* Алфавит: тоньше, не перекрывает */
+    .alphabet-vertical {
+        right: 4px;
+        padding: 6px 4px;
+        gap: 1px;
+        border-radius: 16px;
+        background: rgba(0,0,0,0.2);
+        backdrop-filter: blur(2px);
+    }
+    .alphabet-vertical .letter {
+        width: 18px;
+        height: 18px;
+        line-height: 18px;
+        font-size: 0.55rem;
+    }
+
+    /* Разделитель категорий */
+    .category-divider {
+        width: 80%;
+    }
+
+    /* Плеер: перестроить, чтобы описание не наезжало на кнопку */
     .player-layout {
         flex-direction: column;
-        gap: 20px;
+        gap: 15px;
     }
     .film-info-panel {
         order: 2;
         flex-direction: row;
         flex-wrap: wrap;
         align-items: flex-start;
-        padding: 16px;
-        gap: 15px;
+        padding: 12px;
+        gap: 10px;
+        background: rgba(20,20,30,0.9);
+        backdrop-filter: none;
+        border-radius: 16px;
+        margin-top: 0;
     }
     .film-info-panel img {
-        max-width: 100px;
+        max-width: 80px;
         margin: 0;
     }
     .film-description-full {
         flex: 1;
         margin: 0;
-        font-size: 0.85rem;
-        max-height: 150px;
+        font-size: 0.8rem;
+        max-height: 120px;
         overflow-y: auto;
+        padding-right: 4px;
     }
     .film-actions {
         width: 100%;
         justify-content: center;
-        margin-top: 5px;
+        margin-top: 4px;
+        gap: 10px;
     }
-    .player-panel {
-        order: 1;
-    }
-    .player-panel h1 {
-        font-size: 1.3rem;
-        margin-top: 0;
+    .rate-btn, .download-btn {
+        padding: 8px 14px;
+        font-size: 0.8rem;
     }
 
-    /* Сиквелы: десктопный блок скрываем, мобильный показываем над плеером */
+    .player-panel {
+        order: 1;
+        margin-bottom: 0;
+    }
+    .player-panel h1 {
+        font-size: 1.2rem;
+        margin-top: 0;
+        margin-bottom: 10px;
+    }
+    .video-wrapper {
+        border-radius: 14px;
+        aspect-ratio: 16/9;
+    }
+    .watch-btn-large {
+        padding: 12px;
+        font-size: 1rem;
+        margin-top: 5px;
+    }
+    .back-link {
+        padding: 8px 16px;
+        font-size: 0.85rem;
+        margin-bottom: 15px;
+    }
+
+    /* Сиквелы: десктоп скрыт, мобильный показываем */
     #sequelNavDesktop {
         display: none !important;
     }
     #sequelNavMobile {
         display: flex !important;
-        margin-bottom: 10px;
+        margin-bottom: 8px;
+        gap: 6px;
     }
-
-    /* Алфавит справа - меньше, не перекрывает */
-    .alphabet-vertical {
-        right: 4px;
-        padding: 6px 4px;
-        gap: 1px;
-        border-radius: 16px;
-    }
-    .alphabet-vertical .letter {
-        width: 18px;
-        height: 18px;
-        line-height: 18px;
-        font-size: 0.6rem;
+    .sequel-btn {
+        padding: 6px 12px;
+        font-size: 0.7rem;
     }
 
     /* Отключаем тяжёлые эффекты */
@@ -809,6 +906,72 @@ h1 {
     }
     .submit-suggest-btn {
         background: #e50914 !important;
+    }
+
+    /* Кнопки внизу */
+    .buttons-row {
+        gap: 10px;
+        margin-right: 30px;
+    }
+    .action-btn {
+        padding: 8px 14px;
+        font-size: 0.8rem;
+    }
+}
+
+/* ============= ГОРИЗОНТАЛЬНАЯ ОРИЕНТАЦИЯ НА ТЕЛЕФОНЕ ============= */
+@media (max-width: 900px) and (orientation: landscape) {
+    body {
+        padding: 10px 15px;
+    }
+    .container, .player-page {
+        max-width: 100%;
+    }
+    .films-grid {
+        grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+        gap: 12px;
+        margin-right: 35px;
+    }
+    .alphabet-vertical {
+        right: 4px;
+        padding: 6px 4px;
+        gap: 1px;
+    }
+    .alphabet-vertical .letter {
+        width: 16px;
+        height: 16px;
+        line-height: 16px;
+        font-size: 0.5rem;
+    }
+    .top-film-item {
+        flex: 0 0 100px;
+    }
+    .film-info-panel img {
+        max-width: 70px;
+    }
+    .film-description-full {
+        max-height: 100px;
+        font-size: 0.75rem;
+    }
+    .player-panel h1 {
+        font-size: 1rem;
+    }
+    .video-wrapper {
+        aspect-ratio: 16/9;
+        max-height: 60vh;
+    }
+    .watch-btn-large {
+        padding: 10px;
+        font-size: 0.9rem;
+    }
+    .category-container {
+        margin-right: 35px;
+    }
+    .search-container {
+        margin-right: 35px;
+    }
+    .buttons-row {
+        margin-right: 35px;
     }
 }
 
