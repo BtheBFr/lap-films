@@ -6,7 +6,7 @@
 
 body {
     font-family: 'Segoe UI', system-ui, sans-serif;
-    background: #1a1a2e; /* чуть светлее, чем чёрный */
+    background: #12121f; /* тёмный, не чёрный */
     color: #f0f0f0;
     min-height: 100vh;
     padding: 20px 10px;
@@ -21,7 +21,7 @@ h1 {
     font-size: 2.5rem;
     font-weight: 800;
     text-align: center;
-    color: #e50914;
+    color: #ffffff; /* белый, не красный */
     margin-bottom: 25px;
 }
 
@@ -34,8 +34,8 @@ h1 {
 #searchInput {
     width: 100%;
     padding: 12px 50px 12px 20px;
-    background: #252540;
-    border: 1px solid #444;
+    background: #1e1e32;
+    border: 1px solid #333;
     border-radius: 40px;
     color: white;
     font-size: 1rem;
@@ -61,22 +61,25 @@ h1 {
     background: #e50914;
 }
 
-/* ============= ЛУЧШИЕ ФИЛЬМЫ (горизонтальный список, центрирован) ============= */
+/* ============= ЛУЧШИЕ ФИЛЬМЫ ============= */
 .best-films-container {
     margin: 10px 0 20px;
     text-align: center;
 }
+.section-title {
+    font-size: 1.4rem;
+    color: #fff;
+    margin-bottom: 12px;
+}
 .best-films-wrapper {
     display: flex;
-    flex-wrap: nowrap;
+    flex-wrap: wrap;
     justify-content: center;
     gap: 16px;
-    overflow: hidden;
     padding: 10px 0;
 }
 .best-film-item {
-    flex: 0 0 auto;
-    width: 120px;
+    flex: 0 0 120px;
     cursor: pointer;
     text-align: center;
 }
@@ -116,7 +119,7 @@ h1 {
     cursor: not-allowed;
 }
 
-/* ============= ОТОБРАЖЕНИЕ ФИЛЬТРОВ ============= */
+/* ============= ФИЛЬТРЫ ============= */
 .filters-info {
     text-align: center;
     font-size: 0.85rem;
@@ -125,7 +128,7 @@ h1 {
 }
 .filters-info span {
     display: inline-block;
-    background: #2a2a4a;
+    background: #1e1e32;
     padding: 4px 14px;
     border-radius: 20px;
     margin: 0 5px 5px 0;
@@ -137,7 +140,7 @@ h1 {
     display: block;
     margin: 10px auto 20px;
     padding: 10px 24px;
-    background: #252540;
+    background: #1e1e32;
     border: 1px solid #444;
     border-radius: 40px;
     color: #fff;
@@ -158,7 +161,7 @@ h1 {
 }
 
 .film-card {
-    background: #1e1e32;
+    background: #1a1a2a;
     border-radius: 12px;
     overflow: hidden;
     border: 1px solid #2a2a3a;
@@ -210,7 +213,7 @@ h1 {
     display: inline-block;
     text-align: center;
     border: none;
-    background: #252540;
+    background: #1e1e32;
     border: 1px solid #444;
     color: white;
 }
@@ -228,7 +231,7 @@ h1 {
 .film-info-panel {
     flex: 1;
     min-width: 240px;
-    background: #1e1e32;
+    background: #1a1a2a;
     border-radius: 20px;
     padding: 20px;
     border: 1px solid #2a2a3a;
@@ -376,7 +379,7 @@ h1 {
     display: inline-flex;
     align-items: center;
     gap: 8px;
-    background: #252540;
+    background: #1e1e32;
     border: 1px solid #444;
     padding: 8px 20px;
     border-radius: 40px;
@@ -402,7 +405,7 @@ h1 {
     margin-bottom: 15px;
 }
 .reviews-list {
-    background: #1e1e32;
+    background: #1a1a2a;
     border-radius: 16px;
     padding: 16px;
 }
@@ -467,7 +470,7 @@ h1 {
     z-index: 1000;
 }
 .modal-content {
-    background: #1e1e32;
+    background: #1a1a2a;
     border-radius: 24px;
     padding: 28px;
     max-width: 500px;
@@ -650,7 +653,6 @@ h1 {
     h1 {
         font-size: 2rem;
     }
-    /* Сетка фильмов */
     .films-grid {
         grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
         gap: 10px;
@@ -658,22 +660,20 @@ h1 {
     .film-card h3 {
         font-size: 0.75rem;
     }
-    /* Лучшие фильмы */
     .best-film-item {
-        width: 100px;
+        flex: 0 0 100px;
     }
     .best-film-item .best-film-title {
         font-size: 0.7rem;
     }
-    /* Плеер: на телефоне видео сверху, постер и описание снизу */
     .player-layout {
         flex-direction: column;
     }
     .player-panel {
-        order: 1; /* видео наверх */
+        order: 1;
     }
     .film-info-panel {
-        order: 2; /* постер и описание вниз */
+        order: 2;
         padding: 16px;
     }
     .film-info-panel img {
@@ -746,7 +746,7 @@ h1 {
         gap: 12px;
     }
     .best-film-item {
-        width: 90px;
+        flex: 0 0 90px;
     }
     .film-info-panel img {
         max-width: 100px;
