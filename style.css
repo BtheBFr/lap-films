@@ -1039,3 +1039,26 @@ h1 {
         color: #e50914 !important;
     }
 }
+
+/* ----- Блок категорий (отдельно от описания) ----- */
+.film-categories {
+    margin: 10px 0 15px;
+    text-align: left;
+}
+.category-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+.category-tags .cat-tag {
+    display: inline-block;
+    background: #2a2a3a;
+    padding: 4px 14px;
+    border-radius: 20px;
+    font-size: 0.8rem;
+    color: #ccc;
+    border: 1px solid #444;
+}
+.category-tags .cat-tag:first-child {
+    border-color: #e50914;
+}
