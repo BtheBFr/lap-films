@@ -900,13 +900,28 @@ h1 {
         padding: 6px 12px;
         font-size: 0.75rem;
     }
+
     .nav-buttons {
         gap: 8px;
+        justify-content: center;
     }
     .nav-buttons button {
         padding: 8px 14px;
         font-size: 0.8rem;
     }
+    /* Расположение кнопок: Предыдущая и Следующая в ряд, Выбрать серию на новой строке */
+    .nav-buttons .prev-btn,
+    .nav-buttons .next-btn {
+        order: 1;
+        flex: 0 1 auto;
+    }
+    .nav-buttons .choose-btn {
+        order: 2;
+        flex: 0 1 100%;
+        text-align: center;
+        justify-content: center;
+    }
+
     .buttons-row {
         gap: 10px;
     }
