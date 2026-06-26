@@ -7,6 +7,11 @@
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
+    <!-- Спиннер загрузки (на весь экран) -->
+    <div id="loadingOverlay" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.7); z-index:9999; justify-content:center; align-items:center; backdrop-filter:blur(4px);">
+        <div class="spinner" style="width:50px; height:50px; border-width:4px;"></div>
+    </div>
+
     <div class="container">
         <h1>lap-films</h1>
         
@@ -15,13 +20,15 @@
             <button id="searchClear" class="clear-btn" style="display: none;">✖</button>
         </div>
         
-        <!-- ТОП-ЛЕНТА (автопрокрутка) -->
+        <!-- ТОП-ЛЕНТА (бесконечная) -->
         <div class="top-carousel-container" id="topCarousel" style="display: none;">
             <h2 class="section-title">🔥 Топ фильмов</h2>
-            <div class="top-carousel" id="topCarouselList"></div>
+            <div class="top-carousel-wrapper">
+                <div class="top-carousel" id="topCarouselList"></div>
+            </div>
         </div>
         
-        <!-- КАТЕГОРИИ (горизонтальные кнопки) -->
+        <!-- КАТЕГОРИИ -->
         <div class="category-container" id="categoryFilters"></div>
         
         <!-- СЕТКА ФИЛЬМОВ -->
@@ -37,7 +44,7 @@
         </div>
     </div>
 
-    <!-- ВЕРТИКАЛЬНЫЙ АЛФАВИТ (фиксированный справа) -->
+    <!-- ВЕРТИКАЛЬНЫЙ АЛФАВИТ (только клик) -->
     <div class="alphabet-vertical" id="alphabetVertical"></div>
 
     <!-- МОДАЛЬНОЕ ОКНО -->
