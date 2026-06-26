@@ -381,7 +381,6 @@ function switchSequel(id) {
     if (newFilm) {
         history.pushState(null, '', `?id=${newFilm.id}`);
         loadFilmPart(newFilm);
-        // Обновить активные кнопки в единственном блоке
         const sequelNav = document.getElementById('sequelNav');
         if (sequelNav) {
             sequelNav.querySelectorAll('.sequel-btn').forEach(b => b.classList.remove('active'));
@@ -799,7 +798,8 @@ document.addEventListener('DOMContentLoaded', () => {
                 if (searchInput) searchInput.focus();
             });
         }
-        setTimeout(() => hideLoading(), 300);
+        // Увеличил время показа загрузки на главной странице
+        setTimeout(() => hideLoading(), 600);
     }
 
     if (document.getElementById('driveIframe')) {
