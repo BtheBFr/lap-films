@@ -5,14 +5,14 @@ let allReviewsData = {};
 let reviewsExpanded = {};
 let currentCategory = null;
 let currentSubcategory = null;
-let currentLetter = null;
 
-// Для бесконечной карусели
-let topCarouselInterval = null;
-let topCarouselSpeed = 1.5; // пикселей за кадр
-let topCarouselPaused = false;
+// Карусель
+let carouselAnimId = null;
+let carouselPosition = 0;
+let carouselSpeed = 0.8; // пикселей за кадр
+let carouselPaused = false;
 
-// ↓↓↓ ТВОИ ССЫЛКИ (ВСТАВЬ СВОИ) ↓↓↓
+// ↓↓↓ ТВОИ ССЫЛКИ ↓↓↓
 const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycby86FMOsqBSKIP8qE_1T8W4G5mgINcSiV4z7TnIaVlHpvHR7YYROpSXrhMGO24yfT1C/exec";
 const GOOGLE_RATINGS_URL = "https://script.google.com/macros/s/AKfycbyQjl03vdNZEjtyab3faMS-wD22urPYlWqb_mJjX0l0b8qsYwiZDuVmjPLs4-UQ8jj5/exec";
 
@@ -106,15 +106,12 @@ function filterFilms(films) {
         result = result.filter(f => f.category === currentCategory);
         if (currentSubcategory) result = result.filter(f => f.subcategory === currentSubcategory);
     }
-    if (currentLetter) {
-        result = result.filter(f => f.title.charAt(0).toUpperCase() === currentLetter);
-    }
     return result;
 }
 
 // ============= ГЛАВНАЯ СТРАНИЦА =============
 
-// --- БЕСКОНЕЧНАЯ ТОП-ЛЕНТА (выезжает справа) ---
+// --- КАРУСЕЛЬ (бесконечная, с выездом справа) ---
 function renderTopCarousel() {
     const container = document.getElementById('topCarousel');
     if (!container) return;
@@ -129,9 +126,8 @@ function renderTopCarousel() {
     const list = document.getElementById('topCarouselList');
     if (!list) return;
 
-    // Создаём двойной набор для бесконечности
+    // Строим двойной набор для бесконечности
     let itemsHtml = '';
-    // Клонируем 2 раза
     for (let i = 0; i < 2; i++) {
         topFilms.forEach(film => {
             itemsHtml += `
@@ -143,53 +139,58 @@ function renderTopCarousel() {
         });
     }
     list.innerHTML = itemsHtml;
-    const itemWidth = 140 + 16; // ширина + gap
-    const totalItems = topFilms.length * 2;
-    const totalWidth = totalItems * itemWidth;
-    list.style.width = totalWidth + 'px';
 
-    // Запускаем
-    startCarousel(list, itemWidth, topFilms.length);
+    // Вычисляем ширину одного набора
+    const itemWidth = 130 + 16; // ширина + gap
+    const originalCount = topFilms.length;
+    const oneSetWidth = originalCount * itemWidth;
+    list.style.width = (oneSetWidth * 2) + 'px';
+
+    // Сбрасываем позицию
+    carouselPosition = 0;
+    list.style.transform = 'translateX(0px)';
+
+    // Запускаем анимацию через requestAnimationFrame
+    startCarousel(list, oneSetWidth);
 }
 
-function startCarousel(list, itemWidth, originalCount) {
-    if (topCarouselInterval) clearInterval(topCarouselInterval);
-    let position = 0;
-    const oneSetWidth = originalCount * itemWidth;
+function startCarousel(list, oneSetWidth) {
+    if (carouselAnimId) cancelAnimationFrame(carouselAnimId);
 
-    // Стартуем с позиции 0, будем двигать влево
-    topCarouselInterval = setInterval(() => {
-        if (!topCarouselPaused) {
-            position += topCarouselSpeed;
-            // Когда доходим до конца первого набора, перепрыгиваем на начало второго набора (который идентичен первому)
-            if (position >= oneSetWidth) {
-                position = 0;
-                // Мгновенно переставляем на начало без перехода
+    function step() {
+        if (!carouselPaused) {
+            carouselPosition += carouselSpeed;
+            // Если дошли до конца первого набора, сбрасываем на 0 (без рывка)
+            if (carouselPosition >= oneSetWidth) {
+                carouselPosition = 0;
                 list.style.transition = 'none';
-                list.style.transform = `translateX(0px)`;
-                // Форсируем перерисовку
+                list.style.transform = 'translateX(0px)';
+                // Принудительный пересчёт
                 void list.offsetHeight;
                 list.style.transition = 'transform 0.05s linear';
             } else {
-                list.style.transform = `translateX(-${position}px)`;
+                list.style.transform = `translateX(-${carouselPosition}px)`;
             }
         }
-    }, 16);
+        carouselAnimId = requestAnimationFrame(step);
+    }
+
+    carouselAnimId = requestAnimationFrame(step);
 
     // Пауза при наведении/касании
     const wrapper = list.closest('.top-carousel-wrapper');
     if (wrapper) {
-        wrapper.addEventListener('mouseenter', () => { topCarouselPaused = true; });
-        wrapper.addEventListener('mouseleave', () => { topCarouselPaused = false; });
-        wrapper.addEventListener('touchstart', () => { topCarouselPaused = true; });
-        wrapper.addEventListener('touchend', () => { topCarouselPaused = false; });
+        wrapper.addEventListener('mouseenter', () => { carouselPaused = true; });
+        wrapper.addEventListener('mouseleave', () => { carouselPaused = false; });
+        wrapper.addEventListener('touchstart', () => { carouselPaused = true; });
+        wrapper.addEventListener('touchend', () => { carouselPaused = false; });
     }
 }
 
 function stopCarousel() {
-    if (topCarouselInterval) {
-        clearInterval(topCarouselInterval);
-        topCarouselInterval = null;
+    if (carouselAnimId) {
+        cancelAnimationFrame(carouselAnimId);
+        carouselAnimId = null;
     }
 }
 
@@ -241,30 +242,6 @@ function updateCatalog() {
     renderFilmsGrid(searched);
 }
 
-// --- АЛФАВИТ (закреплён) ---
-function renderAlphabetVertical() {
-    const container = document.getElementById('alphabetVertical');
-    if (!container) return;
-    const letters = 'АБВГДЕЁЖЗИЙКЛМНОПРСТУФХЦЧШЩЪЫЬЭЮЯ'.split('');
-    container.innerHTML = letters.map(letter => `
-        <span class="letter ${currentLetter === letter ? 'active' : ''}" data-letter="${letter}">${letter}</span>
-    `).join('');
-
-    container.querySelectorAll('.letter').forEach(el => {
-        el.addEventListener('click', function() {
-            const letter = this.dataset.letter;
-            if (currentLetter === letter) {
-                currentLetter = null;
-            } else {
-                currentLetter = letter;
-            }
-            container.querySelectorAll('.letter').forEach(l => l.classList.toggle('active', l.dataset.letter === currentLetter));
-            updateCatalog();
-            document.getElementById('filmsGrid').scrollIntoView({ behavior: 'smooth', block: 'start' });
-        });
-    });
-}
-
 // --- КАТЕГОРИИ (модальное окно) ---
 function renderCategoryModal() {
     const modal = document.getElementById('categoryModal');
@@ -287,7 +264,7 @@ function renderCategoryModal() {
         });
         html += `</div>`;
     } else {
-        html += `<div class="category-sub-list" style="opacity:0.5;"><span style="color:#666; font-size:0.8rem;">Выберите категорию для подкатегорий</span></div>`;
+        html += `<div class="category-sub-list" style="opacity:0.5;"><span style="color:#666; font-size:0.8rem;">Выберите категорию</span></div>`;
     }
     modal.querySelector('.modal-content').innerHTML = `
         <span class="modal-close" id="categoryModalClose">&times;</span>
@@ -692,7 +669,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
     if (document.getElementById('filmsGrid')) {
         renderTopCarousel();
-        renderAlphabetVertical();
         const categoryBtn = document.getElementById('categoryToggleBtn');
         if (categoryBtn) categoryBtn.addEventListener('click', openCategoryModal);
         updateCatalog();
@@ -710,10 +686,8 @@ document.addEventListener('DOMContentLoaded', () => {
             clearBtn.addEventListener('click', function() {
                 if (searchInput) searchInput.value = '';
                 this.style.display = 'none';
-                currentLetter = null;
                 currentCategory = null;
                 currentSubcategory = null;
-                renderAlphabetVertical();
                 updateCatalog();
                 if (searchInput) searchInput.focus();
             });
