@@ -9,14 +9,14 @@ let currentLetter = null;
 
 // Для бесконечной карусели
 let topCarouselInterval = null;
-let topCarouselSpeed = 1.5; // пикселей за кадр (чуть быстрее)
+let topCarouselSpeed = 1.2;
 let topCarouselPaused = false;
 
 // ↓↓↓ ТВОИ ССЫЛКИ (ВСТАВЬ СВОИ) ↓↓↓
 const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycby86FMOsqBSKIP8qE_1T8W4G5mgINcSiV4z7TnIaVlHpvHR7YYROpSXrhMGO24yfT1C/exec";
 const GOOGLE_RATINGS_URL = "https://script.google.com/macros/s/AKfycbyQjl03vdNZEjtyab3faMS-wD22urPYlWqb_mJjX0l0b8qsYwiZDuVmjPLs4-UQ8jj5/exec";
 
-// ============= ВСПОМОГАТЕЛЬНЫЕ ФУНКЦИИ =============
+// ============= ВСПОМОГАТЕЛЬНЫЕ =============
 function showLoading() {
     const overlay = document.getElementById('loadingOverlay');
     if (overlay) overlay.style.display = 'flex';
@@ -29,12 +29,10 @@ function hideLoading() {
 // ============= ВИДЕО-ПЛЕЕР =============
 function getEmbedUrl(videoPath) {
     if (!videoPath) return '';
-    // YouTube
     if (videoPath.includes('youtube.com/watch') || videoPath.includes('youtu.be/')) {
         return convertToYouTubeEmbed(videoPath);
     }
     if (videoPath.includes('youtube.com/embed/')) return videoPath;
-    // Dailymotion
     if (videoPath.includes('dailymotion.com') || videoPath.includes('dai.ly')) {
         let videoId = null;
         let match = videoPath.match(/dailymotion\.com\/video\/([a-zA-Z0-9]+)/);
@@ -46,7 +44,6 @@ function getEmbedUrl(videoPath) {
         if (videoId) return `https://www.dailymotion.com/embed/video/${videoId}`;
         return videoPath;
     }
-    // Google Drive
     if (videoPath.includes('drive.google.com') || videoPath.includes('drive.usercontent.google.com')) {
         return convertToDriveEmbed(videoPath);
     }
@@ -117,7 +114,7 @@ function filterFilms(films) {
 
 // ============= ГЛАВНАЯ СТРАНИЦА =============
 
-// --- БЕСКОНЕЧНАЯ ТОП-ЛЕНТА (движение влево) ---
+// --- БЕСКОНЕЧНАЯ ТОП-ЛЕНТА (без рывков) ---
 function renderTopCarousel() {
     const container = document.getElementById('topCarousel');
     if (!container) return;
@@ -132,8 +129,8 @@ function renderTopCarousel() {
     const list = document.getElementById('topCarouselList');
     if (!list) return;
 
-    // Строим бесконечный список (дублируем 3 раза)
-    const cloneCount = 3;
+    // Дублируем 2 раза для плавности (если 1 фильм – дублируем 3 раза)
+    const cloneCount = topFilms.length === 1 ? 4 : 2;
     let itemsHtml = '';
     for (let i = 0; i < cloneCount; i++) {
         topFilms.forEach(film => {
@@ -151,26 +148,32 @@ function renderTopCarousel() {
     const totalWidth = totalItems * itemWidth;
     list.style.width = totalWidth + 'px';
 
-    // Запускаем движение влево
+    // Запускаем
     startCarousel(list, itemWidth, topFilms.length);
 }
 
 function startCarousel(list, itemWidth, originalCount) {
     if (topCarouselInterval) clearInterval(topCarouselInterval);
     let position = 0;
-    // Максимальная позиция = половина ширины (чтобы уйти в бесконечность)
-    const maxPosition = (originalCount * 2) * itemWidth;
+    // Длина одного набора
+    const oneSetWidth = originalCount * itemWidth;
+    // Максимальная позиция, когда доходим до конца первого набора (чтобы перекинуть на начало)
+    const maxPosition = oneSetWidth;
+
+    // Убираем transition для мгновенного сброса
+    list.style.transition = 'none';
 
     topCarouselInterval = setInterval(() => {
         if (!topCarouselPaused) {
             position += topCarouselSpeed;
+            // Если дошли до конца первого набора, мгновенно сбрасываем на 0 (без рывка)
             if (position >= maxPosition) {
                 position = 0;
-                // Мгновенный сброс
                 list.style.transition = 'none';
-                list.style.transform = 'translateX(0px)';
+                list.style.transform = `translateX(0px)`;
+                // Форсируем перерисовку
                 void list.offsetHeight;
-                list.style.transition = 'transform 0.5s ease';
+                list.style.transition = 'transform 0.05s linear'; // небольшой переход для плавности
             } else {
                 list.style.transform = `translateX(-${position}px)`;
             }
@@ -242,7 +245,7 @@ function updateCatalog() {
     renderFilmsGrid(searched);
 }
 
-// --- АЛФАВИТ (только клик) ---
+// --- АЛФАВИТ (закреплён, не двигается) ---
 function renderAlphabetVertical() {
     const container = document.getElementById('alphabetVertical');
     if (!container) return;
@@ -266,10 +269,10 @@ function renderAlphabetVertical() {
     });
 }
 
-// --- КАТЕГОРИИ (с разделителем) ---
-function renderCategoryFilters() {
-    const container = document.getElementById('categoryFilters');
-    if (!container) return;
+// --- КАТЕГОРИИ (модальное окно) ---
+function renderCategoryModal() {
+    const modal = document.getElementById('categoryModal');
+    if (!modal) return;
     const mainKeys = Object.keys(CATEGORIES);
     let html = `<div class="category-main-list">`;
     html += `<button class="category-main-btn ${!currentCategory ? 'active' : ''}" data-category="">Все</button>`;
@@ -277,7 +280,6 @@ function renderCategoryFilters() {
         html += `<button class="category-main-btn ${currentCategory === key ? 'active' : ''}" data-category="${key}">${CATEGORIES[key].label}</button>`;
     });
     html += `</div>`;
-    // Разделитель
     html += `<div class="category-divider"></div>`;
     if (currentCategory && CATEGORIES[currentCategory]) {
         const subs = CATEGORIES[currentCategory].subcategories;
@@ -291,9 +293,13 @@ function renderCategoryFilters() {
     } else {
         html += `<div class="category-sub-list" style="opacity:0.5;"><span style="color:#666; font-size:0.8rem;">Выберите категорию для подкатегорий</span></div>`;
     }
-    container.innerHTML = html;
-
-    container.querySelectorAll('.category-main-btn').forEach(btn => {
+    modal.querySelector('.modal-content').innerHTML = `
+        <span class="modal-close" id="categoryModalClose">&times;</span>
+        <h3>🎬 Выбор категорий</h3>
+        ${html}
+    `;
+    // Обработчики
+    modal.querySelectorAll('.category-main-btn').forEach(btn => {
         btn.addEventListener('click', function() {
             const cat = this.dataset.category;
             if (currentCategory === cat) {
@@ -303,18 +309,33 @@ function renderCategoryFilters() {
                 currentCategory = cat;
                 currentSubcategory = null;
             }
-            renderCategoryFilters();
+            renderCategoryModal();
             updateCatalog();
         });
     });
-    container.querySelectorAll('.category-sub-btn').forEach(btn => {
+    modal.querySelectorAll('.category-sub-btn').forEach(btn => {
         btn.addEventListener('click', function() {
             const sub = this.dataset.subcategory;
             currentSubcategory = sub || null;
-            renderCategoryFilters();
+            renderCategoryModal();
             updateCatalog();
         });
     });
+    document.getElementById('categoryModalClose').addEventListener('click', () => {
+        modal.style.display = 'none';
+    });
+    window.addEventListener('click', (e) => {
+        if (e.target === modal) modal.style.display = 'none';
+    });
+}
+
+// Открыть модалку категорий
+function openCategoryModal() {
+    const modal = document.getElementById('categoryModal');
+    if (modal) {
+        renderCategoryModal();
+        modal.style.display = 'flex';
+    }
 }
 
 // ============= ПЛЕЕР =============
@@ -328,12 +349,10 @@ function initPlayer() {
 
     loadFilmPart(film);
 
-    // Сиквелы – оба блока
     if (film.sequelGroup) {
         const groupFilms = allFilms.filter(f => f.sequelGroup === film.sequelGroup)
                                    .sort((a,b) => (a.sequelOrder || 0) - (b.sequelOrder || 0));
         if (groupFilms.length > 1) {
-            // Десктоп
             const desktopNav = document.getElementById('sequelNavDesktop');
             if (desktopNav) {
                 desktopNav.style.display = 'flex';
@@ -346,7 +365,6 @@ function initPlayer() {
                     });
                 });
             }
-            // Мобильный
             const mobileNav = document.getElementById('sequelNavMobile');
             if (mobileNav) {
                 mobileNav.style.display = 'flex';
@@ -681,7 +699,11 @@ document.addEventListener('DOMContentLoaded', () => {
     if (document.getElementById('filmsGrid')) {
         renderTopCarousel();
         renderAlphabetVertical();
-        renderCategoryFilters();
+        // Кнопка для открытия категорий
+        const categoryBtn = document.getElementById('categoryToggleBtn');
+        if (categoryBtn) {
+            categoryBtn.addEventListener('click', openCategoryModal);
+        }
         updateCatalog();
 
         const searchInput = document.getElementById('searchInput');
@@ -701,7 +723,6 @@ document.addEventListener('DOMContentLoaded', () => {
                 currentCategory = null;
                 currentSubcategory = null;
                 renderAlphabetVertical();
-                renderCategoryFilters();
                 updateCatalog();
                 if (searchInput) searchInput.focus();
             });
