@@ -1,3 +1,6 @@
+/* ================================================================
+   БАЗОВЫЕ СТИЛИ
+   ================================================================ */
 * {
     margin: 0;
     padding: 0;
@@ -5,7 +8,7 @@
 }
 
 body {
-    font-family: 'Segoe UI', system-ui, sans-serif;
+    font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
     background: #0a0a0a;
     color: #f0f0f0;
     min-height: 100vh;
@@ -23,9 +26,40 @@ h1 {
     text-align: center;
     color: #ffffff;
     margin-bottom: 25px;
+    letter-spacing: 1px;
 }
 
-/* ============= ПОИСК ============= */
+/* ================================================================
+   ОВЕРЛЕЙ ЗАГРУЗКИ (полностью перекрывает экран)
+   ================================================================ */
+#loadingOverlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: #0a0a0a; /* сплошной тёмный фон, без прозрачности */
+    z-index: 9999;
+    display: none;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+}
+#loadingOverlay .spinner {
+    width: 50px;
+    height: 50px;
+    border: 4px solid rgba(255,255,255,0.1);
+    border-top-color: #e50914;
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+}
+@keyframes spin {
+    to { transform: rotate(360deg); }
+}
+
+/* ================================================================
+   ПОИСК
+   ================================================================ */
 .search-container {
     position: relative;
     max-width: 500px;
@@ -39,6 +73,7 @@ h1 {
     border-radius: 40px;
     color: white;
     font-size: 1rem;
+    transition: border-color 0.2s;
 }
 #searchInput:focus {
     outline: none;
@@ -56,29 +91,40 @@ h1 {
     height: 24px;
     border-radius: 50%;
     cursor: pointer;
+    font-size: 0.8rem;
+    transition: background 0.2s;
 }
 .clear-btn:hover {
     background: #e50914;
 }
 
-/* ============= КНОПКА КАТЕГОРИЙ ============= */
+/* ================================================================
+   КНОПКА КАТЕГОРИЙ (на главной)
+   ================================================================ */
 .category-toggle-btn {
     display: block;
     margin: 10px auto 20px;
-    padding: 10px 24px;
-    background: #1a1a2a;
+    padding: 12px 28px;
+    background: linear-gradient(135deg, #2a2a3a, #1a1a2a);
     border: 1px solid #444;
     border-radius: 40px;
     color: #fff;
-    font-size: 0.9rem;
+    font-size: 0.95rem;
+    font-weight: 600;
     cursor: pointer;
-    text-align: center;
+    transition: all 0.25s;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.3);
 }
 .category-toggle-btn:hover {
     background: #e50914;
+    border-color: #e50914;
+    transform: scale(1.02);
+    box-shadow: 0 6px 20px rgba(229,9,20,0.3);
 }
 
-/* ============= ОТОБРАЖЕНИЕ ФИЛЬТРОВ ============= */
+/* ================================================================
+   ОТОБРАЖЕНИЕ АКТИВНЫХ ФИЛЬТРОВ
+   ================================================================ */
 .filters-info {
     text-align: center;
     font-size: 0.85rem;
@@ -94,14 +140,15 @@ h1 {
     border: 1px solid #444;
 }
 
-/* ============= СЕТКА ФИЛЬМОВ ============= */
+/* ================================================================
+   СЕТКА ФИЛЬМОВ (карточки)
+   ================================================================ */
 .films-grid {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
     gap: 16px;
     margin: 20px 0 40px;
 }
-
 .film-card {
     background: #1a1a2a;
     border-radius: 12px;
@@ -110,6 +157,11 @@ h1 {
     cursor: pointer;
     text-align: center;
     padding-bottom: 10px;
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+.film-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 8px 24px rgba(0,0,0,0.5);
 }
 .film-card img {
     width: 100%;
@@ -130,14 +182,15 @@ h1 {
     font-weight: 600;
     color: white;
 }
-
 .no-results {
     text-align: center;
     padding: 40px;
     color: #888;
 }
 
-/* ============= КНОПКИ ============= */
+/* ================================================================
+   ОСНОВНЫЕ КНОПКИ (предложить, другие проекты)
+   ================================================================ */
 .buttons-row {
     display: flex;
     justify-content: center;
@@ -146,9 +199,9 @@ h1 {
     flex-wrap: wrap;
 }
 .action-btn {
-    padding: 10px 24px;
+    padding: 12px 28px;
     border-radius: 40px;
-    font-size: 0.9rem;
+    font-size: 0.95rem;
     font-weight: 600;
     cursor: pointer;
     text-decoration: none;
@@ -158,18 +211,25 @@ h1 {
     background: #1a1a2a;
     border: 1px solid #444;
     color: white;
+    transition: all 0.25s;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.2);
 }
 .action-btn:hover {
     background: #e50914;
+    border-color: #e50914;
+    transform: scale(1.03);
+    box-shadow: 0 6px 20px rgba(229,9,20,0.3);
 }
 
-/* ============= ПЛЕЕР ============= */
+/* ================================================================
+   СТРАНИЦА ПЛЕЕРА
+   ================================================================ */
 .player-layout {
     display: flex;
     gap: 30px;
     margin: 20px 0;
     flex-wrap: wrap;
-    align-items: flex-start; /* ← добавляем, чтобы панель не растягивалась */
+    align-items: flex-start;
 }
 .film-info-panel {
     flex: 1;
@@ -179,7 +239,6 @@ h1 {
     padding: 20px;
     border: 1px solid #2a2a3a;
     text-align: center;
-    align-self: flex-start; /* уже было, оставляем */
 }
 .film-info-panel img {
     width: 100%;
@@ -205,7 +264,7 @@ h1 {
     border-radius: 10px;
 }
 
-/* Сиквелы – только над плеером */
+/* ----- Сиквелы (над плеером) ----- */
 .sequel-nav {
     display: flex;
     gap: 10px;
@@ -214,20 +273,30 @@ h1 {
     flex-wrap: wrap;
 }
 .sequel-btn {
-    padding: 6px 16px;
+    padding: 8px 18px;
     background: #2a2a3a;
-    border: 1px solid #444;
+    border: 1px solid transparent;
     border-radius: 30px;
     color: #ccc;
     cursor: pointer;
-    font-size: 0.8rem;
+    font-size: 0.85rem;
+    font-weight: 600;
+    transition: all 0.25s;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+}
+.sequel-btn:hover {
+    background: #3a3a4a;
+    color: #fff;
+    transform: translateY(-2px);
 }
 .sequel-btn.active {
     background: #e50914;
     color: #fff;
     border-color: #e50914;
+    box-shadow: 0 4px 16px rgba(229,9,20,0.4);
 }
 
+/* ----- Действия с фильмом (оценить, скачать, следующая серия) ----- */
 .film-actions {
     display: flex;
     gap: 12px;
@@ -235,22 +304,31 @@ h1 {
     flex-wrap: wrap;
     margin-top: 10px;
 }
-.rate-btn, .download-btn, .next-episode-btn {
+.rate-btn,
+.download-btn,
+.next-episode-btn {
+    padding: 10px 22px;
+    border-radius: 40px;
+    font-weight: 600;
+    font-size: 0.85rem;
+    border: none;
+    cursor: pointer;
+    transition: all 0.25s;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.2);
     display: inline-flex;
     align-items: center;
     gap: 6px;
-    padding: 8px 18px;
-    border-radius: 40px;
-    font-weight: 600;
-    cursor: pointer;
-    text-decoration: none;
-    font-size: 0.85rem;
-    border: none;
 }
 .rate-btn {
     background: #2a2a3a;
     border: 1px solid #ffc107;
     color: #ffc107;
+}
+.rate-btn:hover:not(:disabled) {
+    background: #ffc107;
+    color: #1a1a2a;
+    transform: scale(1.03);
+    box-shadow: 0 4px 16px rgba(255,193,7,0.3);
 }
 .rate-btn:disabled {
     opacity: 0.5;
@@ -261,6 +339,12 @@ h1 {
     border: 1px solid #4caf50;
     color: #4caf50;
 }
+.download-btn:hover {
+    background: #4caf50;
+    color: #0a0a0a;
+    transform: scale(1.03);
+    box-shadow: 0 4px 16px rgba(76,175,80,0.3);
+}
 .next-episode-btn {
     background: #2a2a3a;
     border: 1px solid #e50914;
@@ -268,9 +352,12 @@ h1 {
 }
 .next-episode-btn:hover {
     background: #e50914;
-    color: white;
+    color: #fff;
+    transform: scale(1.03);
+    box-shadow: 0 4px 16px rgba(229,9,20,0.3);
 }
 
+/* ----- Правая панель (плеер) ----- */
 .player-panel {
     flex: 2;
     min-width: 280px;
@@ -296,9 +383,45 @@ h1 {
     width: 100%;
     height: 100%;
 }
+
+/* ----- Навигация по сезонам и сериям ----- */
 .season-series-nav {
     margin: 15px 0;
 }
+.season-nav,
+.series-nav {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-bottom: 10px;
+}
+.season-btn,
+.series-btn {
+    padding: 8px 18px;
+    background: #2a2a3a;
+    border: 1px solid transparent;
+    border-radius: 30px;
+    color: #ccc;
+    font-size: 0.85rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.25s;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+}
+.season-btn:hover,
+.series-btn:hover {
+    background: #3a3a4a;
+    color: #fff;
+    transform: translateY(-2px);
+}
+.season-btn.active,
+.series-btn.active {
+    background: #e50914;
+    color: #fff;
+    border-color: #e50914;
+    box-shadow: 0 4px 16px rgba(229,9,20,0.4);
+}
+
 .better-version-notice {
     background: rgba(229,9,20,0.2);
     border: 1px solid #e50914;
@@ -306,40 +429,59 @@ h1 {
     padding: 8px 16px;
     text-align: center;
     font-size: 0.85rem;
+    color: #ff9999;
 }
+
+/* ----- Кнопка "Смотреть" ----- */
 .watch-btn-large {
     width: 100%;
-    padding: 14px;
-    background: #e50914;
+    padding: 16px;
+    background: linear-gradient(135deg, #e50914, #b00710);
     border: none;
     border-radius: 40px;
     color: white;
-    font-size: 1rem;
+    font-size: 1.1rem;
     font-weight: 700;
     cursor: pointer;
-    margin-top: 10px;
+    transition: all 0.25s;
+    box-shadow: 0 4px 16px rgba(229,9,20,0.3);
+    letter-spacing: 0.5px;
+}
+.watch-btn-large:hover {
+    transform: scale(1.02);
+    box-shadow: 0 6px 24px rgba(229,9,20,0.5);
+}
+.watch-btn-large:active {
+    transform: scale(0.98);
 }
 
+/* ----- Кнопка "Назад" ----- */
 .back-link {
     display: inline-flex;
     align-items: center;
     gap: 8px;
     background: #1a1a2a;
     border: 1px solid #444;
-    padding: 8px 20px;
+    padding: 10px 24px;
     border-radius: 40px;
     color: white;
     text-decoration: none;
     font-weight: 600;
-    font-size: 0.9rem;
+    font-size: 0.95rem;
     margin-bottom: 20px;
-    cursor: pointer;
+    transition: all 0.25s;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.2);
 }
 .back-link:hover {
     background: #e50914;
+    border-color: #e50914;
+    transform: translateX(-4px);
+    box-shadow: 0 6px 20px rgba(229,9,20,0.3);
 }
 
-/* ============= ОТЗЫВЫ ============= */
+/* ================================================================
+   ОТЗЫВЫ
+   ================================================================ */
 .reviews-section {
     margin-top: 30px;
     padding-top: 20px;
@@ -381,7 +523,8 @@ h1 {
     color: #777;
     font-size: 0.7rem;
 }
-.empty-suggestions, .loading-text {
+.empty-suggestions,
+.loading-text {
     text-align: center;
     color: #888;
     padding: 20px;
@@ -390,7 +533,7 @@ h1 {
 .toggle-reviews-btn {
     display: block;
     width: 100%;
-    padding: 10px;
+    padding: 12px;
     margin-top: 12px;
     background: #2a2a3a;
     border: 1px solid #444;
@@ -398,10 +541,16 @@ h1 {
     color: #ffc107;
     font-weight: 600;
     cursor: pointer;
-    text-align: center;
+    transition: all 0.25s;
+}
+.toggle-reviews-btn:hover {
+    background: #ffc107;
+    color: #1a1a2a;
 }
 
-/* ============= МОДАЛЬНЫЕ ОКНА ============= */
+/* ================================================================
+   МОДАЛЬНЫЕ ОКНА (общие)
+   ================================================================ */
 .modal {
     display: none;
     position: fixed;
@@ -409,7 +558,7 @@ h1 {
     left: 0;
     width: 100%;
     height: 100%;
-    background: rgba(0,0,0,0.8);
+    background: rgba(0,0,0,0.85);
     justify-content: center;
     align-items: center;
     z-index: 1000;
@@ -422,89 +571,82 @@ h1 {
     width: 90%;
     max-height: 80vh;
     overflow-y: auto;
+    border: 1px solid #333;
 }
 .modal-content h3 {
     font-size: 1.4rem;
     margin-bottom: 8px;
+    color: #fff;
 }
 .modal-close {
     float: right;
-    font-size: 24px;
+    font-size: 26px;
     cursor: pointer;
+    color: #aaa;
+    transition: color 0.2s;
 }
 .modal-close:hover {
     color: #e50914;
 }
-.modal-content input, .modal-content textarea {
+.modal-content input,
+.modal-content textarea {
     width: 100%;
-    padding: 10px;
-    margin-bottom: 12px;
+    padding: 12px;
+    margin-bottom: 14px;
     background: #2a2a3a;
     border: 1px solid #444;
     border-radius: 12px;
     color: white;
+    font-size: 0.95rem;
 }
+.modal-content input:focus,
+.modal-content textarea:focus {
+    outline: none;
+    border-color: #e50914;
+}
+
+/* ================================================================
+   КНОПКИ В МОДАЛКАХ
+   ================================================================ */
 .submit-suggest-btn {
     width: 100%;
-    padding: 12px;
-    background: #e50914;
+    padding: 14px;
+    background: linear-gradient(135deg, #e50914, #b00710);
     border: none;
     border-radius: 40px;
     color: white;
     font-weight: 700;
+    font-size: 1rem;
     cursor: pointer;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 8px;
+    transition: all 0.25s;
+    box-shadow: 0 4px 16px rgba(229,9,20,0.3);
+}
+.submit-suggest-btn:hover {
+    transform: scale(1.02);
+    box-shadow: 0 6px 24px rgba(229,9,20,0.5);
+}
+.submit-suggest-btn:active {
+    transform: scale(0.98);
 }
 .suggest-status {
     margin-top: 10px;
     text-align: center;
 }
-.stars-container {
-    display: flex;
-    gap: 10px;
-    justify-content: center;
-    margin: 15px 0;
-}
-.stars-container span {
-    font-size: 2.2rem;
-    cursor: pointer;
-    color: #555;
-}
-.stars-container span:hover {
-    color: #ffc107;
-}
-.rate-modal {
-    max-width: 400px;
-    text-align: center;
-}
-.spinner {
-    display: inline-block;
-    width: 16px;
-    height: 16px;
-    border: 2px solid rgba(255,255,255,0.3);
-    border-radius: 50%;
-    border-top-color: white;
-    animation: spin 0.8s linear infinite;
-}
-@keyframes spin {
-    to { transform: rotate(360deg); }
-}
 .show-suggested-btn {
     width: 100%;
-    padding: 10px;
+    padding: 12px;
     background: #2a2a3a;
     border: 1px solid #444;
     border-radius: 40px;
     color: white;
     font-weight: 600;
     cursor: pointer;
-    margin-top: 10px;
+    transition: all 0.25s;
+    margin-top: 12px;
 }
 .show-suggested-btn:hover {
     background: #e50914;
+    border-color: #e50914;
 }
 .suggestions-divider {
     height: 1px;
@@ -541,7 +683,45 @@ h1 {
     font-size: 0.7rem;
 }
 
-/* ============= КАТЕГОРИИ В МОДАЛКЕ ============= */
+/* ----- Звёзды для оценки ----- */
+.stars-container {
+    display: flex;
+    gap: 10px;
+    justify-content: center;
+    margin: 15px 0;
+}
+.stars-container span {
+    font-size: 2.2rem;
+    cursor: pointer;
+    color: #555;
+    transition: color 0.2s, transform 0.2s;
+}
+.stars-container span:hover {
+    color: #ffc107;
+    transform: scale(1.1);
+}
+.rate-modal {
+    max-width: 400px;
+    text-align: center;
+}
+
+/* ----- Спиннер (общий) ----- */
+.spinner {
+    display: inline-block;
+    width: 16px;
+    height: 16px;
+    border: 2px solid rgba(255,255,255,0.3);
+    border-radius: 50%;
+    border-top-color: white;
+    animation: spin 0.8s linear infinite;
+}
+@keyframes spin {
+    to { transform: rotate(360deg); }
+}
+
+/* ================================================================
+   КАТЕГОРИИ В МОДАЛКЕ
+   ================================================================ */
 .category-modal .category-main-list {
     display: flex;
     flex-wrap: wrap;
@@ -550,18 +730,24 @@ h1 {
     margin-bottom: 12px;
 }
 .category-modal .category-main-btn {
-    padding: 6px 16px;
+    padding: 8px 18px;
     border-radius: 30px;
     border: 1px solid #444;
     background: #1a1a2a;
     color: #aaa;
-    font-size: 0.8rem;
+    font-size: 0.85rem;
     cursor: pointer;
+    transition: all 0.25s;
+}
+.category-modal .category-main-btn:hover {
+    background: #2a2a3a;
+    color: #fff;
 }
 .category-modal .category-main-btn.active {
     background: #e50914;
     color: #fff;
     border-color: #e50914;
+    box-shadow: 0 4px 16px rgba(229,9,20,0.3);
 }
 .category-modal .category-divider {
     width: 60%;
@@ -576,21 +762,29 @@ h1 {
     justify-content: center;
 }
 .category-modal .category-sub-btn {
-    padding: 5px 14px;
+    padding: 6px 16px;
     border-radius: 30px;
     border: 1px solid #444;
     background: #111;
     color: #888;
-    font-size: 0.75rem;
+    font-size: 0.8rem;
     cursor: pointer;
+    transition: all 0.25s;
+}
+.category-modal .category-sub-btn:hover {
+    background: #2a2a3a;
+    color: #fff;
 }
 .category-modal .category-sub-btn.active {
     background: #e50914;
     color: #fff;
     border-color: #e50914;
+    box-shadow: 0 4px 16px rgba(229,9,20,0.3);
 }
 
-/* ============= АДАПТАЦИЯ ПОД ТЕЛЕФОН ============= */
+/* ================================================================
+   АДАПТАЦИЯ ПОД ТЕЛЕФОН
+   ================================================================ */
 @media (max-width: 768px) {
     body {
         padding: 10px 6px;
@@ -609,7 +803,7 @@ h1 {
     .player-layout {
         flex-direction: column;
         gap: 20px;
-        align-items: stretch; /* возвращаем растяжение для мобильных, чтобы панель была на всю ширину */
+        align-items: stretch;
     }
     .player-panel {
         order: 1;
@@ -618,7 +812,7 @@ h1 {
         order: 2;
         padding: 16px;
         margin-top: 45px;
-        align-self: stretch; /* чтобы панель растягивалась по ширине */
+        align-self: stretch;
     }
     .film-info-panel img {
         max-width: 120px;
@@ -633,8 +827,10 @@ h1 {
         gap: 8px;
         margin-top: 5px;
     }
-    .rate-btn, .download-btn, .next-episode-btn {
-        padding: 6px 14px;
+    .rate-btn,
+    .download-btn,
+    .next-episode-btn {
+        padding: 8px 14px;
         font-size: 0.75rem;
     }
     .player-panel h1 {
@@ -652,17 +848,19 @@ h1 {
         margin-top: 5px;
     }
     .back-link {
-        padding: 6px 14px;
-        font-size: 0.8rem;
+        padding: 8px 16px;
+        font-size: 0.85rem;
         margin-bottom: 15px;
     }
     .sequel-nav {
         gap: 6px;
         margin: 10px 0;
     }
-    .sequel-btn {
-        padding: 4px 12px;
-        font-size: 0.7rem;
+    .sequel-btn,
+    .season-btn,
+    .series-btn {
+        padding: 6px 12px;
+        font-size: 0.75rem;
     }
     .buttons-row {
         gap: 10px;
@@ -671,6 +869,12 @@ h1 {
         padding: 8px 16px;
         font-size: 0.8rem;
     }
+    .category-toggle-btn {
+        font-size: 0.85rem;
+        padding: 10px 20px;
+    }
+
+    /* Отключаем тяжёлые эффекты для мобильных */
     .search-container input,
     .film-card,
     .film-info-panel,
@@ -679,7 +883,8 @@ h1 {
         backdrop-filter: none !important;
         background: #1a1a2a !important;
     }
-    .container, .player-page {
+    .container,
+    .player-page {
         animation: none !important;
     }
     body {
@@ -687,6 +892,9 @@ h1 {
     }
 }
 
+/* ================================================================
+   АДАПТАЦИЯ ПОД ГОРИЗОНТАЛЬНУЮ ОРИЕНТАЦИЮ НА ТЕЛЕФОНЕ
+   ================================================================ */
 @media (max-width: 900px) and (orientation: landscape) {
     .films-grid {
         grid-template-columns: repeat(auto-fill, minmax(110px, 1fr));
@@ -697,5 +905,68 @@ h1 {
     }
     .video-wrapper {
         max-height: 55vh;
+    }
+}
+
+/* ================================================================
+   ОТКЛЮЧАЕМ HOVER НА ТАЧ-УСТРОЙСТВАХ
+   ================================================================ */
+@media (pointer: coarse) {
+    .film-card:hover,
+    .action-btn:hover,
+    .category-toggle-btn:hover,
+    .watch-btn-large:hover,
+    .back-link:hover,
+    .rate-btn:hover:not(:disabled),
+    .download-btn:hover,
+    .next-episode-btn:hover,
+    .toggle-reviews-btn:hover,
+    .show-suggested-btn:hover,
+    .modal-close:hover,
+    .clear-btn:hover,
+    .season-btn:hover,
+    .series-btn:hover,
+    .sequel-btn:hover,
+    .submit-suggest-btn:hover,
+    .category-modal .category-main-btn:hover,
+    .category-modal .category-sub-btn:hover {
+        transform: none !important;
+        background: initial !important;
+        color: initial !important;
+        border-color: initial !important;
+        box-shadow: none !important;
+    }
+    .film-card:hover {
+        transform: none !important;
+        box-shadow: none !important;
+    }
+    .rate-btn:hover:not(:disabled) {
+        background: #2a2a3a !important;
+        color: #ffc107 !important;
+    }
+    .download-btn:hover {
+        background: #2a2a3a !important;
+        color: #4caf50 !important;
+    }
+    .next-episode-btn:hover {
+        background: #2a2a3a !important;
+        color: #e50914 !important;
+    }
+    .season-btn.active,
+    .series-btn.active,
+    .sequel-btn.active {
+        background: #e50914 !important;
+        color: #fff !important;
+    }
+    .category-modal .category-main-btn.active,
+    .category-modal .category-sub-btn.active {
+        background: #e50914 !important;
+        color: #fff !important;
+    }
+    .watch-btn-large {
+        background: #e50914 !important;
+    }
+    .submit-suggest-btn {
+        background: #e50914 !important;
     }
 }
