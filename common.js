@@ -5,12 +5,10 @@ let allReviewsData = {};
 let reviewsExpanded = {};
 let currentCategory = null;
 let currentSubcategory = null;
+let bestPage = 0;
+const BEST_PER_PAGE = 10;
 
-// Карусель
-let carouselAnimId = null;
-let carouselPosition = 0;
-let carouselSpeed = 0.8; // пикселей за кадр
-let carouselPaused = false;
+// Карусель не используется (убрали)
 
 // ↓↓↓ ТВОИ ССЫЛКИ ↓↓↓
 const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycby86FMOsqBSKIP8qE_1T8W4G5mgINcSiV4z7TnIaVlHpvHR7YYROpSXrhMGO24yfT1C/exec";
@@ -111,86 +109,79 @@ function filterFilms(films) {
 
 // ============= ГЛАВНАЯ СТРАНИЦА =============
 
-// --- КАРУСЕЛЬ (бесконечная, с выездом справа) ---
-function renderTopCarousel() {
-    const container = document.getElementById('topCarousel');
+// --- ЛУЧШИЕ ФИЛЬМЫ (горизонтальный список с пагинацией) ---
+function renderBestFilms() {
+    const container = document.getElementById('bestFilmsContainer');
     if (!container) return;
 
-    const topFilms = TOP_FILMS_IDS.map(id => allFilms.find(f => f.id === id)).filter(Boolean);
-    if (topFilms.length === 0) {
+    // Фильмы, помеченные как лучшие (isTop: true)
+    const bestFilms = allFilms.filter(f => f.isTop === true);
+    if (bestFilms.length === 0) {
         container.style.display = 'none';
         return;
     }
     container.style.display = 'block';
 
-    const list = document.getElementById('topCarouselList');
-    if (!list) return;
+    const totalPages = Math.ceil(bestFilms.length / BEST_PER_PAGE);
+    if (bestPage >= totalPages) bestPage = totalPages - 1;
+    if (bestPage < 0) bestPage = 0;
 
-    // Строим двойной набор для бесконечности
-    let itemsHtml = '';
-    for (let i = 0; i < 2; i++) {
-        topFilms.forEach(film => {
-            itemsHtml += `
-                <div class="top-film-item" data-id="${film.id}">
-                    <img src="${film.poster}" alt="${film.title}" loading="lazy">
-                    <div class="top-film-title">${film.title}</div>
-                </div>
-            `;
+    const start = bestPage * BEST_PER_PAGE;
+    const end = Math.min(start + BEST_PER_PAGE, bestFilms.length);
+    const pageFilms = bestFilms.slice(start, end);
+
+    const wrapper = document.getElementById('bestFilmsWrapper');
+    wrapper.innerHTML = pageFilms.map(film => `
+        <div class="best-film-item" data-id="${film.id}">
+            <img src="${film.poster}" alt="${film.title}" loading="lazy">
+            <div class="best-film-title">${film.title}</div>
+        </div>
+    `).join('');
+
+    wrapper.querySelectorAll('.best-film-item').forEach(el => {
+        el.addEventListener('click', function() {
+            showLoading();
+            window.location.href = `player.html?id=${this.dataset.id}`;
         });
+    });
+
+    // Навигация
+    const prevBtn = document.getElementById('bestPrev');
+    const nextBtn = document.getElementById('bestNext');
+    const pageInfo = document.getElementById('bestPageInfo');
+    if (prevBtn) {
+        prevBtn.disabled = bestPage === 0;
+        prevBtn.onclick = () => { if (bestPage > 0) { bestPage--; renderBestFilms(); } };
     }
-    list.innerHTML = itemsHtml;
-
-    // Вычисляем ширину одного набора
-    const itemWidth = 130 + 16; // ширина + gap
-    const originalCount = topFilms.length;
-    const oneSetWidth = originalCount * itemWidth;
-    list.style.width = (oneSetWidth * 2) + 'px';
-
-    // Сбрасываем позицию
-    carouselPosition = 0;
-    list.style.transform = 'translateX(0px)';
-
-    // Запускаем анимацию через requestAnimationFrame
-    startCarousel(list, oneSetWidth);
+    if (nextBtn) {
+        nextBtn.disabled = bestPage >= totalPages - 1;
+        nextBtn.onclick = () => { if (bestPage < totalPages - 1) { bestPage++; renderBestFilms(); } };
+    }
+    if (pageInfo) {
+        pageInfo.textContent = `${bestPage + 1} / ${totalPages}`;
+    }
 }
 
-function startCarousel(list, oneSetWidth) {
-    if (carouselAnimId) cancelAnimationFrame(carouselAnimId);
-
-    function step() {
-        if (!carouselPaused) {
-            carouselPosition += carouselSpeed;
-            // Если дошли до конца первого набора, сбрасываем на 0 (без рывка)
-            if (carouselPosition >= oneSetWidth) {
-                carouselPosition = 0;
-                list.style.transition = 'none';
-                list.style.transform = 'translateX(0px)';
-                // Принудительный пересчёт
-                void list.offsetHeight;
-                list.style.transition = 'transform 0.05s linear';
-            } else {
-                list.style.transform = `translateX(-${carouselPosition}px)`;
-            }
+// --- ОТОБРАЖЕНИЕ ФИЛЬТРОВ ---
+function renderFiltersInfo() {
+    const container = document.getElementById('filtersInfo');
+    if (!container) return;
+    let parts = [];
+    if (currentCategory && CATEGORIES[currentCategory]) {
+        let label = CATEGORIES[currentCategory].label;
+        if (currentSubcategory && CATEGORIES[currentCategory].subcategories[currentSubcategory]) {
+            label += ' → ' + CATEGORIES[currentCategory].subcategories[currentSubcategory];
         }
-        carouselAnimId = requestAnimationFrame(step);
+        parts.push(label);
     }
-
-    carouselAnimId = requestAnimationFrame(step);
-
-    // Пауза при наведении/касании
-    const wrapper = list.closest('.top-carousel-wrapper');
-    if (wrapper) {
-        wrapper.addEventListener('mouseenter', () => { carouselPaused = true; });
-        wrapper.addEventListener('mouseleave', () => { carouselPaused = false; });
-        wrapper.addEventListener('touchstart', () => { carouselPaused = true; });
-        wrapper.addEventListener('touchend', () => { carouselPaused = false; });
+    const searchQuery = document.getElementById('searchInput')?.value?.trim();
+    if (searchQuery) {
+        parts.push(`Поиск: "${searchQuery}"`);
     }
-}
-
-function stopCarousel() {
-    if (carouselAnimId) {
-        cancelAnimationFrame(carouselAnimId);
-        carouselAnimId = null;
+    if (parts.length === 0) {
+        container.innerHTML = '<span style="color:#666;">Все фильмы</span>';
+    } else {
+        container.innerHTML = parts.map(p => `<span>${p}</span>`).join(' ');
     }
 }
 
@@ -234,6 +225,9 @@ function renderFilmsGrid(filmsToRender) {
             window.location.href = `player.html?id=${this.dataset.id}`;
         });
     });
+
+    // Обновляем фильтры
+    renderFiltersInfo();
 }
 
 function updateCatalog() {
@@ -283,6 +277,7 @@ function renderCategoryModal() {
             }
             renderCategoryModal();
             updateCatalog();
+            renderBestFilms(); // обновить лучшие, если нужно (но они не фильтруются)
         });
     });
     modal.querySelectorAll('.category-sub-btn').forEach(btn => {
@@ -320,6 +315,7 @@ function initPlayer() {
 
     loadFilmPart(film);
 
+    // Сиквелы
     if (film.sequelGroup) {
         const groupFilms = allFilms.filter(f => f.sequelGroup === film.sequelGroup)
                                    .sort((a,b) => (a.sequelOrder || 0) - (b.sequelOrder || 0));
@@ -355,7 +351,109 @@ function initPlayer() {
         document.querySelectorAll('.sequel-nav').forEach(el => el.style.display = 'none');
     }
 
+    // Кнопка "Следующая серия"
+    const nextBtn = document.getElementById('nextEpisodeBtn');
+    if (nextBtn) {
+        if (film.seasons && typeof film.seasons === 'object' && Object.keys(film.seasons).length > 0) {
+            nextBtn.style.display = 'inline-flex';
+            // Сохраняем текущее состояние сезона/серии в глобальные переменные
+            window._currentFilm = film;
+            window._currentSeason = null;
+            window._currentSeries = null;
+            // Попробуем определить текущий сезон и серию из URL параметров (если есть)
+            const seasonParam = urlParams.get('season');
+            const seriesParam = urlParams.get('series');
+            if (seasonParam && seriesParam && film.seasons[seasonParam] && film.seasons[seasonParam].series[seriesParam]) {
+                window._currentSeason = seasonParam;
+                window._currentSeries = seriesParam;
+            } else {
+                // По умолчанию первый сезон, первая серия
+                const seasonsKeys = Object.keys(film.seasons).sort();
+                if (seasonsKeys.length > 0) {
+                    const firstSeason = seasonsKeys[0];
+                    const seriesKeys = Object.keys(film.seasons[firstSeason].series).sort();
+                    if (seriesKeys.length > 0) {
+                        window._currentSeason = firstSeason;
+                        window._currentSeries = seriesKeys[0];
+                    }
+                }
+            }
+            nextBtn.onclick = function() {
+                goToNextEpisode(film);
+            };
+        } else {
+            nextBtn.style.display = 'none';
+        }
+    }
+
     hideLoading();
+}
+
+function goToNextEpisode(film) {
+    if (!film.seasons) return;
+    const seasonsKeys = Object.keys(film.seasons).sort();
+    if (seasonsKeys.length === 0) return;
+
+    let currentSeason = window._currentSeason;
+    let currentSeries = window._currentSeries;
+
+    // Если не заданы, берём первый сезон, первую серию
+    if (!currentSeason || !currentSeries) {
+        currentSeason = seasonsKeys[0];
+        const seriesKeys = Object.keys(film.seasons[currentSeason].series).sort();
+        if (seriesKeys.length === 0) return;
+        currentSeries = seriesKeys[0];
+    }
+
+    const seasonObj = film.seasons[currentSeason];
+    const seriesKeys = Object.keys(seasonObj.series).sort();
+    const currentIndex = seriesKeys.indexOf(currentSeries);
+    let nextSeries = null;
+    let nextSeason = currentSeason;
+
+    if (currentIndex < seriesKeys.length - 1) {
+        // Есть следующая серия в текущем сезоне
+        nextSeries = seriesKeys[currentIndex + 1];
+    } else {
+        // Ищем следующий сезон
+        const currentSeasonIndex = seasonsKeys.indexOf(currentSeason);
+        if (currentSeasonIndex < seasonsKeys.length - 1) {
+            nextSeason = seasonsKeys[currentSeasonIndex + 1];
+            const nextSeriesKeys = Object.keys(film.seasons[nextSeason].series).sort();
+            if (nextSeriesKeys.length > 0) {
+                nextSeries = nextSeriesKeys[0];
+            }
+        }
+    }
+
+    if (nextSeries) {
+        // Переключаем на следующую серию
+        window._currentSeason = nextSeason;
+        window._currentSeries = nextSeries;
+        const newVideoUrl = film.seasons[nextSeason].series[nextSeries].videoUrl;
+        if (newVideoUrl) {
+            const iframe = document.getElementById('driveIframe');
+            if (iframe) {
+                iframe.src = getEmbedUrl(newVideoUrl);
+            }
+            // Обновить активные кнопки сезонов/серий (если они есть)
+            updateSeasonSeriesUI(film, nextSeason, nextSeries);
+        }
+    } else {
+        alert('Это последняя серия!');
+    }
+}
+
+function updateSeasonSeriesUI(film, seasonKey, seriesKey) {
+    // Если есть навигация по сезонам/сериям – обновить активные классы
+    const seasonBtns = document.querySelectorAll('.season-btn');
+    const seriesBtns = document.querySelectorAll('.series-btn');
+    seasonBtns.forEach(btn => {
+        btn.classList.toggle('active', btn.dataset.season === seasonKey);
+    });
+    seriesBtns.forEach(btn => {
+        btn.classList.toggle('active', btn.dataset.series === seriesKey);
+    });
 }
 
 function switchSequel(id) {
@@ -365,6 +463,32 @@ function switchSequel(id) {
         loadFilmPart(newFilm);
         document.querySelectorAll('.sequel-btn').forEach(b => b.classList.remove('active'));
         document.querySelectorAll(`.sequel-btn[data-id="${newFilm.id}"]`).forEach(b => b.classList.add('active'));
+        // Сбросить состояние серий
+        window._currentFilm = newFilm;
+        window._currentSeason = null;
+        window._currentSeries = null;
+        // Инициализировать кнопку "Следующая серия" заново
+        const nextBtn = document.getElementById('nextEpisodeBtn');
+        if (nextBtn) {
+            if (newFilm.seasons && typeof newFilm.seasons === 'object' && Object.keys(newFilm.seasons).length > 0) {
+                nextBtn.style.display = 'inline-flex';
+                // Устанавливаем начальные значения
+                const seasonsKeys = Object.keys(newFilm.seasons).sort();
+                if (seasonsKeys.length > 0) {
+                    const firstSeason = seasonsKeys[0];
+                    const seriesKeys = Object.keys(newFilm.seasons[firstSeason].series).sort();
+                    if (seriesKeys.length > 0) {
+                        window._currentSeason = firstSeason;
+                        window._currentSeries = seriesKeys[0];
+                    }
+                }
+                nextBtn.onclick = function() {
+                    goToNextEpisode(newFilm);
+                };
+            } else {
+                nextBtn.style.display = 'none';
+            }
+        }
     }
 }
 
@@ -387,26 +511,99 @@ function loadFilmPart(film) {
     initRatingModal(film);
 
     const seasonNav = document.getElementById('seasonSeriesNav');
-    if (!film.betterVersionReady && film.betterVersionDate && film.betterVersionDate !== 'null') {
-        const formatted = formatDate(film.betterVersionDate);
-        seasonNav.innerHTML = `<div class="better-version-notice">🎥 Улучшенная версия выйдет ${formatted || 'скоро'}</div>`;
-    } else if (!film.betterVersionReady && film.betterVersionDate === null) {
-        seasonNav.innerHTML = `<div class="better-version-notice">🎥 Улучшенная версия скоро</div>`;
+    // Если есть сезоны, показываем кнопки выбора сезона/серии
+    if (film.seasons && typeof film.seasons === 'object' && Object.keys(film.seasons).length > 0) {
+        const seasonsKeys = Object.keys(film.seasons).sort();
+        let html = '<div class="season-nav">';
+        seasonsKeys.forEach(sKey => {
+            html += `<button class="season-btn ${sKey === window._currentSeason ? 'active' : ''}" data-season="${sKey}">${film.seasons[sKey].title || 'Сезон '+sKey}</button>`;
+        });
+        html += '</div>';
+        // Показываем серии текущего сезона
+        if (window._currentSeason && film.seasons[window._currentSeason]) {
+            const seriesKeys = Object.keys(film.seasons[window._currentSeason].series).sort();
+            html += '<div class="series-nav">';
+            seriesKeys.forEach(srKey => {
+                html += `<button class="series-btn ${srKey === window._currentSeries ? 'active' : ''}" data-series="${srKey}">${film.seasons[window._currentSeason].series[srKey].title || 'Серия '+srKey}</button>`;
+            });
+            html += '</div>';
+        }
+        seasonNav.innerHTML = html;
+        // Обработчики для сезонов
+        seasonNav.querySelectorAll('.season-btn').forEach(btn => {
+            btn.addEventListener('click', function() {
+                const sKey = this.dataset.season;
+                if (film.seasons[sKey]) {
+                    window._currentSeason = sKey;
+                    const seriesKeys = Object.keys(film.seasons[sKey].series).sort();
+                    if (seriesKeys.length > 0) {
+                        window._currentSeries = seriesKeys[0];
+                        // Обновить видео
+                        const videoUrl = film.seasons[sKey].series[window._currentSeries].videoUrl;
+                        if (videoUrl) {
+                            const iframe = document.getElementById('driveIframe');
+                            if (iframe) iframe.src = getEmbedUrl(videoUrl);
+                        }
+                        // Перерисовать навигацию
+                        loadFilmPart(film); // рекурсивно обновим, чтобы обновить кнопки серий
+                    }
+                }
+            });
+        });
+        // Обработчики для серий
+        seasonNav.querySelectorAll('.series-btn').forEach(btn => {
+            btn.addEventListener('click', function() {
+                const srKey = this.dataset.series;
+                if (window._currentSeason && film.seasons[window._currentSeason] && film.seasons[window._currentSeason].series[srKey]) {
+                    window._currentSeries = srKey;
+                    const videoUrl = film.seasons[window._currentSeason].series[srKey].videoUrl;
+                    if (videoUrl) {
+                        const iframe = document.getElementById('driveIframe');
+                        if (iframe) iframe.src = getEmbedUrl(videoUrl);
+                    }
+                    // Обновить активные классы
+                    seasonNav.querySelectorAll('.series-btn').forEach(b => b.classList.toggle('active', b.dataset.series === srKey));
+                }
+            });
+        });
     } else {
-        seasonNav.innerHTML = '';
+        // Если нет сезонов, показываем улучшенную версию или ничего
+        if (!film.betterVersionReady && film.betterVersionDate && film.betterVersionDate !== 'null') {
+            const formatted = formatDate(film.betterVersionDate);
+            seasonNav.innerHTML = `<div class="better-version-notice">🎥 Улучшенная версия выйдет ${formatted || 'скоро'}</div>`;
+        } else if (!film.betterVersionReady && film.betterVersionDate === null) {
+            seasonNav.innerHTML = `<div class="better-version-notice">🎥 Улучшенная версия скоро</div>`;
+        } else {
+            seasonNav.innerHTML = '';
+        }
     }
 
+    // Видео (если есть videoUrl и нет сезонов, иначе уже загружено через сезоны)
     const iframe = document.getElementById('driveIframe');
     const watchBtn = document.getElementById('watchBtn');
-    if (iframe && film.videoUrl) {
+    if (iframe && film.videoUrl && !film.seasons) {
         const embedUrl = getEmbedUrl(film.videoUrl);
         iframe.src = embedUrl;
         watchBtn.onclick = function() {
             iframe.src = '';
             setTimeout(() => { iframe.src = embedUrl; }, 100);
         };
-    } else {
-        if (watchBtn) watchBtn.style.display = 'none';
+    } else if (iframe && film.seasons) {
+        // Если есть сезоны, но видео не загружено – загружаем первый сезон, первую серию
+        const seasonsKeys = Object.keys(film.seasons).sort();
+        if (seasonsKeys.length > 0) {
+            const firstSeason = seasonsKeys[0];
+            const seriesKeys = Object.keys(film.seasons[firstSeason].series).sort();
+            if (seriesKeys.length > 0) {
+                const firstSeries = seriesKeys[0];
+                const videoUrl = film.seasons[firstSeason].series[firstSeries].videoUrl;
+                if (videoUrl) {
+                    iframe.src = getEmbedUrl(videoUrl);
+                }
+                window._currentSeason = firstSeason;
+                window._currentSeries = firstSeries;
+            }
+        }
     }
 }
 
@@ -668,7 +865,7 @@ document.addEventListener('DOMContentLoaded', () => {
     if (typeof FILMS_CATALOG !== 'undefined') allFilms = [...FILMS_CATALOG];
 
     if (document.getElementById('filmsGrid')) {
-        renderTopCarousel();
+        renderBestFilms();
         const categoryBtn = document.getElementById('categoryToggleBtn');
         if (categoryBtn) categoryBtn.addEventListener('click', openCategoryModal);
         updateCatalog();
