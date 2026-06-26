@@ -51,6 +51,7 @@ const CATEGORIES = {
             sequel: "Сиквел",
             prequel: "Приквел",
             spinOff: "Спин-офф",
+            sciFi: "Фантастика",
             other: "Другое"
         }
     },
@@ -136,15 +137,50 @@ const FILMS_CATALOG = [
         poster: "posters/ждун2.png",
         seasons: "none",
         videoUrl: "https://drive.usercontent.google.com/download?id=11dKW3RGr1td0_P8HWp_O7F5mGyFQSEZR&export=download&authuser=0",
-        downloadUrl: "https://drive.usercontent.google.com/download?id=11dKW3RGr1td0_P8HWp_O7F5mGyFQSEZR&export=download&authuser=0",
-        betterVersionReady: false,
-        betterVersionDate: "2026-04-07",
+        downloadUrl: null,
+        betterVersionReady: true,
+        betterVersionDate: null,
         releaseDate: null,
         comingSoon: false,
         category: "sequel",
-        subcategory: "sequel"
+        subcategory: "sciFi"
     },
 
+    // --------- САШАТАНЯ ---------
+    {
+    id: "sashatanya",
+    title: "СашаТаня",
+    searchTerms: ["сашатаня", "саша", "таня", "сашенька", "таненька", "сашка", "таньяка", "гена", "алешка", "алёшка"],
+    description: "Чуть длиннее:
+
+Сериал «СашаТаня» — это продолжение «Универа», в котором главные герои после свадьбы пытаются построить самостоятельную жизнь в съёмной квартире за МКАДом. У них рождается сын Алёша, появляются ипотечные долги и вечные бытовые проблемы. Главный конфликт — борьба Саши за независимость от своего богатого отца-олигарха Сильвестра, который постоянно вмешивается в их жизнь, предлагая лёгкие деньги, но Саша упрямо хочет всего добиться сам. Всё это подаётся через житейские комедийные ситуации, ссоры, примирения и попытки сохранить романтику в браке.",
+    poster: "posters/сашатаня.jpg",
+    seasons: {
+        "1": {
+            title: "Сезон 1",
+            series: {
+                "1": { title: "Серия 1 - Начало", videoUrl: "https://vkvideo.ru/video_ext.php?oid=-XXX&id=XXX&hash=XXX&hd=4" },
+                "2": { title: "Серия 2 - Продолжение", videoUrl: "https://vkvideo.ru/video_ext.php?oid=-XXX&id=XXX&hash=XXX&hd=4" },
+                "3": { title: "Серия 3 - Финал", videoUrl: "https://vkvideo.ru/video_ext.php?oid=-XXX&id=XXX&hash=XXX&hd=4" }
+            }
+        },
+        "2": {
+            title: "Сезон 2",
+            series: {
+                "1": { title: "Серия 1", videoUrl: "https://vkvideo.ru/video_ext.php?oid=-XXX&id=XXX&hash=XXX&hd=4" },
+                "2": { title: "Серия 2", videoUrl: "https://vkvideo.ru/video_ext.php?oid=-XXX&id=XXX&hash=XXX&hd=4" }
+            }
+        }
+    },
+    downloadUrl: null,
+    betterVersionReady: false,
+    betterVersionDate: "2026-08-01",
+    releaseDate: null,
+    comingSoon: false,
+    category: "serial",
+    subcategory: "drama"
+},
+    
     // ---------- ДРУГИЕ ----------
     {
         id: "obsessiya",
