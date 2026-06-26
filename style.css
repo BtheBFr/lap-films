@@ -6,7 +6,7 @@
 
 body {
     font-family: 'Segoe UI', system-ui, sans-serif;
-    background: #0a0a0a; /* почти чёрный */
+    background: #0a0a0a;
     color: #f0f0f0;
     min-height: 100vh;
     padding: 20px 10px;
@@ -203,6 +203,7 @@ h1 {
     border-radius: 10px;
 }
 
+/* Сиквелы – теперь только над плеером, этот класс используется для обоих блоков */
 .sequel-nav {
     display: flex;
     gap: 10px;
@@ -614,7 +615,7 @@ h1 {
     .film-info-panel {
         order: 2; /* постер и описание вниз */
         padding: 16px;
-        margin-top: 10px;
+        margin-top: 25px; /* отступ от кнопки "Смотреть" */
     }
     .film-info-panel img {
         max-width: 120px;
@@ -645,15 +646,17 @@ h1 {
     .watch-btn-large {
         padding: 14px;
         font-size: 1rem;
-        margin-top: 5px; /* уменьшили отступ сверху, чтобы кнопка была ближе к видео */
+        margin-top: 5px;
     }
     .back-link {
         padding: 6px 14px;
         font-size: 0.8rem;
         margin-bottom: 15px;
     }
+    /* Сиквелы – адаптация, они теперь только над плеером */
     .sequel-nav {
         gap: 6px;
+        margin: 10px 0;
     }
     .sequel-btn {
         padding: 4px 12px;
