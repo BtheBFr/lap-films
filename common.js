@@ -4,27 +4,28 @@ let allFilms = [];
 let currentRating = 0;
 let allReviewsData = {};
 let reviewsExpanded = {};
-let currentCategory = null;   // выбранная главная категория (ключ)
-let currentSubcategory = null; // выбранная подкатегория (ключ)
-let currentLetter = null;     // выбранная буква
+let currentCategory = null;
+let currentSubcategory = null;
+let currentLetter = null;
+
+// Для автопрокрутки
+let topCarouselInterval = null;
+let topCarouselIndex = 0;
+let topCarouselItems = [];
 
 // ↓↓↓ ТВОИ ССЫЛКИ (ВСТАВЬ СВОИ) ↓↓↓
 const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycby86FMOsqBSKIP8qE_1T8W4G5mgINcSiV4z7TnIaVlHpvHR7YYROpSXrhMGO24yfT1C/exec";
 const GOOGLE_RATINGS_URL = "https://script.google.com/macros/s/AKfycbyQjl03vdNZEjtyab3faMS-wD22urPYlWqb_mJjX0l0b8qsYwiZDuVmjPLs4-UQ8jj5/exec";
 
-// ============= ПОДДЕРЖКА DAILYMOTION, YOUTUBE, GOOGLE DRIVE =============
+// ============= ПОДДЕРЖКА ВИДЕО (YOUTUBE, DAILYMOTION, GOOGLE DRIVE) =============
 function getEmbedUrl(videoPath) {
     if (!videoPath) return '';
-    
-    // YouTube
     if (videoPath.includes('youtube.com/watch') || videoPath.includes('youtu.be/')) {
         return convertToYouTubeEmbed(videoPath);
     }
     if (videoPath.includes('youtube.com/embed/')) {
         return videoPath;
     }
-    
-    // Dailymotion
     if (videoPath.includes('dailymotion.com') || videoPath.includes('dai.ly')) {
         let videoId = null;
         let match = videoPath.match(/dailymotion\.com\/video\/([a-zA-Z0-9]+)/);
@@ -38,12 +39,9 @@ function getEmbedUrl(videoPath) {
         }
         return videoPath;
     }
-    
-    // Google Drive
     if (videoPath.includes('drive.google.com') || videoPath.includes('drive.usercontent.google.com')) {
         return convertToDriveEmbed(videoPath);
     }
-    
     return '';
 }
 
@@ -122,10 +120,12 @@ function filterFilms(films) {
 }
 
 // ============= РЕНДЕР ГЛАВНОЙ СТРАНИЦЫ =============
+
+// --- ТОП-ЛЕНТА с автопрокруткой ---
 function renderTopCarousel() {
     const container = document.getElementById('topCarousel');
     if (!container) return;
-    
+
     const topFilms = TOP_FILMS_IDS.map(id => allFilms.find(f => f.id === id)).filter(Boolean);
     if (topFilms.length === 0) {
         container.style.display = 'none';
@@ -134,35 +134,82 @@ function renderTopCarousel() {
     container.style.display = 'block';
     const carousel = document.getElementById('topCarouselList');
     if (!carousel) return;
-    
-    carousel.innerHTML = topFilms.map(film => `
+
+    // Строим список: добавляем клон для бесконечности
+    const items = [];
+    topFilms.forEach(film => {
+        items.push(film);
+    });
+    // Если больше 1, дублируем для плавной прокрутки
+    if (items.length > 1) {
+        // Добавляем копию в конец
+        topFilms.forEach(film => items.push(film));
+    }
+    topCarouselItems = items;
+
+    carousel.innerHTML = items.map(film => `
         <div class="top-film-item" data-id="${film.id}">
             <img src="${film.poster}" alt="${film.title}" loading="lazy">
             <div class="top-film-title">${film.title}</div>
         </div>
     `).join('');
-    
+
+    // Обработчик клика
     document.querySelectorAll('.top-film-item').forEach(item => {
         item.addEventListener('click', () => {
             window.location.href = `player.html?id=${item.dataset.id}`;
         });
     });
+
+    // Запускаем автопрокрутку
+    startAutoScroll();
 }
 
+function startAutoScroll() {
+    if (topCarouselInterval) clearInterval(topCarouselInterval);
+    const carousel = document.getElementById('topCarouselList');
+    if (!carousel || topCarouselItems.length <= 1) return;
+
+    const itemWidth = 140 + 16; // ширина + gap
+    const totalWidth = itemWidth * (topCarouselItems.length / 2); // ширина одного набора
+    let position = 0;
+
+    topCarouselInterval = setInterval(() => {
+        position += 1;
+        if (position >= totalWidth) {
+            position = 0;
+            carousel.style.transition = 'none';
+            carousel.style.transform = `translateX(0px)`;
+            // Форсируем рефлоу
+            void carousel.offsetHeight;
+            carousel.style.transition = 'transform 0.5s ease';
+        }
+        carousel.style.transform = `translateX(-${position}px)`;
+    }, 30); // 30ms ~ плавно
+}
+
+function stopAutoScroll() {
+    if (topCarouselInterval) {
+        clearInterval(topCarouselInterval);
+        topCarouselInterval = null;
+    }
+}
+
+// --- СЕТКА ФИЛЬМОВ ---
 function renderFilmsGrid(filmsToRender) {
     const grid = document.getElementById('filmsGrid');
     if (!grid) return;
-    
+
     const filtered = filterFilms(filmsToRender);
     const sorted = [...filtered].sort((a, b) => a.title.localeCompare(b.title, 'ru'));
-    
+
     if (sorted.length === 0) {
         grid.innerHTML = '';
         document.getElementById('noResults').style.display = 'block';
         return;
     }
     document.getElementById('noResults').style.display = 'none';
-    
+
     grid.innerHTML = sorted.map(film => {
         let comingBadge = '';
         if (film.comingSoon === true) {
@@ -183,7 +230,7 @@ function renderFilmsGrid(filmsToRender) {
             </div>
         `;
     }).join('');
-    
+
     document.querySelectorAll('.film-card').forEach(card => {
         card.addEventListener('click', () => {
             window.location.href = `player.html?id=${card.dataset.id}`;
@@ -197,23 +244,65 @@ function updateCatalog() {
     renderFilmsGrid(searched);
 }
 
-// ============= АЛФАВИТ =============
-function renderAlphabet() {
-    const container = document.getElementById('alphabetContainer');
+// ============= ВЕРТИКАЛЬНЫЙ АЛФАВИТ (с touch) =============
+function renderAlphabetVertical() {
+    const container = document.getElementById('alphabetVertical');
     if (!container) return;
     const letters = 'АБВГДЕЁЖЗИЙКЛМНОПРСТУФХЦЧШЩЪЫЬЭЮЯ'.split('');
     container.innerHTML = letters.map(letter => `
-        <span class="alphabet-letter ${currentLetter === letter ? 'active' : ''}" data-letter="${letter}">${letter}</span>
+        <span class="letter ${currentLetter === letter ? 'active' : ''}" data-letter="${letter}">${letter}</span>
     `).join('');
-    container.querySelectorAll('.alphabet-letter').forEach(el => {
+
+    // Обработчики кликов и touch
+    const letterElements = container.querySelectorAll('.letter');
+    letterElements.forEach(el => {
         el.addEventListener('click', () => {
-            const letter = el.dataset.letter;
-            if (currentLetter === letter) currentLetter = null;
-            else currentLetter = letter;
-            updateCatalog();
-            renderAlphabet();
+            selectLetter(el.dataset.letter);
         });
     });
+
+    // Touch-поддержка (как в контактах)
+    let touchTimeout = null;
+    container.addEventListener('touchstart', (e) => {
+        const target = document.elementFromPoint(e.touches[0].clientX, e.touches[0].clientY);
+        if (target && target.classList.contains('letter')) {
+            selectLetter(target.dataset.letter);
+        }
+        // Запоминаем начальную позицию для скролла
+        container.dataset.startY = e.touches[0].clientY;
+    }, { passive: true });
+
+    container.addEventListener('touchmove', (e) => {
+        e.preventDefault(); // чтобы не скроллилась страница при касании алфавита
+        const touch = e.touches[0];
+        const target = document.elementFromPoint(touch.clientX, touch.clientY);
+        if (target && target.classList.contains('letter')) {
+            selectLetter(target.dataset.letter);
+        }
+    }, { passive: false });
+
+    container.addEventListener('touchend', () => {
+        // можно ничего не делать
+    }, { passive: true });
+}
+
+function selectLetter(letter) {
+    if (currentLetter === letter) {
+        currentLetter = null;
+    } else {
+        currentLetter = letter;
+    }
+    // Обновить активный класс
+    document.querySelectorAll('.alphabet-vertical .letter').forEach(el => {
+        el.classList.toggle('active', el.dataset.letter === currentLetter);
+    });
+    // Обновить сетку
+    updateCatalog();
+    // Прокрутить к сетке (для удобства)
+    const grid = document.getElementById('filmsGrid');
+    if (grid) {
+        grid.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
 }
 
 // ============= КАТЕГОРИИ =============
@@ -262,7 +351,7 @@ function renderCategoryFilters() {
     });
 }
 
-// ============= ОТЗЫВЫ =============
+// ============= ОТЗЫВЫ (без изменений) =============
 async function loadReviews(filmId) {
     const container = document.getElementById('reviewsList');
     if (!container) return;
@@ -330,15 +419,13 @@ function escapeHtml(str) {
     return str.replace(/[&<>]/g, m => ({ '&':'&amp;', '<':'&lt;', '>':'&gt;' }[m]));
 }
 
-// ============= ОЦЕНКИ =============
+// ============= ОЦЕНКИ (без изменений) =============
 function hasUserRated(filmId) {
     return localStorage.getItem(`rated_${filmId}`) === 'true';
 }
-
 function markAsRated(filmId) {
     localStorage.setItem(`rated_${filmId}`, 'true');
 }
-
 async function sendRating(filmId, filmTitle, rating, review) {
     if (hasUserRated(filmId)) {
         return { success: false, message: "Вы уже оценили этот фильм. Спасибо!" };
@@ -366,7 +453,6 @@ function initRatingModal(film) {
     const reviewText = document.getElementById('reviewText');
     const statusDiv = document.getElementById('ratingStatus');
     if (!rateBtn || !modal) return;
-    // сброс состояния при смене фильма
     if (hasUserRated(film.id)) {
         rateBtn.disabled = true;
         rateBtn.style.opacity = '0.5';
@@ -434,7 +520,7 @@ function initRatingModal(film) {
     };
 }
 
-// ============= ПЛЕЕР С ПОДДЕРЖКОЙ СИКВЕЛОВ =============
+// ============= ПЛЕЕР С СИКВЕЛАМИ (без изменений) =============
 function initPlayer() {
     const urlParams = new URLSearchParams(window.location.search);
     const filmId = urlParams.get('id');
@@ -447,11 +533,7 @@ function initPlayer() {
         window.location.href = 'index.html'; 
         return; 
     }
-    
-    // Загружаем информацию о фильме
     loadFilmPart(film);
-    
-    // Обработка сиквелов: если есть группа, показываем переключатель
     const sequelNav = document.getElementById('sequelNav');
     if (sequelNav && film.sequelGroup) {
         const groupFilms = allFilms.filter(f => f.sequelGroup === film.sequelGroup)
@@ -465,10 +547,8 @@ function initPlayer() {
                 btn.addEventListener('click', () => {
                     const newFilm = allFilms.find(f => f.id === btn.dataset.id);
                     if (newFilm) {
-                        // обновляем URL без перезагрузки (опционально)
                         history.pushState(null, '', `?id=${newFilm.id}`);
                         loadFilmPart(newFilm);
-                        // обновляем активный класс
                         sequelNav.querySelectorAll('.sequel-btn').forEach(b => b.classList.remove('active'));
                         btn.classList.add('active');
                     }
@@ -483,12 +563,9 @@ function initPlayer() {
 }
 
 function loadFilmPart(film) {
-    // Обновляем основные элементы
     document.getElementById('filmTitle').textContent = film.title;
     document.getElementById('filmPoster').src = film.poster;
     document.getElementById('filmDescription').textContent = film.description || '';
-    
-    // Кнопка скачивания
     const downloadBtn = document.getElementById('downloadBtn');
     if (downloadBtn) {
         if (film.downloadUrl && film.videoUrl && film.videoUrl.includes('drive.google.com')) {
@@ -498,14 +575,8 @@ function loadFilmPart(film) {
             downloadBtn.style.display = 'none';
         }
     }
-    
-    // Загружаем отзывы для этого фильма
     loadReviews(film.id);
-    
-    // Инициализируем модалку оценки (сбрасываем состояние)
     initRatingModal(film);
-    
-    // Обновляем информацию об улучшенной версии
     const seasonNav = document.getElementById('seasonSeriesNav');
     if (!film.betterVersionReady && film.betterVersionDate && film.betterVersionDate !== 'null') {
         const formattedDate = formatDate(film.betterVersionDate);
@@ -519,17 +590,12 @@ function loadFilmPart(film) {
     } else {
         seasonNav.innerHTML = '';
     }
-    
-    // Видео
     const watchBtn = document.getElementById('watchBtn');
     const iframe = document.getElementById('driveIframe');
     if (watchBtn && iframe && film.videoUrl) {
         watchBtn.onclick = () => {
-            const embedUrl = getEmbedUrl(film.videoUrl);
-            iframe.src = embedUrl;
+            iframe.src = getEmbedUrl(film.videoUrl);
         };
-        // Если хотите авто-загрузку при смене части, можно раскомментировать:
-        // iframe.src = getEmbedUrl(film.videoUrl);
     }
 }
 
@@ -641,9 +707,10 @@ document.addEventListener('DOMContentLoaded', () => {
     
     if (document.getElementById('filmsGrid')) {
         renderTopCarousel();
-        renderAlphabet();
+        renderAlphabetVertical();
         renderCategoryFilters();
         updateCatalog();
+        
         const searchInput = document.getElementById('searchInput');
         const clearBtn = document.getElementById('searchClear');
         if (searchInput) {
@@ -660,7 +727,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 currentLetter = null;
                 currentCategory = null;
                 currentSubcategory = null;
-                renderAlphabet();
+                renderAlphabetVertical();
                 renderCategoryFilters();
                 updateCatalog();
                 if (searchInput) searchInput.focus();
