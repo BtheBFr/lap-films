@@ -169,6 +169,7 @@ h1 {
     gap: 30px;
     margin: 20px 0;
     flex-wrap: wrap;
+    align-items: flex-start; /* ← добавляем, чтобы панель не растягивалась */
 }
 .film-info-panel {
     flex: 1;
@@ -178,6 +179,7 @@ h1 {
     padding: 20px;
     border: 1px solid #2a2a3a;
     text-align: center;
+    align-self: flex-start; /* уже было, оставляем */
 }
 .film-info-panel img {
     width: 100%;
@@ -604,18 +606,19 @@ h1 {
         font-size: 0.75rem;
     }
 
-    /* Плеер: видео и кнопка сверху, постер и описание снизу */
     .player-layout {
         flex-direction: column;
         gap: 20px;
+        align-items: stretch; /* возвращаем растяжение для мобильных, чтобы панель была на всю ширину */
     }
     .player-panel {
-        order: 1; /* видео наверх */
+        order: 1;
     }
     .film-info-panel {
-        order: 2; /* постер и описание вниз */
+        order: 2;
         padding: 16px;
-        margin-top: 45px; /* ↑↑↑ УВЕЛИЧИЛ ОТСТУП, ЧТОБЫ ОПУСТИТЬ ПАНЕЛЬ ЕЩЁ НИЖЕ ↑↑↑ */
+        margin-top: 45px;
+        align-self: stretch; /* чтобы панель растягивалась по ширине */
     }
     .film-info-panel img {
         max-width: 120px;
@@ -668,7 +671,6 @@ h1 {
         padding: 8px 16px;
         font-size: 0.8rem;
     }
-    /* Убираем тяжёлые эффекты */
     .search-container input,
     .film-card,
     .film-info-panel,
