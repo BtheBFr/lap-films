@@ -9,7 +9,7 @@ let currentLetter = null;
 
 // Для бесконечной карусели
 let topCarouselInterval = null;
-let topCarouselSpeed = 1; // пикселей за кадр
+let topCarouselSpeed = 1.5; // пикселей за кадр (чуть быстрее)
 let topCarouselPaused = false;
 
 // ↓↓↓ ТВОИ ССЫЛКИ (ВСТАВЬ СВОИ) ↓↓↓
@@ -117,7 +117,7 @@ function filterFilms(films) {
 
 // ============= ГЛАВНАЯ СТРАНИЦА =============
 
-// --- БЕСКОНЕЧНАЯ ТОП-ЛЕНТА ---
+// --- БЕСКОНЕЧНАЯ ТОП-ЛЕНТА (движение влево) ---
 function renderTopCarousel() {
     const container = document.getElementById('topCarousel');
     if (!container) return;
@@ -132,8 +132,8 @@ function renderTopCarousel() {
     const list = document.getElementById('topCarouselList');
     if (!list) return;
 
-    // Строим бесконечный список (дублируем несколько раз для плавности)
-    const cloneCount = 3; // повторим 3 раза для длинной ленты
+    // Строим бесконечный список (дублируем 3 раза)
+    const cloneCount = 3;
     let itemsHtml = '';
     for (let i = 0; i < cloneCount; i++) {
         topFilms.forEach(film => {
@@ -146,43 +146,42 @@ function renderTopCarousel() {
         });
     }
     list.innerHTML = itemsHtml;
-    // Общая ширина = кол-во элементов * (ширина + gap)
-    const totalItems = topFilms.length * cloneCount;
     const itemWidth = 140 + 16; // ширина + gap
+    const totalItems = topFilms.length * cloneCount;
     const totalWidth = totalItems * itemWidth;
     list.style.width = totalWidth + 'px';
 
-    // Запускаем анимацию
+    // Запускаем движение влево
     startCarousel(list, itemWidth, topFilms.length);
 }
 
 function startCarousel(list, itemWidth, originalCount) {
     if (topCarouselInterval) clearInterval(topCarouselInterval);
     let position = 0;
-    const maxPosition = (originalCount * 2) * itemWidth; // прокручиваем до середины второго набора
+    // Максимальная позиция = половина ширины (чтобы уйти в бесконечность)
+    const maxPosition = (originalCount * 2) * itemWidth;
 
     topCarouselInterval = setInterval(() => {
         if (!topCarouselPaused) {
             position += topCarouselSpeed;
             if (position >= maxPosition) {
                 position = 0;
-                // Мгновенный сброс без анимации
+                // Мгновенный сброс
                 list.style.transition = 'none';
                 list.style.transform = 'translateX(0px)';
-                void list.offsetHeight; // форсируем рефлоу
+                void list.offsetHeight;
                 list.style.transition = 'transform 0.5s ease';
             } else {
                 list.style.transform = `translateX(-${position}px)`;
             }
         }
-    }, 16); // ~60fps
+    }, 16);
 
-    // Пауза при наведении
+    // Пауза при наведении/касании
     const wrapper = list.closest('.top-carousel-wrapper');
     if (wrapper) {
         wrapper.addEventListener('mouseenter', () => { topCarouselPaused = true; });
         wrapper.addEventListener('mouseleave', () => { topCarouselPaused = false; });
-        // На телефонах касание тоже ставит на паузу? Можно добавить touchstart/touchend
         wrapper.addEventListener('touchstart', () => { topCarouselPaused = true; });
         wrapper.addEventListener('touchend', () => { topCarouselPaused = false; });
     }
@@ -260,16 +259,14 @@ function renderAlphabetVertical() {
             } else {
                 currentLetter = letter;
             }
-            // Обновить классы
             container.querySelectorAll('.letter').forEach(l => l.classList.toggle('active', l.dataset.letter === currentLetter));
             updateCatalog();
-            // Прокрутить к сетке
             document.getElementById('filmsGrid').scrollIntoView({ behavior: 'smooth', block: 'start' });
         });
     });
 }
 
-// --- КАТЕГОРИИ ---
+// --- КАТЕГОРИИ (с разделителем) ---
 function renderCategoryFilters() {
     const container = document.getElementById('categoryFilters');
     if (!container) return;
@@ -280,6 +277,8 @@ function renderCategoryFilters() {
         html += `<button class="category-main-btn ${currentCategory === key ? 'active' : ''}" data-category="${key}">${CATEGORIES[key].label}</button>`;
     });
     html += `</div>`;
+    // Разделитель
+    html += `<div class="category-divider"></div>`;
     if (currentCategory && CATEGORIES[currentCategory]) {
         const subs = CATEGORIES[currentCategory].subcategories;
         const subKeys = Object.keys(subs);
@@ -289,6 +288,8 @@ function renderCategoryFilters() {
             html += `<button class="category-sub-btn ${currentSubcategory === key ? 'active' : ''}" data-subcategory="${key}">${subs[key]}</button>`;
         });
         html += `</div>`;
+    } else {
+        html += `<div class="category-sub-list" style="opacity:0.5;"><span style="color:#666; font-size:0.8rem;">Выберите категорию для подкатегорий</span></div>`;
     }
     container.innerHTML = html;
 
@@ -316,7 +317,7 @@ function renderCategoryFilters() {
     });
 }
 
-// ============= ПЛЕЕР (с автозапуском и сиквелами) =============
+// ============= ПЛЕЕР =============
 function initPlayer() {
     showLoading();
     const urlParams = new URLSearchParams(window.location.search);
@@ -325,15 +326,14 @@ function initPlayer() {
     const film = allFilms.find(f => f.id === filmId);
     if (!film) { window.location.href = 'index.html'; return; }
 
-    // Загружаем данные
     loadFilmPart(film);
 
-    // Сиквелы – обрабатываем оба блока (десктоп и мобильный)
+    // Сиквелы – оба блока
     if (film.sequelGroup) {
         const groupFilms = allFilms.filter(f => f.sequelGroup === film.sequelGroup)
                                    .sort((a,b) => (a.sequelOrder || 0) - (b.sequelOrder || 0));
         if (groupFilms.length > 1) {
-            // Десктопный блок
+            // Десктоп
             const desktopNav = document.getElementById('sequelNavDesktop');
             if (desktopNav) {
                 desktopNav.style.display = 'flex';
@@ -342,18 +342,11 @@ function initPlayer() {
                 `).join('');
                 desktopNav.querySelectorAll('.sequel-btn').forEach(btn => {
                     btn.addEventListener('click', function() {
-                        const newFilm = allFilms.find(f => f.id === this.dataset.id);
-                        if (newFilm) {
-                            history.pushState(null, '', `?id=${newFilm.id}`);
-                            loadFilmPart(newFilm);
-                            // Обновить активные кнопки в обоих блоках
-                            document.querySelectorAll('.sequel-btn').forEach(b => b.classList.remove('active'));
-                            document.querySelectorAll(`.sequel-btn[data-id="${newFilm.id}"]`).forEach(b => b.classList.add('active'));
-                        }
+                        switchSequel(this.dataset.id);
                     });
                 });
             }
-            // Мобильный блок
+            // Мобильный
             const mobileNav = document.getElementById('sequelNavMobile');
             if (mobileNav) {
                 mobileNav.style.display = 'flex';
@@ -362,13 +355,7 @@ function initPlayer() {
                 `).join('');
                 mobileNav.querySelectorAll('.sequel-btn').forEach(btn => {
                     btn.addEventListener('click', function() {
-                        const newFilm = allFilms.find(f => f.id === this.dataset.id);
-                        if (newFilm) {
-                            history.pushState(null, '', `?id=${newFilm.id}`);
-                            loadFilmPart(newFilm);
-                            document.querySelectorAll('.sequel-btn').forEach(b => b.classList.remove('active'));
-                            document.querySelectorAll(`.sequel-btn[data-id="${newFilm.id}"]`).forEach(b => b.classList.add('active'));
-                        }
+                        switchSequel(this.dataset.id);
                     });
                 });
             }
@@ -382,13 +369,21 @@ function initPlayer() {
     hideLoading();
 }
 
+function switchSequel(id) {
+    const newFilm = allFilms.find(f => f.id === id);
+    if (newFilm) {
+        history.pushState(null, '', `?id=${newFilm.id}`);
+        loadFilmPart(newFilm);
+        document.querySelectorAll('.sequel-btn').forEach(b => b.classList.remove('active'));
+        document.querySelectorAll(`.sequel-btn[data-id="${newFilm.id}"]`).forEach(b => b.classList.add('active'));
+    }
+}
+
 function loadFilmPart(film) {
-    // Обновляем заголовок, постер, описание
     document.getElementById('filmTitle').textContent = film.title;
     document.getElementById('filmPoster').src = film.poster;
     document.getElementById('filmDescription').textContent = film.description || '';
 
-    // Скачивание
     const downloadBtn = document.getElementById('downloadBtn');
     if (downloadBtn) {
         if (film.downloadUrl && film.videoUrl && film.videoUrl.includes('drive.google.com')) {
@@ -399,13 +394,9 @@ function loadFilmPart(film) {
         }
     }
 
-    // Отзывы
     loadReviews(film.id);
-
-    // Оценка
     initRatingModal(film);
 
-    // Улучшенная версия
     const seasonNav = document.getElementById('seasonSeriesNav');
     if (!film.betterVersionReady && film.betterVersionDate && film.betterVersionDate !== 'null') {
         const formatted = formatDate(film.betterVersionDate);
@@ -416,13 +407,11 @@ function loadFilmPart(film) {
         seasonNav.innerHTML = '';
     }
 
-    // Видео - автозапуск
     const iframe = document.getElementById('driveIframe');
     const watchBtn = document.getElementById('watchBtn');
     if (iframe && film.videoUrl) {
         const embedUrl = getEmbedUrl(film.videoUrl);
         iframe.src = embedUrl;
-        // Кнопка "Смотреть" - перезапуск (сброс src)
         watchBtn.onclick = function() {
             iframe.src = '';
             setTimeout(() => { iframe.src = embedUrl; }, 100);
@@ -534,7 +523,6 @@ function initRatingModal(film) {
     const statusDiv = document.getElementById('ratingStatus');
     if (!rateBtn || !modal) return;
 
-    // Сброс состояния
     if (hasUserRated(film.id)) {
         rateBtn.disabled = true;
         rateBtn.style.opacity = '0.5';
@@ -721,7 +709,6 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     if (document.getElementById('driveIframe')) {
-        // Добавляем обработчик для ссылки "Назад" – показать спиннер
         document.getElementById('backLink')?.addEventListener('click', function(e) {
             showLoading();
         });
