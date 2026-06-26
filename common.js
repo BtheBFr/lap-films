@@ -312,7 +312,8 @@ function initPlayer() {
         }
     }
 
-    setTimeout(() => hideLoading(), 500);
+    // Увеличил время загрузки до 2.5 секунд
+    setTimeout(() => hideLoading(), 2500);
 }
 
 function goToNextEpisode(film) {
@@ -798,8 +799,8 @@ document.addEventListener('DOMContentLoaded', () => {
                 if (searchInput) searchInput.focus();
             });
         }
-        // Увеличил время показа загрузки на главной странице
-        setTimeout(() => hideLoading(), 600);
+        // Увеличил время загрузки до 2.5 секунд
+        setTimeout(() => hideLoading(), 2500);
     }
 
     if (document.getElementById('driveIframe')) {
