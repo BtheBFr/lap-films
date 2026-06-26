@@ -24,7 +24,8 @@
                 <div class="top-carousel" id="topCarouselList"></div>
             </div>
         </div>
-        <div class="category-container" id="categoryFilters"></div>
+        <!-- Кнопка для открытия категорий -->
+        <button id="categoryToggleBtn" class="category-toggle-btn">🎬 Выбрать категорию</button>
         <div class="films-grid" id="filmsGrid"></div>
         <div id="noResults" class="no-results" style="display: none;">
             <p>Ничего не найдено</p>
@@ -36,8 +37,15 @@
         </div>
     </div>
 
+    <!-- Закреплённый алфавит -->
     <div class="alphabet-vertical" id="alphabetVertical"></div>
 
+    <!-- Модалка категорий -->
+    <div id="categoryModal" class="modal category-modal" style="display:none;">
+        <div class="modal-content"></div>
+    </div>
+
+    <!-- Модалка предложений -->
     <div id="suggestModal" class="modal">
         <div class="modal-content">
             <span class="modal-close">&times;</span>
