@@ -9,7 +9,7 @@ let currentLetter = null;
 
 // Для бесконечной карусели
 let topCarouselInterval = null;
-let topCarouselSpeed = 1.2;
+let topCarouselSpeed = 1.5; // пикселей за кадр
 let topCarouselPaused = false;
 
 // ↓↓↓ ТВОИ ССЫЛКИ (ВСТАВЬ СВОИ) ↓↓↓
@@ -114,7 +114,7 @@ function filterFilms(films) {
 
 // ============= ГЛАВНАЯ СТРАНИЦА =============
 
-// --- БЕСКОНЕЧНАЯ ТОП-ЛЕНТА (без рывков) ---
+// --- БЕСКОНЕЧНАЯ ТОП-ЛЕНТА (выезжает справа) ---
 function renderTopCarousel() {
     const container = document.getElementById('topCarousel');
     if (!container) return;
@@ -129,10 +129,10 @@ function renderTopCarousel() {
     const list = document.getElementById('topCarouselList');
     if (!list) return;
 
-    // Дублируем 2 раза для плавности (если 1 фильм – дублируем 3 раза)
-    const cloneCount = topFilms.length === 1 ? 4 : 2;
+    // Создаём двойной набор для бесконечности
     let itemsHtml = '';
-    for (let i = 0; i < cloneCount; i++) {
+    // Клонируем 2 раза
+    for (let i = 0; i < 2; i++) {
         topFilms.forEach(film => {
             itemsHtml += `
                 <div class="top-film-item" data-id="${film.id}">
@@ -144,7 +144,7 @@ function renderTopCarousel() {
     }
     list.innerHTML = itemsHtml;
     const itemWidth = 140 + 16; // ширина + gap
-    const totalItems = topFilms.length * cloneCount;
+    const totalItems = topFilms.length * 2;
     const totalWidth = totalItems * itemWidth;
     list.style.width = totalWidth + 'px';
 
@@ -155,25 +155,21 @@ function renderTopCarousel() {
 function startCarousel(list, itemWidth, originalCount) {
     if (topCarouselInterval) clearInterval(topCarouselInterval);
     let position = 0;
-    // Длина одного набора
     const oneSetWidth = originalCount * itemWidth;
-    // Максимальная позиция, когда доходим до конца первого набора (чтобы перекинуть на начало)
-    const maxPosition = oneSetWidth;
 
-    // Убираем transition для мгновенного сброса
-    list.style.transition = 'none';
-
+    // Стартуем с позиции 0, будем двигать влево
     topCarouselInterval = setInterval(() => {
         if (!topCarouselPaused) {
             position += topCarouselSpeed;
-            // Если дошли до конца первого набора, мгновенно сбрасываем на 0 (без рывка)
-            if (position >= maxPosition) {
+            // Когда доходим до конца первого набора, перепрыгиваем на начало второго набора (который идентичен первому)
+            if (position >= oneSetWidth) {
                 position = 0;
+                // Мгновенно переставляем на начало без перехода
                 list.style.transition = 'none';
                 list.style.transform = `translateX(0px)`;
                 // Форсируем перерисовку
                 void list.offsetHeight;
-                list.style.transition = 'transform 0.05s linear'; // небольшой переход для плавности
+                list.style.transition = 'transform 0.05s linear';
             } else {
                 list.style.transform = `translateX(-${position}px)`;
             }
@@ -245,7 +241,7 @@ function updateCatalog() {
     renderFilmsGrid(searched);
 }
 
-// --- АЛФАВИТ (закреплён, не двигается) ---
+// --- АЛФАВИТ (закреплён) ---
 function renderAlphabetVertical() {
     const container = document.getElementById('alphabetVertical');
     if (!container) return;
@@ -298,7 +294,6 @@ function renderCategoryModal() {
         <h3>🎬 Выбор категорий</h3>
         ${html}
     `;
-    // Обработчики
     modal.querySelectorAll('.category-main-btn').forEach(btn => {
         btn.addEventListener('click', function() {
             const cat = this.dataset.category;
@@ -329,7 +324,6 @@ function renderCategoryModal() {
     });
 }
 
-// Открыть модалку категорий
 function openCategoryModal() {
     const modal = document.getElementById('categoryModal');
     if (modal) {
@@ -699,11 +693,8 @@ document.addEventListener('DOMContentLoaded', () => {
     if (document.getElementById('filmsGrid')) {
         renderTopCarousel();
         renderAlphabetVertical();
-        // Кнопка для открытия категорий
         const categoryBtn = document.getElementById('categoryToggleBtn');
-        if (categoryBtn) {
-            categoryBtn.addEventListener('click', openCategoryModal);
-        }
+        if (categoryBtn) categoryBtn.addEventListener('click', openCategoryModal);
         updateCatalog();
 
         const searchInput = document.getElementById('searchInput');
