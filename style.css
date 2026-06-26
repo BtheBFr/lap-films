@@ -74,39 +74,33 @@ h1 {
     background: #e50914;
 }
 
-/* ============= ТОП-ЛЕНТА ============= */
+/* ============= ТОП-ЛЕНТА (автопрокрутка) ============= */
 .section-title {
     font-size: 1.6rem;
     margin: 20px 0 15px;
     color: #fff;
 }
 .top-carousel-container {
+    position: relative;
+    overflow: hidden;
     margin-bottom: 30px;
 }
 .top-carousel {
     display: flex;
     gap: 16px;
-    overflow-x: auto;
+    overflow: visible; /* чтобы не обрезать тени */
+    transition: transform 0.5s ease;
     padding: 10px 4px 20px;
-    scroll-snap-type: x mandatory;
-    -webkit-overflow-scrolling: touch;
-}
-.top-carousel::-webkit-scrollbar {
-    height: 6px;
-}
-.top-carousel::-webkit-scrollbar-thumb {
-    background: #e50914;
-    border-radius: 10px;
+    will-change: transform;
 }
 .top-film-item {
     flex: 0 0 140px;
-    scroll-snap-align: start;
     cursor: pointer;
-    transition: transform 0.2s;
     text-align: center;
+    transition: transform 0.2s;
 }
 .top-film-item:hover {
-    transform: scale(1.03);
+    transform: scale(1.05);
 }
 .top-film-item img {
     width: 100%;
@@ -122,36 +116,46 @@ h1 {
     color: #eee;
 }
 
-/* ============= АЛФАВИТ ============= */
-.alphabet-container {
+/* ============= ВЕРТИКАЛЬНЫЙ АЛФАВИТ ============= */
+.alphabet-vertical {
+    position: fixed;
+    right: 8px;
+    top: 50%;
+    transform: translateY(-50%);
     display: flex;
-    flex-wrap: wrap;
-    gap: 6px;
-    justify-content: center;
-    margin: 10px 0 20px;
+    flex-direction: column;
+    gap: 2px;
+    z-index: 100;
+    background: rgba(0,0,0,0.3);
+    backdrop-filter: blur(4px);
+    border-radius: 20px;
+    padding: 10px 6px;
+    border: 1px solid rgba(255,255,255,0.1);
+    user-select: none;
+    -webkit-user-select: none;
+    touch-action: none;
 }
-.alphabet-letter {
-    display: inline-block;
-    padding: 6px 10px;
-    background: rgba(255,255,255,0.08);
-    border: 1px solid rgba(255,255,255,0.15);
-    border-radius: 6px;
-    font-size: 0.85rem;
-    font-weight: 600;
-    cursor: pointer;
-    transition: background 0.2s, color 0.2s;
-    color: #aaa;
-    min-width: 30px;
+.alphabet-vertical .letter {
+    display: block;
+    width: 22px;
+    height: 22px;
+    line-height: 22px;
     text-align: center;
+    font-size: 0.7rem;
+    font-weight: 600;
+    color: #aaa;
+    border-radius: 50%;
+    cursor: pointer;
+    transition: background 0.2s, color 0.2s, transform 0.1s;
 }
-.alphabet-letter:hover {
-    background: rgba(229,9,20,0.3);
-    color: #fff;
-}
-.alphabet-letter.active {
+.alphabet-vertical .letter.active {
     background: #e50914;
     color: #fff;
-    border-color: #e50914;
+    transform: scale(1.2);
+}
+.alphabet-vertical .letter:hover {
+    background: rgba(229,9,20,0.4);
+    color: #fff;
 }
 
 /* ============= КАТЕГОРИИ ============= */
@@ -319,7 +323,6 @@ h1 {
     margin-bottom: 20px;
 }
 
-/* Навигация по сиквелам */
 .sequel-nav {
     display: flex;
     gap: 10px;
@@ -699,7 +702,7 @@ h1 {
 /* ============= МОБИЛЬНАЯ ОПТИМИЗАЦИЯ ============= */
 @media (max-width: 768px) {
     body {
-        padding: 20px 15px;
+        padding: 20px 10px;
     }
     h1 {
         font-size: 2rem;
@@ -798,6 +801,19 @@ h1 {
     }
     .submit-suggest-btn {
         background: #e50914 !important;
+    }
+    /* Алфавит справа делаем чуть меньше */
+    .alphabet-vertical {
+        right: 4px;
+        padding: 6px 4px;
+        gap: 1px;
+        border-radius: 16px;
+    }
+    .alphabet-vertical .letter {
+        width: 18px;
+        height: 18px;
+        line-height: 18px;
+        font-size: 0.6rem;
     }
 }
 
