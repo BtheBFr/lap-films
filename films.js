@@ -5,67 +5,67 @@ const CATEGORIES = {
     film: {
         label: "🎬 Фильмы",
         subcategories: {
-            action: "Боевик",
-            comedy: "Комедия",
-            drama: "Драма",
-            thriller: "Триллер",
-            horror: "Ужасы",
-            adventure: "Приключения",
-            fantasy: "Фэнтези",
+            //action: "Боевик",
+            //comedy: "Комедия",
+            //drama: "Драма",
+            //thriller: "Триллер",
+            //horror: "Ужасы",
+            //adventure: "Приключения",
+            //fantasy: "Фэнтези",
             sciFi: "Фантастика",
-            romance: "Мелодрама",
-            detective: "Детектив",
-            documentary: "Документальный",
-            other: "Другое"
+            //romance: "Мелодрама",
+            //detective: "Детектив",
+            //documentary: "Документальный",
+            //other: "Другое"
         }
     },
     serial: {
         label: "📺 Сериалы",
         subcategories: {
-            action: "Боевик",
-            comedy: "Комедия",
-            drama: "Драма",
-            thriller: "Триллер",
-            horror: "Ужасы",
-            adventure: "Приключения",
-            fantasy: "Фэнтези",
+            //action: "Боевик",
+            //comedy: "Комедия",
+            //drama: "Драма",
+            //thriller: "Триллер",
+            //horror: "Ужасы",
+            //adventure: "Приключения",
+            //fantasy: "Фэнтези",
             sciFi: "Фантастика",
-            romance: "Мелодрама",
-            detective: "Детектив",
-            documentary: "Документальный",
-            other: "Другое"
+            //romance: "Мелодрама",
+            //detective: "Детектив",
+            //documentary: "Документальный",
+            //other: "Другое"
         }
     },
     cartoon: {
         label: "🐱 Мультфильмы",
         subcategories: {
-            animated: "Анимация",
-            anime: "Аниме",
-            family: "Семейный",
-            other: "Другое"
+            //animated: "Анимация",
+            //anime: "Аниме",
+            //family: "Семейный",
+            //other: "Другое"
         }
     },
     sequel: {
         label: "📌 Сиквелы / Продолжения",
         subcategories: {
-            sequel: "Сиквел",
-            prequel: "Приквел",
-            spinOff: "Спин-офф",
+            //sequel: "Сиквел",
+            //prequel: "Приквел",
+            //spinOff: "Спин-офф",
             sciFi: "Фантастика",
-            other: "Другое"
+            //other: "Другое"
         }
     },
     short: {
         label: "⏳ Короткометражки",
         subcategories: {
-            short: "Короткометражный",
-            other: "Другое"
+            //short: "Короткометражный",
+            //other: "Другое"
         }
     },
     other: {
         label: "📂 Другое",
         subcategories: {
-            other: "Разное"
+            //other: "Разное"
         }
     }
 };
@@ -142,7 +142,7 @@ const FILMS_CATALOG = [
         betterVersionDate: null,
         releaseDate: null,
         comingSoon: false,
-        category: "sequel",
+        category: ["sequel", "film"], 
         subcategory: "sciFi"
     },
 
