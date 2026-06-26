@@ -107,12 +107,13 @@ function filterFilms(films) {
 
 // ============= ГЛАВНАЯ СТРАНИЦА =============
 
-// --- ЛУЧШИЕ ФИЛЬМЫ ---
+// --- ЛУЧШИЕ ФИЛЬМЫ (по списку TOP_FILMS_IDS) ---
 function renderBestFilms() {
     const container = document.getElementById('bestFilmsContainer');
     if (!container) return;
 
-    const bestFilms = allFilms.filter(f => f.isTop === true);
+    // Берём фильмы из глобального массива TOP_FILMS_IDS
+    const bestFilms = TOP_FILMS_IDS.map(id => allFilms.find(f => f.id === id)).filter(Boolean);
     if (bestFilms.length === 0) {
         container.style.display = 'none';
         return;
@@ -307,7 +308,6 @@ function initPlayer() {
     const film = allFilms.find(f => f.id === filmId);
     if (!film) { window.location.href = 'index.html'; return; }
 
-    // Загружаем данные фильма
     loadFilmPart(film);
 
     // Сиквелы
@@ -378,8 +378,7 @@ function initPlayer() {
         }
     }
 
-    // Скрываем загрузку после того, как всё загружено
-    setTimeout(() => hideLoading(), 500); // небольшая задержка для уверенности
+    setTimeout(() => hideLoading(), 500);
 }
 
 function goToNextEpisode(film) {
@@ -477,7 +476,6 @@ function switchSequel(id) {
 }
 
 function loadFilmPart(film) {
-    // Обновляем информацию на странице
     document.getElementById('filmTitle').textContent = film.title;
     document.getElementById('filmPoster').src = film.poster;
     document.getElementById('filmDescription').textContent = film.description || '';
@@ -492,11 +490,9 @@ function loadFilmPart(film) {
         }
     }
 
-    // Загружаем отзывы и модалку оценки (асинхронно)
     loadReviews(film.id);
     initRatingModal(film);
 
-    // Навигация по сезонам
     const seasonNav = document.getElementById('seasonSeriesNav');
     if (film.seasons && typeof film.seasons === 'object' && Object.keys(film.seasons).length > 0) {
         const seasonsKeys = Object.keys(film.seasons).sort();
@@ -514,7 +510,6 @@ function loadFilmPart(film) {
             html += '</div>';
         }
         seasonNav.innerHTML = html;
-        // Обработчики для сезонов
         seasonNav.querySelectorAll('.season-btn').forEach(btn => {
             btn.addEventListener('click', function() {
                 const sKey = this.dataset.season;
@@ -548,7 +543,6 @@ function loadFilmPart(film) {
             });
         });
     } else {
-        // Если нет сезонов, показываем улучшенную версию
         if (!film.betterVersionReady && film.betterVersionDate && film.betterVersionDate !== 'null') {
             const formatted = formatDate(film.betterVersionDate);
             seasonNav.innerHTML = `<div class="better-version-notice">🎥 Улучшенная версия выйдет ${formatted || 'скоро'}</div>`;
@@ -559,7 +553,6 @@ function loadFilmPart(film) {
         }
     }
 
-    // Видео
     const iframe = document.getElementById('driveIframe');
     const watchBtn = document.getElementById('watchBtn');
     if (iframe) {
@@ -837,15 +830,12 @@ function initModal() {
 
 // ============= ЗАПУСК =============
 document.addEventListener('DOMContentLoaded', () => {
-    // Показываем загрузку при старте
     showLoading();
 
-    // Загружаем данные
     if (typeof FILMS_CATALOG !== 'undefined') {
         allFilms = [...FILMS_CATALOG];
     }
 
-    // Если мы на главной странице
     if (document.getElementById('filmsGrid')) {
         renderBestFilms();
         const categoryBtn = document.getElementById('categoryToggleBtn');
@@ -871,17 +861,14 @@ document.addEventListener('DOMContentLoaded', () => {
                 if (searchInput) searchInput.focus();
             });
         }
-        // Скрываем загрузку после рендера
         setTimeout(() => hideLoading(), 300);
     }
 
-    // Если мы на странице плеера
     if (document.getElementById('driveIframe')) {
         document.getElementById('backLink')?.addEventListener('click', function(e) {
             showLoading();
         });
         initPlayer();
-        // hideLoading будет вызван внутри initPlayer
     }
 
     document.querySelectorAll('#otherProjectsLink').forEach(link => link && (link.href = '#'));
