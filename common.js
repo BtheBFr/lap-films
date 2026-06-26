@@ -1,5 +1,4 @@
 // ============= ПЕРЕМЕННЫЕ =============
-let currentFilmId = null;
 let allFilms = [];
 let currentRating = 0;
 let allReviewsData = {};
@@ -8,24 +7,34 @@ let currentCategory = null;
 let currentSubcategory = null;
 let currentLetter = null;
 
-// Для автопрокрутки
+// Для бесконечной карусели
 let topCarouselInterval = null;
-let topCarouselIndex = 0;
-let topCarouselItems = [];
+let topCarouselSpeed = 1; // пикселей за кадр
+let topCarouselPaused = false;
 
 // ↓↓↓ ТВОИ ССЫЛКИ (ВСТАВЬ СВОИ) ↓↓↓
 const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycby86FMOsqBSKIP8qE_1T8W4G5mgINcSiV4z7TnIaVlHpvHR7YYROpSXrhMGO24yfT1C/exec";
 const GOOGLE_RATINGS_URL = "https://script.google.com/macros/s/AKfycbyQjl03vdNZEjtyab3faMS-wD22urPYlWqb_mJjX0l0b8qsYwiZDuVmjPLs4-UQ8jj5/exec";
 
-// ============= ПОДДЕРЖКА ВИДЕО (YOUTUBE, DAILYMOTION, GOOGLE DRIVE) =============
+// ============= ВСПОМОГАТЕЛЬНЫЕ ФУНКЦИИ =============
+function showLoading() {
+    const overlay = document.getElementById('loadingOverlay');
+    if (overlay) overlay.style.display = 'flex';
+}
+function hideLoading() {
+    const overlay = document.getElementById('loadingOverlay');
+    if (overlay) overlay.style.display = 'none';
+}
+
+// ============= ВИДЕО-ПЛЕЕР =============
 function getEmbedUrl(videoPath) {
     if (!videoPath) return '';
+    // YouTube
     if (videoPath.includes('youtube.com/watch') || videoPath.includes('youtu.be/')) {
         return convertToYouTubeEmbed(videoPath);
     }
-    if (videoPath.includes('youtube.com/embed/')) {
-        return videoPath;
-    }
+    if (videoPath.includes('youtube.com/embed/')) return videoPath;
+    // Dailymotion
     if (videoPath.includes('dailymotion.com') || videoPath.includes('dai.ly')) {
         let videoId = null;
         let match = videoPath.match(/dailymotion\.com\/video\/([a-zA-Z0-9]+)/);
@@ -34,11 +43,10 @@ function getEmbedUrl(videoPath) {
             match = videoPath.match(/dai\.ly\/([a-zA-Z0-9]+)/);
             if (match) videoId = match[1];
         }
-        if (videoId) {
-            return `https://www.dailymotion.com/embed/video/${videoId}`;
-        }
+        if (videoId) return `https://www.dailymotion.com/embed/video/${videoId}`;
         return videoPath;
     }
+    // Google Drive
     if (videoPath.includes('drive.google.com') || videoPath.includes('drive.usercontent.google.com')) {
         return convertToDriveEmbed(videoPath);
     }
@@ -53,9 +61,7 @@ function convertToYouTubeEmbed(url) {
         match = url.match(/youtu\.be\/([^?&]+)/);
         if (match) videoId = match[1];
     }
-    if (videoId) {
-        return `https://www.youtube.com/embed/${videoId}`;
-    }
+    if (videoId) return `https://www.youtube.com/embed/${videoId}`;
     return url;
 }
 
@@ -67,9 +73,7 @@ function convertToDriveEmbed(url) {
         match = url.match(/[?&]id=([^&]+)/);
         if (match) fileId = match[1];
     }
-    if (fileId) {
-        return `https://drive.google.com/file/d/${fileId}/preview`;
-    }
+    if (fileId) return `https://drive.google.com/file/d/${fileId}/preview`;
     return url;
 }
 
@@ -85,43 +89,35 @@ function getFileIdFromPath(path) {
 function getDownloadUrl(drivePath) {
     if (!drivePath) return null;
     const fileId = getFileIdFromPath(drivePath);
-    if (fileId) {
-        return `https://drive.usercontent.google.com/download?id=${fileId}&export=download&authuser=0`;
-    }
+    if (fileId) return `https://drive.usercontent.google.com/download?id=${fileId}&export=download&authuser=0`;
     return drivePath;
 }
 
-// ============= ПОИСК И ФИЛЬТРЫ =============
+// ============= ФИЛЬТРЫ =============
 function searchFilms(query) {
     if (!query.trim()) return allFilms;
-    const lowerQuery = query.toLowerCase().trim();
-    return allFilms.filter(film => {
-        if (film.title.toLowerCase().includes(lowerQuery)) return true;
-        if (film.searchTerms && film.searchTerms.some(term => term.toLowerCase().includes(lowerQuery))) return true;
-        return false;
-    });
+    const lower = query.toLowerCase().trim();
+    return allFilms.filter(f => 
+        f.title.toLowerCase().includes(lower) ||
+        (f.searchTerms && f.searchTerms.some(t => t.toLowerCase().includes(lower)))
+    );
 }
 
 function filterFilms(films) {
     let result = [...films];
     if (currentCategory) {
         result = result.filter(f => f.category === currentCategory);
-        if (currentSubcategory) {
-            result = result.filter(f => f.subcategory === currentSubcategory);
-        }
+        if (currentSubcategory) result = result.filter(f => f.subcategory === currentSubcategory);
     }
     if (currentLetter) {
-        result = result.filter(f => {
-            const firstChar = f.title.charAt(0).toUpperCase();
-            return firstChar === currentLetter;
-        });
+        result = result.filter(f => f.title.charAt(0).toUpperCase() === currentLetter);
     }
     return result;
 }
 
-// ============= РЕНДЕР ГЛАВНОЙ СТРАНИЦЫ =============
+// ============= ГЛАВНАЯ СТРАНИЦА =============
 
-// --- ТОП-ЛЕНТА с автопрокруткой ---
+// --- БЕСКОНЕЧНАЯ ТОП-ЛЕНТА ---
 function renderTopCarousel() {
     const container = document.getElementById('topCarousel');
     if (!container) return;
@@ -132,63 +128,67 @@ function renderTopCarousel() {
         return;
     }
     container.style.display = 'block';
-    const carousel = document.getElementById('topCarouselList');
-    if (!carousel) return;
 
-    // Строим список: добавляем клон для бесконечности
-    const items = [];
-    topFilms.forEach(film => {
-        items.push(film);
-    });
-    // Если больше 1, дублируем для плавной прокрутки
-    if (items.length > 1) {
-        // Добавляем копию в конец
-        topFilms.forEach(film => items.push(film));
-    }
-    topCarouselItems = items;
+    const list = document.getElementById('topCarouselList');
+    if (!list) return;
 
-    carousel.innerHTML = items.map(film => `
-        <div class="top-film-item" data-id="${film.id}">
-            <img src="${film.poster}" alt="${film.title}" loading="lazy">
-            <div class="top-film-title">${film.title}</div>
-        </div>
-    `).join('');
-
-    // Обработчик клика
-    document.querySelectorAll('.top-film-item').forEach(item => {
-        item.addEventListener('click', () => {
-            window.location.href = `player.html?id=${item.dataset.id}`;
+    // Строим бесконечный список (дублируем несколько раз для плавности)
+    const cloneCount = 3; // повторим 3 раза для длинной ленты
+    let itemsHtml = '';
+    for (let i = 0; i < cloneCount; i++) {
+        topFilms.forEach(film => {
+            itemsHtml += `
+                <div class="top-film-item" data-id="${film.id}">
+                    <img src="${film.poster}" alt="${film.title}" loading="lazy">
+                    <div class="top-film-title">${film.title}</div>
+                </div>
+            `;
         });
-    });
+    }
+    list.innerHTML = itemsHtml;
+    // Общая ширина = кол-во элементов * (ширина + gap)
+    const totalItems = topFilms.length * cloneCount;
+    const itemWidth = 140 + 16; // ширина + gap
+    const totalWidth = totalItems * itemWidth;
+    list.style.width = totalWidth + 'px';
 
-    // Запускаем автопрокрутку
-    startAutoScroll();
+    // Запускаем анимацию
+    startCarousel(list, itemWidth, topFilms.length);
 }
 
-function startAutoScroll() {
+function startCarousel(list, itemWidth, originalCount) {
     if (topCarouselInterval) clearInterval(topCarouselInterval);
-    const carousel = document.getElementById('topCarouselList');
-    if (!carousel || topCarouselItems.length <= 1) return;
-
-    const itemWidth = 140 + 16; // ширина + gap
-    const totalWidth = itemWidth * (topCarouselItems.length / 2); // ширина одного набора
     let position = 0;
+    const maxPosition = (originalCount * 2) * itemWidth; // прокручиваем до середины второго набора
 
     topCarouselInterval = setInterval(() => {
-        position += 1;
-        if (position >= totalWidth) {
-            position = 0;
-            carousel.style.transition = 'none';
-            carousel.style.transform = `translateX(0px)`;
-            // Форсируем рефлоу
-            void carousel.offsetHeight;
-            carousel.style.transition = 'transform 0.5s ease';
+        if (!topCarouselPaused) {
+            position += topCarouselSpeed;
+            if (position >= maxPosition) {
+                position = 0;
+                // Мгновенный сброс без анимации
+                list.style.transition = 'none';
+                list.style.transform = 'translateX(0px)';
+                void list.offsetHeight; // форсируем рефлоу
+                list.style.transition = 'transform 0.5s ease';
+            } else {
+                list.style.transform = `translateX(-${position}px)`;
+            }
         }
-        carousel.style.transform = `translateX(-${position}px)`;
-    }, 30); // 30ms ~ плавно
+    }, 16); // ~60fps
+
+    // Пауза при наведении
+    const wrapper = list.closest('.top-carousel-wrapper');
+    if (wrapper) {
+        wrapper.addEventListener('mouseenter', () => { topCarouselPaused = true; });
+        wrapper.addEventListener('mouseleave', () => { topCarouselPaused = false; });
+        // На телефонах касание тоже ставит на паузу? Можно добавить touchstart/touchend
+        wrapper.addEventListener('touchstart', () => { topCarouselPaused = true; });
+        wrapper.addEventListener('touchend', () => { topCarouselPaused = false; });
+    }
 }
 
-function stopAutoScroll() {
+function stopCarousel() {
     if (topCarouselInterval) {
         clearInterval(topCarouselInterval);
         topCarouselInterval = null;
@@ -212,12 +212,10 @@ function renderFilmsGrid(filmsToRender) {
 
     grid.innerHTML = sorted.map(film => {
         let comingBadge = '';
-        if (film.comingSoon === true) {
+        if (film.comingSoon) {
             if (film.releaseDate) {
                 const date = new Date(film.releaseDate);
-                const day = date.getDate();
-                const month = date.toLocaleString('ru', { month: 'long' });
-                comingBadge = `<div class="coming-badge">📅 ${day} ${month}</div>`;
+                comingBadge = `<div class="coming-badge">📅 ${date.getDate()} ${date.toLocaleString('ru', { month: 'long' })}</div>`;
             } else {
                 comingBadge = `<div class="coming-badge">⏳ Скоро</div>`;
             }
@@ -232,19 +230,20 @@ function renderFilmsGrid(filmsToRender) {
     }).join('');
 
     document.querySelectorAll('.film-card').forEach(card => {
-        card.addEventListener('click', () => {
-            window.location.href = `player.html?id=${card.dataset.id}`;
+        card.addEventListener('click', function() {
+            showLoading();
+            window.location.href = `player.html?id=${this.dataset.id}`;
         });
     });
 }
 
 function updateCatalog() {
-    const searchQuery = document.getElementById('searchInput')?.value || '';
-    const searched = searchFilms(searchQuery);
+    const query = document.getElementById('searchInput')?.value || '';
+    const searched = searchFilms(query);
     renderFilmsGrid(searched);
 }
 
-// ============= ВЕРТИКАЛЬНЫЙ АЛФАВИТ (с touch) =============
+// --- АЛФАВИТ (только клик) ---
 function renderAlphabetVertical() {
     const container = document.getElementById('alphabetVertical');
     if (!container) return;
@@ -253,66 +252,31 @@ function renderAlphabetVertical() {
         <span class="letter ${currentLetter === letter ? 'active' : ''}" data-letter="${letter}">${letter}</span>
     `).join('');
 
-    // Обработчики кликов и touch
-    const letterElements = container.querySelectorAll('.letter');
-    letterElements.forEach(el => {
-        el.addEventListener('click', () => {
-            selectLetter(el.dataset.letter);
+    container.querySelectorAll('.letter').forEach(el => {
+        el.addEventListener('click', function() {
+            const letter = this.dataset.letter;
+            if (currentLetter === letter) {
+                currentLetter = null;
+            } else {
+                currentLetter = letter;
+            }
+            // Обновить классы
+            container.querySelectorAll('.letter').forEach(l => l.classList.toggle('active', l.dataset.letter === currentLetter));
+            updateCatalog();
+            // Прокрутить к сетке
+            document.getElementById('filmsGrid').scrollIntoView({ behavior: 'smooth', block: 'start' });
         });
     });
-
-    // Touch-поддержка (как в контактах)
-    let touchTimeout = null;
-    container.addEventListener('touchstart', (e) => {
-        const target = document.elementFromPoint(e.touches[0].clientX, e.touches[0].clientY);
-        if (target && target.classList.contains('letter')) {
-            selectLetter(target.dataset.letter);
-        }
-        // Запоминаем начальную позицию для скролла
-        container.dataset.startY = e.touches[0].clientY;
-    }, { passive: true });
-
-    container.addEventListener('touchmove', (e) => {
-        e.preventDefault(); // чтобы не скроллилась страница при касании алфавита
-        const touch = e.touches[0];
-        const target = document.elementFromPoint(touch.clientX, touch.clientY);
-        if (target && target.classList.contains('letter')) {
-            selectLetter(target.dataset.letter);
-        }
-    }, { passive: false });
-
-    container.addEventListener('touchend', () => {
-        // можно ничего не делать
-    }, { passive: true });
 }
 
-function selectLetter(letter) {
-    if (currentLetter === letter) {
-        currentLetter = null;
-    } else {
-        currentLetter = letter;
-    }
-    // Обновить активный класс
-    document.querySelectorAll('.alphabet-vertical .letter').forEach(el => {
-        el.classList.toggle('active', el.dataset.letter === currentLetter);
-    });
-    // Обновить сетку
-    updateCatalog();
-    // Прокрутить к сетке (для удобства)
-    const grid = document.getElementById('filmsGrid');
-    if (grid) {
-        grid.scrollIntoView({ behavior: 'smooth', block: 'start' });
-    }
-}
-
-// ============= КАТЕГОРИИ =============
+// --- КАТЕГОРИИ ---
 function renderCategoryFilters() {
     const container = document.getElementById('categoryFilters');
     if (!container) return;
-    const mainCategories = Object.keys(CATEGORIES);
+    const mainKeys = Object.keys(CATEGORIES);
     let html = `<div class="category-main-list">`;
     html += `<button class="category-main-btn ${!currentCategory ? 'active' : ''}" data-category="">Все</button>`;
-    mainCategories.forEach(key => {
+    mainKeys.forEach(key => {
         html += `<button class="category-main-btn ${currentCategory === key ? 'active' : ''}" data-category="${key}">${CATEGORIES[key].label}</button>`;
     });
     html += `</div>`;
@@ -327,9 +291,10 @@ function renderCategoryFilters() {
         html += `</div>`;
     }
     container.innerHTML = html;
+
     container.querySelectorAll('.category-main-btn').forEach(btn => {
-        btn.addEventListener('click', () => {
-            const cat = btn.dataset.category;
+        btn.addEventListener('click', function() {
+            const cat = this.dataset.category;
             if (currentCategory === cat) {
                 currentCategory = null;
                 currentSubcategory = null;
@@ -342,8 +307,8 @@ function renderCategoryFilters() {
         });
     });
     container.querySelectorAll('.category-sub-btn').forEach(btn => {
-        btn.addEventListener('click', () => {
-            const sub = btn.dataset.subcategory;
+        btn.addEventListener('click', function() {
+            const sub = this.dataset.subcategory;
             currentSubcategory = sub || null;
             renderCategoryFilters();
             updateCatalog();
@@ -351,7 +316,132 @@ function renderCategoryFilters() {
     });
 }
 
-// ============= ОТЗЫВЫ (без изменений) =============
+// ============= ПЛЕЕР (с автозапуском и сиквелами) =============
+function initPlayer() {
+    showLoading();
+    const urlParams = new URLSearchParams(window.location.search);
+    const filmId = urlParams.get('id');
+    if (!filmId) { window.location.href = 'index.html'; return; }
+    const film = allFilms.find(f => f.id === filmId);
+    if (!film) { window.location.href = 'index.html'; return; }
+
+    // Загружаем данные
+    loadFilmPart(film);
+
+    // Сиквелы – обрабатываем оба блока (десктоп и мобильный)
+    if (film.sequelGroup) {
+        const groupFilms = allFilms.filter(f => f.sequelGroup === film.sequelGroup)
+                                   .sort((a,b) => (a.sequelOrder || 0) - (b.sequelOrder || 0));
+        if (groupFilms.length > 1) {
+            // Десктопный блок
+            const desktopNav = document.getElementById('sequelNavDesktop');
+            if (desktopNav) {
+                desktopNav.style.display = 'flex';
+                desktopNav.innerHTML = groupFilms.map(f => `
+                    <button class="sequel-btn ${f.id === film.id ? 'active' : ''}" data-id="${f.id}">${f.title}</button>
+                `).join('');
+                desktopNav.querySelectorAll('.sequel-btn').forEach(btn => {
+                    btn.addEventListener('click', function() {
+                        const newFilm = allFilms.find(f => f.id === this.dataset.id);
+                        if (newFilm) {
+                            history.pushState(null, '', `?id=${newFilm.id}`);
+                            loadFilmPart(newFilm);
+                            // Обновить активные кнопки в обоих блоках
+                            document.querySelectorAll('.sequel-btn').forEach(b => b.classList.remove('active'));
+                            document.querySelectorAll(`.sequel-btn[data-id="${newFilm.id}"]`).forEach(b => b.classList.add('active'));
+                        }
+                    });
+                });
+            }
+            // Мобильный блок
+            const mobileNav = document.getElementById('sequelNavMobile');
+            if (mobileNav) {
+                mobileNav.style.display = 'flex';
+                mobileNav.innerHTML = groupFilms.map(f => `
+                    <button class="sequel-btn ${f.id === film.id ? 'active' : ''}" data-id="${f.id}">${f.title}</button>
+                `).join('');
+                mobileNav.querySelectorAll('.sequel-btn').forEach(btn => {
+                    btn.addEventListener('click', function() {
+                        const newFilm = allFilms.find(f => f.id === this.dataset.id);
+                        if (newFilm) {
+                            history.pushState(null, '', `?id=${newFilm.id}`);
+                            loadFilmPart(newFilm);
+                            document.querySelectorAll('.sequel-btn').forEach(b => b.classList.remove('active'));
+                            document.querySelectorAll(`.sequel-btn[data-id="${newFilm.id}"]`).forEach(b => b.classList.add('active'));
+                        }
+                    });
+                });
+            }
+        } else {
+            document.querySelectorAll('.sequel-nav').forEach(el => el.style.display = 'none');
+        }
+    } else {
+        document.querySelectorAll('.sequel-nav').forEach(el => el.style.display = 'none');
+    }
+
+    hideLoading();
+}
+
+function loadFilmPart(film) {
+    // Обновляем заголовок, постер, описание
+    document.getElementById('filmTitle').textContent = film.title;
+    document.getElementById('filmPoster').src = film.poster;
+    document.getElementById('filmDescription').textContent = film.description || '';
+
+    // Скачивание
+    const downloadBtn = document.getElementById('downloadBtn');
+    if (downloadBtn) {
+        if (film.downloadUrl && film.videoUrl && film.videoUrl.includes('drive.google.com')) {
+            downloadBtn.href = getDownloadUrl(film.downloadUrl);
+            downloadBtn.style.display = 'inline-flex';
+        } else {
+            downloadBtn.style.display = 'none';
+        }
+    }
+
+    // Отзывы
+    loadReviews(film.id);
+
+    // Оценка
+    initRatingModal(film);
+
+    // Улучшенная версия
+    const seasonNav = document.getElementById('seasonSeriesNav');
+    if (!film.betterVersionReady && film.betterVersionDate && film.betterVersionDate !== 'null') {
+        const formatted = formatDate(film.betterVersionDate);
+        seasonNav.innerHTML = `<div class="better-version-notice">🎥 Улучшенная версия выйдет ${formatted || 'скоро'}</div>`;
+    } else if (!film.betterVersionReady && film.betterVersionDate === null) {
+        seasonNav.innerHTML = `<div class="better-version-notice">🎥 Улучшенная версия скоро</div>`;
+    } else {
+        seasonNav.innerHTML = '';
+    }
+
+    // Видео - автозапуск
+    const iframe = document.getElementById('driveIframe');
+    const watchBtn = document.getElementById('watchBtn');
+    if (iframe && film.videoUrl) {
+        const embedUrl = getEmbedUrl(film.videoUrl);
+        iframe.src = embedUrl;
+        // Кнопка "Смотреть" - перезапуск (сброс src)
+        watchBtn.onclick = function() {
+            iframe.src = '';
+            setTimeout(() => { iframe.src = embedUrl; }, 100);
+        };
+    } else {
+        if (watchBtn) watchBtn.style.display = 'none';
+    }
+}
+
+function formatDate(dateString) {
+    if (!dateString || dateString === 'null') return null;
+    try {
+        const date = new Date(dateString);
+        if (isNaN(date.getTime())) return null;
+        return `${date.getDate()} ${date.toLocaleString('ru', { month: 'long' })} ${date.getFullYear()}`;
+    } catch(e) { return null; }
+}
+
+// ============= ОТЗЫВЫ =============
 async function loadReviews(filmId) {
     const container = document.getElementById('reviewsList');
     if (!container) return;
@@ -396,13 +486,10 @@ function displayReviews(filmId) {
         html += `<button class="toggle-reviews-btn" data-film-id="${filmId}">${buttonText}</button>`;
     }
     container.innerHTML = html;
-    const toggleBtn = container.querySelector('.toggle-reviews-btn');
-    if (toggleBtn) {
-        toggleBtn.addEventListener('click', () => {
-            reviewsExpanded[filmId] = !reviewsExpanded[filmId];
-            displayReviews(filmId);
-        });
-    }
+    container.querySelector('.toggle-reviews-btn')?.addEventListener('click', function() {
+        reviewsExpanded[filmId] = !reviewsExpanded[filmId];
+        displayReviews(filmId);
+    });
 }
 
 function formatDateForReview(dateString) {
@@ -419,17 +506,12 @@ function escapeHtml(str) {
     return str.replace(/[&<>]/g, m => ({ '&':'&amp;', '<':'&lt;', '>':'&gt;' }[m]));
 }
 
-// ============= ОЦЕНКИ (без изменений) =============
-function hasUserRated(filmId) {
-    return localStorage.getItem(`rated_${filmId}`) === 'true';
-}
-function markAsRated(filmId) {
-    localStorage.setItem(`rated_${filmId}`, 'true');
-}
+// ============= ОЦЕНКИ =============
+function hasUserRated(filmId) { return localStorage.getItem(`rated_${filmId}`) === 'true'; }
+function markAsRated(filmId) { localStorage.setItem(`rated_${filmId}`, 'true'); }
+
 async function sendRating(filmId, filmTitle, rating, review) {
-    if (hasUserRated(filmId)) {
-        return { success: false, message: "Вы уже оценили этот фильм. Спасибо!" };
-    }
+    if (hasUserRated(filmId)) return { success: false, message: "Вы уже оценили этот фильм. Спасибо!" };
     try {
         await fetch(GOOGLE_RATINGS_URL, {
             method: 'POST', 
@@ -439,9 +521,7 @@ async function sendRating(filmId, filmTitle, rating, review) {
         });
         markAsRated(filmId);
         return { success: true, message: "Спасибо за оценку!" };
-    } catch(e) { 
-        return { success: false, message: "Ошибка отправки" };
-    }
+    } catch(e) { return { success: false, message: "Ошибка отправки" }; }
 }
 
 function initRatingModal(film) {
@@ -453,6 +533,8 @@ function initRatingModal(film) {
     const reviewText = document.getElementById('reviewText');
     const statusDiv = document.getElementById('ratingStatus');
     if (!rateBtn || !modal) return;
+
+    // Сброс состояния
     if (hasUserRated(film.id)) {
         rateBtn.disabled = true;
         rateBtn.style.opacity = '0.5';
@@ -464,20 +546,22 @@ function initRatingModal(film) {
         rateBtn.style.cursor = 'pointer';
         rateBtn.title = '';
     }
+
     stars.forEach(star => {
-        star.addEventListener('click', () => {
+        star.addEventListener('click', function() {
             if (hasUserRated(film.id)) {
                 statusDiv.innerHTML = '<span style="color:#ffc107">Вы уже оценили этот фильм</span>';
                 return;
             }
-            currentRating = parseInt(star.dataset.rating);
+            currentRating = parseInt(this.dataset.rating);
             stars.forEach((s, i) => {
                 s.innerHTML = i < currentRating ? '★' : '☆';
                 s.style.color = i < currentRating ? '#ffc107' : '#555';
             });
         });
     });
-    rateBtn.onclick = () => {
+
+    rateBtn.onclick = function() {
         if (hasUserRated(film.id)) {
             statusDiv.innerHTML = '<span style="color:#ffc107">Вы уже оценили этот фильм</span>';
             setTimeout(() => statusDiv.innerHTML = '', 2000);
@@ -491,20 +575,18 @@ function initRatingModal(film) {
     };
     if (closeSpan) closeSpan.onclick = () => modal.style.display = 'none';
     window.onclick = (e) => { if (e.target === modal) modal.style.display = 'none'; };
-    submitBtn.onclick = async () => {
+
+    submitBtn.onclick = async function() {
         if (hasUserRated(film.id)) {
             statusDiv.innerHTML = '<span style="color:#ffc107">Вы уже оценили этот фильм</span>';
             setTimeout(() => modal.style.display = 'none', 1500);
             return;
         }
-        if (currentRating === 0) { 
-            statusDiv.innerHTML = '<span style="color:#e50914">Поставьте оценку</span>'; 
-            return; 
-        }
+        if (currentRating === 0) { statusDiv.innerHTML = '<span style="color:#e50914">Поставьте оценку</span>'; return; }
         statusDiv.innerHTML = '<span style="color:#ffaa00">Отправка...</span>';
-        submitBtn.disabled = true;
+        this.disabled = true;
         const result = await sendRating(film.id, film.title, currentRating, reviewText.value);
-        submitBtn.disabled = false;
+        this.disabled = false;
         if (result.success) {
             statusDiv.innerHTML = `<span style="color:#4caf50">${result.message}</span>`;
             rateBtn.disabled = true;
@@ -520,97 +602,7 @@ function initRatingModal(film) {
     };
 }
 
-// ============= ПЛЕЕР С СИКВЕЛАМИ (без изменений) =============
-function initPlayer() {
-    const urlParams = new URLSearchParams(window.location.search);
-    const filmId = urlParams.get('id');
-    if (!filmId) { 
-        window.location.href = 'index.html'; 
-        return; 
-    }
-    const film = allFilms.find(f => f.id === filmId);
-    if (!film) { 
-        window.location.href = 'index.html'; 
-        return; 
-    }
-    loadFilmPart(film);
-    const sequelNav = document.getElementById('sequelNav');
-    if (sequelNav && film.sequelGroup) {
-        const groupFilms = allFilms.filter(f => f.sequelGroup === film.sequelGroup)
-                                   .sort((a,b) => (a.sequelOrder || 0) - (b.sequelOrder || 0));
-        if (groupFilms.length > 1) {
-            sequelNav.style.display = 'flex';
-            sequelNav.innerHTML = groupFilms.map(f => `
-                <button class="sequel-btn ${f.id === film.id ? 'active' : ''}" data-id="${f.id}">${f.title}</button>
-            `).join('');
-            sequelNav.querySelectorAll('.sequel-btn').forEach(btn => {
-                btn.addEventListener('click', () => {
-                    const newFilm = allFilms.find(f => f.id === btn.dataset.id);
-                    if (newFilm) {
-                        history.pushState(null, '', `?id=${newFilm.id}`);
-                        loadFilmPart(newFilm);
-                        sequelNav.querySelectorAll('.sequel-btn').forEach(b => b.classList.remove('active'));
-                        btn.classList.add('active');
-                    }
-                });
-            });
-        } else {
-            sequelNav.style.display = 'none';
-        }
-    } else if (sequelNav) {
-        sequelNav.style.display = 'none';
-    }
-}
-
-function loadFilmPart(film) {
-    document.getElementById('filmTitle').textContent = film.title;
-    document.getElementById('filmPoster').src = film.poster;
-    document.getElementById('filmDescription').textContent = film.description || '';
-    const downloadBtn = document.getElementById('downloadBtn');
-    if (downloadBtn) {
-        if (film.downloadUrl && film.videoUrl && film.videoUrl.includes('drive.google.com')) {
-            downloadBtn.href = getDownloadUrl(film.downloadUrl);
-            downloadBtn.style.display = 'inline-flex';
-        } else {
-            downloadBtn.style.display = 'none';
-        }
-    }
-    loadReviews(film.id);
-    initRatingModal(film);
-    const seasonNav = document.getElementById('seasonSeriesNav');
-    if (!film.betterVersionReady && film.betterVersionDate && film.betterVersionDate !== 'null') {
-        const formattedDate = formatDate(film.betterVersionDate);
-        if (formattedDate) {
-            seasonNav.innerHTML = `<div class="better-version-notice">🎥 Улучшенная версия выйдет ${formattedDate}</div>`;
-        } else {
-            seasonNav.innerHTML = `<div class="better-version-notice">🎥 Улучшенная версия скоро</div>`;
-        }
-    } else if (!film.betterVersionReady && film.betterVersionDate === null) {
-        seasonNav.innerHTML = `<div class="better-version-notice">🎥 Улучшенная версия скоро</div>`;
-    } else {
-        seasonNav.innerHTML = '';
-    }
-    const watchBtn = document.getElementById('watchBtn');
-    const iframe = document.getElementById('driveIframe');
-    if (watchBtn && iframe && film.videoUrl) {
-        watchBtn.onclick = () => {
-            iframe.src = getEmbedUrl(film.videoUrl);
-        };
-    }
-}
-
-function formatDate(dateString) {
-    if (!dateString || dateString === 'null') return null;
-    try {
-        const date = new Date(dateString);
-        if (isNaN(date.getTime())) return null;
-        return `${date.getDate()} ${date.toLocaleString('ru', { month: 'long' })} ${date.getFullYear()}`;
-    } catch(e) {
-        return null;
-    }
-}
-
-// ============= ПРЕДЛОЖЕНИЯ (без изменений) =============
+// ============= ПРЕДЛОЖЕНИЯ =============
 async function sendToGoogleSheets(filmName, comment) {
     try {
         await fetch(GOOGLE_SCRIPT_URL, {
@@ -620,9 +612,7 @@ async function sendToGoogleSheets(filmName, comment) {
             body: JSON.stringify({ filmName, comment, timestamp: new Date().toLocaleString('ru-RU') })
         });
         return { success: true, message: "Спасибо! Фильм предложен." };
-    } catch(e) { 
-        return { success: false, message: "Ошибка отправки" }; 
-    }
+    } catch(e) { return { success: false, message: "Ошибка отправки" }; }
 }
 
 async function loadSuggestedFilms() {
@@ -632,13 +622,13 @@ async function loadSuggestedFilms() {
     try {
         const response = await fetch(`${GOOGLE_SCRIPT_URL}?action=get`);
         const films = await response.json();
-        if (!films || films.length === 0) { 
-            container.innerHTML = '<p class="empty-suggestions">Пока нет предложенных фильмов</p>'; 
-            return; 
+        if (!films || films.length === 0) {
+            container.innerHTML = '<p class="empty-suggestions">Пока нет предложенных фильмов</p>';
+            return;
         }
         container.innerHTML = films.map(f => `<div class="suggested-film-item"><span class="suggested-film-name">🎬 ${escapeHtml(f.name)}</span><span class="suggested-film-date">${f.date ? new Date(f.date).toLocaleDateString() : ''}</span></div>`).join('');
-    } catch(e) { 
-        container.innerHTML = '<p class="empty-suggestions">Не удалось загрузить список</p>'; 
+    } catch(e) {
+        container.innerHTML = '<p class="empty-suggestions">Не удалось загрузить список</p>';
     }
 }
 
@@ -654,76 +644,71 @@ function initModal() {
     const statusDiv = document.getElementById('suggestStatus');
     const spinner = document.getElementById('loadingSpinner');
     if (!modal) return;
+
     openBtns.forEach(btn => {
-        if (btn) {
-            btn.onclick = () => {
-                modal.style.display = 'flex';
-                if (filmInput) filmInput.value = '';
-                if (commentInput) commentInput.value = '';
-                if (statusDiv) statusDiv.innerHTML = '';
-                if (suggestContainer) suggestContainer.style.display = 'none';
-            };
-        }
+        btn.onclick = () => {
+            modal.style.display = 'flex';
+            filmInput.value = '';
+            commentInput.value = '';
+            statusDiv.innerHTML = '';
+            if (suggestContainer) suggestContainer.style.display = 'none';
+        };
     });
     if (showBtn) {
-        showBtn.onclick = async () => { 
-            if (suggestContainer) { 
-                suggestContainer.style.display = 'block'; 
-                await loadSuggestedFilms(); 
-            } 
+        showBtn.onclick = async () => {
+            if (suggestContainer) {
+                suggestContainer.style.display = 'block';
+                await loadSuggestedFilms();
+            }
         };
     }
     if (closeSpan) closeSpan.onclick = () => modal.style.display = 'none';
-    window.onclick = e => { if (e.target === modal) modal.style.display = 'none'; };
-    if (submitBtn) {
-        submitBtn.onclick = async () => {
-            const name = filmInput.value.trim();
-            if (!name) { 
-                statusDiv.innerHTML = '<span style="color:#e50914">Введите название</span>'; 
-                return; 
-            }
-            if (spinner) spinner.style.display = 'inline-block';
-            statusDiv.innerHTML = '<span style="color:#ffaa00">Отправка...</span>';
-            submitBtn.disabled = true;
-            const result = await sendToGoogleSheets(name, commentInput.value);
-            if (spinner) spinner.style.display = 'none';
-            submitBtn.disabled = false;
-            if (result.success) {
-                statusDiv.innerHTML = `<span style="color:#4caf50">${result.message}</span>`;
-                filmInput.value = '';
-                commentInput.value = '';
-                if (suggestContainer && suggestContainer.style.display === 'block') await loadSuggestedFilms();
-                setTimeout(() => statusDiv.innerHTML = '', 3000);
-            } else {
-                statusDiv.innerHTML = `<span style="color:#e50914">${result.message}</span>`;
-            }
-        };
-    }
+    window.onclick = (e) => { if (e.target === modal) modal.style.display = 'none'; };
+
+    submitBtn.onclick = async function() {
+        const name = filmInput.value.trim();
+        if (!name) { statusDiv.innerHTML = '<span style="color:#e50914">Введите название</span>'; return; }
+        if (spinner) spinner.style.display = 'inline-block';
+        statusDiv.innerHTML = '<span style="color:#ffaa00">Отправка...</span>';
+        this.disabled = true;
+        const result = await sendToGoogleSheets(name, commentInput.value);
+        if (spinner) spinner.style.display = 'none';
+        this.disabled = false;
+        if (result.success) {
+            statusDiv.innerHTML = `<span style="color:#4caf50">${result.message}</span>`;
+            filmInput.value = '';
+            commentInput.value = '';
+            if (suggestContainer && suggestContainer.style.display === 'block') await loadSuggestedFilms();
+            setTimeout(() => statusDiv.innerHTML = '', 3000);
+        } else {
+            statusDiv.innerHTML = `<span style="color:#e50914">${result.message}</span>`;
+        }
+    };
 }
 
 // ============= ЗАПУСК =============
 document.addEventListener('DOMContentLoaded', () => {
     if (typeof FILMS_CATALOG !== 'undefined') allFilms = [...FILMS_CATALOG];
-    
+
     if (document.getElementById('filmsGrid')) {
         renderTopCarousel();
         renderAlphabetVertical();
         renderCategoryFilters();
         updateCatalog();
-        
+
         const searchInput = document.getElementById('searchInput');
         const clearBtn = document.getElementById('searchClear');
         if (searchInput) {
-            searchInput.addEventListener('input', e => {
-                const val = e.target.value;
+            searchInput.addEventListener('input', function() {
+                const val = this.value;
                 if (clearBtn) clearBtn.style.display = val ? 'block' : 'none';
                 updateCatalog();
             });
         }
         if (clearBtn) {
-            clearBtn.addEventListener('click', () => {
+            clearBtn.addEventListener('click', function() {
                 if (searchInput) searchInput.value = '';
-                clearBtn.style.display = 'none';
+                this.style.display = 'none';
                 currentLetter = null;
                 currentCategory = null;
                 currentSubcategory = null;
@@ -734,9 +719,15 @@ document.addEventListener('DOMContentLoaded', () => {
             });
         }
     }
-    
-    if (document.getElementById('driveIframe')) initPlayer();
-    
+
+    if (document.getElementById('driveIframe')) {
+        // Добавляем обработчик для ссылки "Назад" – показать спиннер
+        document.getElementById('backLink')?.addEventListener('click', function(e) {
+            showLoading();
+        });
+        initPlayer();
+    }
+
     document.querySelectorAll('#otherProjectsLink').forEach(link => link && (link.href = '#'));
     initModal();
 });
