@@ -256,40 +256,28 @@ function initPlayer() {
 
     loadFilmPart(film);
 
-    // Сиквелы
-    if (film.sequelGroup) {
-        const groupFilms = allFilms.filter(f => f.sequelGroup === film.sequelGroup)
-                                   .sort((a,b) => (a.sequelOrder || 0) - (b.sequelOrder || 0));
-        if (groupFilms.length > 1) {
-            const desktopNav = document.getElementById('sequelNavDesktop');
-            if (desktopNav) {
-                desktopNav.style.display = 'flex';
-                desktopNav.innerHTML = groupFilms.map(f => `
+    // Сиквелы – теперь только один блок (над плеером)
+    const sequelNav = document.getElementById('sequelNav');
+    if (sequelNav) {
+        if (film.sequelGroup) {
+            const groupFilms = allFilms.filter(f => f.sequelGroup === film.sequelGroup)
+                                       .sort((a,b) => (a.sequelOrder || 0) - (b.sequelOrder || 0));
+            if (groupFilms.length > 1) {
+                sequelNav.style.display = 'flex';
+                sequelNav.innerHTML = groupFilms.map(f => `
                     <button class="sequel-btn ${f.id === film.id ? 'active' : ''}" data-id="${f.id}">${f.title}</button>
                 `).join('');
-                desktopNav.querySelectorAll('.sequel-btn').forEach(btn => {
+                sequelNav.querySelectorAll('.sequel-btn').forEach(btn => {
                     btn.addEventListener('click', function() {
                         switchSequel(this.dataset.id);
                     });
                 });
-            }
-            const mobileNav = document.getElementById('sequelNavMobile');
-            if (mobileNav) {
-                mobileNav.style.display = 'flex';
-                mobileNav.innerHTML = groupFilms.map(f => `
-                    <button class="sequel-btn ${f.id === film.id ? 'active' : ''}" data-id="${f.id}">${f.title}</button>
-                `).join('');
-                mobileNav.querySelectorAll('.sequel-btn').forEach(btn => {
-                    btn.addEventListener('click', function() {
-                        switchSequel(this.dataset.id);
-                    });
-                });
+            } else {
+                sequelNav.style.display = 'none';
             }
         } else {
-            document.querySelectorAll('.sequel-nav').forEach(el => el.style.display = 'none');
+            sequelNav.style.display = 'none';
         }
-    } else {
-        document.querySelectorAll('.sequel-nav').forEach(el => el.style.display = 'none');
     }
 
     // Кнопка "Следующая серия"
@@ -393,8 +381,13 @@ function switchSequel(id) {
     if (newFilm) {
         history.pushState(null, '', `?id=${newFilm.id}`);
         loadFilmPart(newFilm);
-        document.querySelectorAll('.sequel-btn').forEach(b => b.classList.remove('active'));
-        document.querySelectorAll(`.sequel-btn[data-id="${newFilm.id}"]`).forEach(b => b.classList.add('active'));
+        // Обновить активные кнопки в единственном блоке
+        const sequelNav = document.getElementById('sequelNav');
+        if (sequelNav) {
+            sequelNav.querySelectorAll('.sequel-btn').forEach(b => b.classList.remove('active'));
+            const activeBtn = sequelNav.querySelector(`.sequel-btn[data-id="${newFilm.id}"]`);
+            if (activeBtn) activeBtn.classList.add('active');
+        }
         window._currentFilm = newFilm;
         window._currentSeason = null;
         window._currentSeries = null;
