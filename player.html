@@ -7,8 +7,7 @@
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <!-- ОВЕРЛЕЙ ЗАГРУЗКИ – виден сразу -->
-    <div id="loadingOverlay" style="position:fixed; top:0; left:0; width:100%; height:100%; background:#0a0a0a; z-index:9999; display:flex; justify-content:center; align-items:center;">
+    <div id="loadingOverlay" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:#0a0a0a; z-index:9999; justify-content:center; align-items:center;">
         <div class="spinner" style="width:50px; height:50px; border-width:4px;"></div>
     </div>
 
@@ -21,16 +20,22 @@
                 <div class="film-actions">
                     <button id="rateBtn" class="rate-btn">⭐ Оценить фильм</button>
                     <a id="downloadBtn" class="download-btn" href="#" download>⬇ Скачать фильм</a>
-                    <button id="nextEpisodeBtn" class="next-episode-btn" style="display: none;">⏩ Следующая серия</button>
+                    <!-- Кнопка следующая серия убрана отсюда, теперь она в блоке навигации -->
                 </div>
             </div>
             <div class="player-panel">
                 <div id="sequelNav" class="sequel-nav" style="display: none;"></div>
                 <h1 id="filmTitle"></h1>
                 <div class="video-wrapper">
-                    <iframe id="driveIframe" src="" width="100%" height="100%" frameborder="0" allow="autoplay; fullscreen" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%;"></iframe>
+                    <iframe id="driveIframe" src="" width="100%" height="100%" frameborder="0" allowfullscreen allow="autoplay; fullscreen; picture-in-picture" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%;"></iframe>
                 </div>
+                <!-- Блок навигации по сериям (предыдущая, следующая, выбрать) -->
                 <div id="seasonSeriesNav" class="season-series-nav"></div>
+                <div class="nav-buttons">
+                    <button id="prevEpisodeBtn" class="prev-btn" disabled>◀ Предыдущая</button>
+                    <button id="chooseSeriesBtn" class="choose-btn">📋 Выбрать серию</button>
+                    <button id="nextEpisodeBtn" class="next-btn" disabled>Следующая ▶</button>
+                </div>
                 <button id="watchBtn" class="watch-btn-large">▶ Смотреть</button>
             </div>
         </div>
@@ -48,6 +53,7 @@
         </div>
     </div>
 
+    <!-- Модалка оценки -->
     <div id="rateModal" class="modal">
         <div class="modal-content rate-modal">
             <span class="modal-close rate-close">&times;</span>
@@ -65,6 +71,16 @@
         </div>
     </div>
 
+    <!-- Модалка выбора сезона/серии -->
+    <div id="seasonModal" class="modal" style="display:none;">
+        <div class="modal-content">
+            <span class="modal-close" id="seasonModalClose">&times;</span>
+            <h3>📺 Выбор сезона и серии</h3>
+            <div id="seasonModalContent"></div>
+        </div>
+    </div>
+
+    <!-- Модалка предложений -->
     <div id="suggestModal" class="modal">
         <div class="modal-content">
             <span class="modal-close">&times;</span>
