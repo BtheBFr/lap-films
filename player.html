@@ -7,19 +7,15 @@
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <!-- Спиннер загрузки -->
     <div id="loadingOverlay" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.7); z-index:9999; justify-content:center; align-items:center; backdrop-filter:blur(4px);">
         <div class="spinner" style="width:50px; height:50px; border-width:4px;"></div>
     </div>
 
     <div class="player-page">
         <a href="index.html" class="back-link" id="backLink">← Назад к каталогу</a>
-        
-        <!-- Блок сиквелов (десктопный, внутри панели) - будет показан на больших экранах -->
         <div class="player-layout">
             <div class="film-info-panel" id="filmInfoPanel">
                 <img id="filmPoster" src="" alt="Постер">
-                <!-- Десктопная навигация сиквелов -->
                 <div id="sequelNavDesktop" class="sequel-nav" style="display: none;"></div>
                 <p id="filmDescription" class="film-description-full"></p>
                 <div class="film-actions">
@@ -27,20 +23,11 @@
                     <a id="downloadBtn" class="download-btn" href="#" download>⬇ Скачать фильм</a>
                 </div>
             </div>
-            
             <div class="player-panel">
-                <!-- Мобильная навигация сиквелов (над плеером) -->
                 <div id="sequelNavMobile" class="sequel-nav" style="display: none;"></div>
                 <h1 id="filmTitle"></h1>
                 <div class="video-wrapper">
-                    <iframe id="driveIframe" 
-                        src="" 
-                        width="100%" 
-                        height="100%" 
-                        frameborder="0" 
-                        allow="autoplay; fullscreen"
-                        style="position: absolute; top: 0; left: 0; width: 100%; height: 100%;">
-                    </iframe>
+                    <iframe id="driveIframe" src="" width="100%" height="100%" frameborder="0" allow="autoplay; fullscreen" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%;"></iframe>
                 </div>
                 <div id="seasonSeriesNav" class="season-series-nav"></div>
                 <button id="watchBtn" class="watch-btn-large">▶ Смотреть</button>
@@ -60,7 +47,7 @@
         </div>
     </div>
 
-    <!-- МОДАЛКА ОЦЕНКИ -->
+    <!-- Модалки -->
     <div id="rateModal" class="modal">
         <div class="modal-content rate-modal">
             <span class="modal-close rate-close">&times;</span>
@@ -78,7 +65,6 @@
         </div>
     </div>
 
-    <!-- МОДАЛЬНОЕ ОКНО ПРЕДЛОЖЕНИЙ -->
     <div id="suggestModal" class="modal">
         <div class="modal-content">
             <span class="modal-close">&times;</span>
