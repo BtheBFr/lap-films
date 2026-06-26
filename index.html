@@ -7,47 +7,37 @@
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <!-- Спиннер загрузки (на весь экран) -->
+    <!-- Спиннер загрузки -->
     <div id="loadingOverlay" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.7); z-index:9999; justify-content:center; align-items:center; backdrop-filter:blur(4px);">
         <div class="spinner" style="width:50px; height:50px; border-width:4px;"></div>
     </div>
 
     <div class="container">
         <h1>lap-films</h1>
-        
         <div class="search-container">
             <input type="text" id="searchInput" placeholder="🔍 Поиск фильмов или сериалов..." autocomplete="off">
             <button id="searchClear" class="clear-btn" style="display: none;">✖</button>
         </div>
-        
-        <!-- ТОП-ЛЕНТА (бесконечная) -->
         <div class="top-carousel-container" id="topCarousel" style="display: none;">
             <h2 class="section-title">🔥 Топ фильмов</h2>
             <div class="top-carousel-wrapper">
                 <div class="top-carousel" id="topCarouselList"></div>
             </div>
         </div>
-        
-        <!-- КАТЕГОРИИ -->
         <div class="category-container" id="categoryFilters"></div>
-        
-        <!-- СЕТКА ФИЛЬМОВ -->
         <div class="films-grid" id="filmsGrid"></div>
         <div id="noResults" class="no-results" style="display: none;">
             <p>Ничего не найдено</p>
             <small>Попробуйте другие ключевые слова</small>
         </div>
-
         <div class="buttons-row">
             <button id="suggestFilmBtn" class="action-btn suggest-btn">📩 Предложить фильм / сериал</button>
             <a href="#" id="otherProjectsLink" class="action-btn other-projects-btn">🔗 Другие проекты lap</a>
         </div>
     </div>
 
-    <!-- ВЕРТИКАЛЬНЫЙ АЛФАВИТ (только клик) -->
     <div class="alphabet-vertical" id="alphabetVertical"></div>
 
-    <!-- МОДАЛЬНОЕ ОКНО -->
     <div id="suggestModal" class="modal">
         <div class="modal-content">
             <span class="modal-close">&times;</span>
