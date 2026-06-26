@@ -51,7 +51,6 @@ h1 {
     color: white;
     font-size: 1rem;
 }
-
 #searchInput:focus {
     outline: none;
     border-color: #e50914;
@@ -74,7 +73,7 @@ h1 {
     background: #e50914;
 }
 
-/* ============= ТОП-ЛЕНТА (автопрокрутка) ============= */
+/* ============= ТОП-ЛЕНТА (бесконечная) ============= */
 .section-title {
     font-size: 1.6rem;
     margin: 20px 0 15px;
@@ -85,13 +84,15 @@ h1 {
     overflow: hidden;
     margin-bottom: 30px;
 }
+.top-carousel-wrapper {
+    overflow: hidden;
+    cursor: grab;
+}
 .top-carousel {
     display: flex;
     gap: 16px;
-    overflow: visible; /* чтобы не обрезать тени */
-    transition: transform 0.5s ease;
-    padding: 10px 4px 20px;
     will-change: transform;
+    transition: transform 0.5s ease;
 }
 .top-film-item {
     flex: 0 0 140px;
@@ -116,7 +117,7 @@ h1 {
     color: #eee;
 }
 
-/* ============= ВЕРТИКАЛЬНЫЙ АЛФАВИТ ============= */
+/* ============= АЛФАВИТ (вертикальный, только клик) ============= */
 .alphabet-vertical {
     position: fixed;
     right: 8px;
@@ -133,7 +134,6 @@ h1 {
     border: 1px solid rgba(255,255,255,0.1);
     user-select: none;
     -webkit-user-select: none;
-    touch-action: none;
 }
 .alphabet-vertical .letter {
     display: block;
@@ -163,12 +163,12 @@ h1 {
     margin: 10px 0 20px;
     text-align: center;
 }
-.category-main-list {
+.category-main-list, .category-sub-list {
     display: flex;
     flex-wrap: wrap;
     gap: 8px;
     justify-content: center;
-    margin-bottom: 12px;
+    margin-bottom: 8px;
 }
 .category-main-btn, .category-sub-btn {
     padding: 6px 16px;
@@ -189,12 +189,6 @@ h1 {
     color: #fff;
     border-color: #e50914;
 }
-.category-sub-list {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 6px;
-    justify-content: center;
-}
 
 /* ============= СЕТКА ФИЛЬМОВ ============= */
 .films-grid {
@@ -209,13 +203,11 @@ h1 {
     backdrop-filter: blur(10px);
     border-radius: 16px;
     overflow: hidden;
-    transition: transform 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
+    transition: transform 0.2s, border-color 0.2s, box-shadow 0.2s;
     border: 1px solid rgba(255,255,255,0.1);
     cursor: pointer;
     text-align: center;
     padding-bottom: 12px;
-    will-change: transform;
-    transform: translateZ(0);
 }
 .film-card:hover {
     transform: translateY(-5px);
@@ -224,7 +216,7 @@ h1 {
 }
 .film-card img {
     width: 100%;
-    aspect-ratio: 2 / 3;
+    aspect-ratio: 2/3;
     object-fit: cover;
 }
 .film-card h3 {
@@ -234,14 +226,13 @@ h1 {
 }
 .coming-badge {
     display: inline-block;
-    background: rgba(229, 9, 20, 0.85);
+    background: rgba(229,9,20,0.85);
     backdrop-filter: blur(4px);
     padding: 6px 12px;
     border-radius: 20px;
     font-size: 0.7rem;
     font-weight: 600;
     margin: 8px 12px 12px;
-    text-align: center;
     color: white;
 }
 
@@ -265,7 +256,7 @@ h1 {
     font-size: 0.95rem;
     font-weight: 600;
     cursor: pointer;
-    transition: background 0.3s ease, transform 0.2s ease;
+    transition: background 0.3s, transform 0.2s;
     text-decoration: none;
     display: inline-block;
     text-align: center;
@@ -291,7 +282,7 @@ h1 {
     transform: translateY(-2px);
 }
 
-/* ============= ПЛЕЕР (включая сиквелы) ============= */
+/* ============= ПЛЕЕР ============= */
 .player-layout {
     display: flex;
     gap: 40px;
@@ -301,7 +292,7 @@ h1 {
 .film-info-panel {
     flex: 1;
     min-width: 250px;
-    background: rgba(30, 30, 40, 0.5);
+    background: rgba(30,30,40,0.5);
     backdrop-filter: blur(10px);
     border-radius: 24px;
     padding: 24px;
@@ -320,7 +311,17 @@ h1 {
     line-height: 1.5;
     color: #ccc;
     text-align: left;
-    margin-bottom: 20px;
+    margin: 20px 0;
+    max-height: 300px;
+    overflow-y: auto;
+    padding-right: 5px;
+}
+.film-description-full::-webkit-scrollbar {
+    width: 4px;
+}
+.film-description-full::-webkit-scrollbar-thumb {
+    background: #e50914;
+    border-radius: 10px;
 }
 
 .sequel-nav {
@@ -353,9 +354,9 @@ h1 {
 .film-actions {
     display: flex;
     gap: 15px;
-    margin-top: 10px;
     justify-content: center;
     flex-wrap: wrap;
+    margin-top: 10px;
 }
 .rate-btn, .download-btn {
     display: inline-flex;
@@ -371,7 +372,7 @@ h1 {
     border: none;
 }
 .rate-btn {
-    background: rgba(255, 193, 7, 0.15);
+    background: rgba(255,193,7,0.15);
     border: 1px solid #ffc107;
     color: #ffc107;
 }
@@ -384,7 +385,7 @@ h1 {
     cursor: not-allowed;
 }
 .download-btn {
-    background: rgba(76, 175, 80, 0.15);
+    background: rgba(76,175,80,0.15);
     border: 1px solid #4caf50;
     color: #4caf50;
 }
@@ -392,6 +393,7 @@ h1 {
     background: #4caf50;
     color: white;
 }
+
 .player-panel {
     flex: 2;
     min-width: 300px;
@@ -407,7 +409,7 @@ h1 {
     background: #000;
     border-radius: 20px;
     overflow: hidden;
-    aspect-ratio: 16 / 9;
+    aspect-ratio: 16/9;
     margin-bottom: 20px;
     position: relative;
 }
@@ -421,25 +423,13 @@ h1 {
 .season-series-nav {
     margin: 20px 0;
 }
-.season-nav, .series-nav {
-    display: flex;
-    gap: 10px;
-    flex-wrap: wrap;
-    margin-bottom: 15px;
-}
-.season-btn, .series-btn {
-    background: #2a2a3a;
-    border: 1px solid #444;
-    padding: 8px 18px;
+.better-version-notice {
+    background: rgba(229,9,20,0.2);
+    border: 1px solid #e50914;
     border-radius: 40px;
-    color: white;
-    cursor: pointer;
-    font-size: 0.85rem;
-    transition: background 0.2s;
-}
-.season-btn.active, .series-btn.active {
-    background: #e50914;
-    border-color: white;
+    padding: 10px 20px;
+    text-align: center;
+    font-size: 0.9rem;
 }
 .watch-btn-large {
     width: 100%;
@@ -451,18 +441,19 @@ h1 {
     font-size: 1.1rem;
     font-weight: 700;
     cursor: pointer;
-    transition: transform 0.2s, box-shadow 0.2s;
+    transition: transform 0.2s;
 }
 .watch-btn-large:hover {
     transform: scale(1.02);
 }
+
 .back-link {
     display: inline-flex;
     align-items: center;
     gap: 8px;
-    background: rgba(255, 255, 255, 0.08);
+    background: rgba(255,255,255,0.08);
     backdrop-filter: blur(10px);
-    border: 1px solid rgba(255, 255, 255, 0.2);
+    border: 1px solid rgba(255,255,255,0.2);
     padding: 10px 24px;
     border-radius: 60px;
     color: white;
@@ -479,22 +470,19 @@ h1 {
     border-color: white;
     transform: translateX(-5px);
 }
-.player-buttons {
-    margin-top: 50px;
-}
 
 /* ============= ОТЗЫВЫ ============= */
 .reviews-section {
     margin-top: 40px;
     padding-top: 30px;
-    border-top: 2px solid rgba(255, 255, 255, 0.1);
+    border-top: 2px solid rgba(255,255,255,0.1);
 }
 .reviews-section h3 {
     font-size: 1.3rem;
     margin-bottom: 20px;
 }
 .reviews-list {
-    background: rgba(30, 30, 40, 0.4);
+    background: rgba(30,30,40,0.4);
     border-radius: 20px;
     padding: 20px;
 }
@@ -502,11 +490,11 @@ h1 {
     font-size: 1.1rem;
     margin-bottom: 20px;
     padding-bottom: 15px;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    border-bottom: 1px solid rgba(255,255,255,0.1);
 }
 .review-item {
     padding: 15px;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+    border-bottom: 1px solid rgba(255,255,255,0.08);
 }
 .review-item:last-child {
     border-bottom: none;
@@ -537,8 +525,8 @@ h1 {
     width: 100%;
     padding: 10px;
     margin-top: 15px;
-    background: rgba(255, 255, 255, 0.08);
-    border: 1px solid rgba(255, 255, 255, 0.2);
+    background: rgba(255,255,255,0.08);
+    border: 1px solid rgba(255,255,255,0.2);
     border-radius: 30px;
     color: #ffc107;
     font-weight: 600;
@@ -579,8 +567,7 @@ h1 {
     font-size: 1.5rem;
     margin-bottom: 8px;
 }
-.modal-content input,
-.modal-content textarea {
+.modal-content input, .modal-content textarea {
     width: 100%;
     padding: 12px;
     margin-bottom: 16px;
@@ -650,8 +637,8 @@ h1 {
 .show-suggested-btn {
     width: 100%;
     padding: 12px;
-    background: rgba(255, 255, 255, 0.08);
-    border: 1px solid rgba(255, 255, 255, 0.2);
+    background: rgba(255,255,255,0.08);
+    border: 1px solid rgba(255,255,255,0.2);
     border-radius: 40px;
     color: white;
     font-weight: 600;
@@ -699,10 +686,10 @@ h1 {
     font-size: 0.75rem;
 }
 
-/* ============= МОБИЛЬНАЯ ОПТИМИЗАЦИЯ ============= */
+/* ============= АДАПТАЦИЯ ПОД ТЕЛЕФОН ============= */
 @media (max-width: 768px) {
     body {
-        padding: 20px 10px;
+        padding: 15px 10px;
     }
     h1 {
         font-size: 2rem;
@@ -710,6 +697,7 @@ h1 {
     .films-grid {
         grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
         gap: 10px;
+        margin-right: 30px; /* чтобы алфавит не перекрывал */
     }
     .film-card h3 {
         font-size: 0.8rem;
@@ -724,31 +712,35 @@ h1 {
     .modal-content {
         padding: 20px;
     }
+
+    /* Плеер на телефоне */
     .player-layout {
         flex-direction: column;
         gap: 20px;
     }
     .film-info-panel {
         order: 2;
-        display: flex;
         flex-direction: row;
         flex-wrap: wrap;
-        align-items: center;
-        gap: 15px;
+        align-items: flex-start;
         padding: 16px;
+        gap: 15px;
     }
     .film-info-panel img {
-        max-width: 80px;
+        max-width: 100px;
         margin: 0;
     }
     .film-description-full {
         flex: 1;
         margin: 0;
         font-size: 0.85rem;
+        max-height: 150px;
+        overflow-y: auto;
     }
     .film-actions {
         width: 100%;
         justify-content: center;
+        margin-top: 5px;
     }
     .player-panel {
         order: 1;
@@ -757,13 +749,30 @@ h1 {
         font-size: 1.3rem;
         margin-top: 0;
     }
-    .sequel-nav {
-        gap: 6px;
+
+    /* Сиквелы: десктопный блок скрываем, мобильный показываем над плеером */
+    #sequelNavDesktop {
+        display: none !important;
     }
-    .sequel-btn {
-        padding: 6px 12px;
-        font-size: 0.75rem;
+    #sequelNavMobile {
+        display: flex !important;
+        margin-bottom: 10px;
     }
+
+    /* Алфавит справа - меньше, не перекрывает */
+    .alphabet-vertical {
+        right: 4px;
+        padding: 6px 4px;
+        gap: 1px;
+        border-radius: 16px;
+    }
+    .alphabet-vertical .letter {
+        width: 18px;
+        height: 18px;
+        line-height: 18px;
+        font-size: 0.6rem;
+    }
+
     /* Отключаем тяжёлые эффекты */
     .search-container input,
     .film-card,
@@ -774,7 +783,7 @@ h1 {
     .coming-badge {
         backdrop-filter: none !important;
         -webkit-backdrop-filter: none !important;
-        background: rgba(20, 20, 30, 0.95) !important;
+        background: rgba(20,20,30,0.95) !important;
     }
     .modal {
         background: rgba(0,0,0,0.85) !important;
@@ -784,7 +793,6 @@ h1 {
     }
     .film-card {
         transition: none !important;
-        will-change: auto;
     }
     .action-btn {
         transition: none !important;
@@ -801,19 +809,6 @@ h1 {
     }
     .submit-suggest-btn {
         background: #e50914 !important;
-    }
-    /* Алфавит справа делаем чуть меньше */
-    .alphabet-vertical {
-        right: 4px;
-        padding: 6px 4px;
-        gap: 1px;
-        border-radius: 16px;
-    }
-    .alphabet-vertical .letter {
-        width: 18px;
-        height: 18px;
-        line-height: 18px;
-        font-size: 0.6rem;
     }
 }
 
@@ -841,11 +836,11 @@ h1 {
         border-color: rgba(255,255,255,0.1) !important;
     }
     .rate-btn:hover:not(:disabled) {
-        background: rgba(255, 193, 7, 0.15) !important;
+        background: rgba(255,193,7,0.15) !important;
         color: #ffc107 !important;
     }
     .download-btn:hover {
-        background: rgba(76, 175, 80, 0.15) !important;
+        background: rgba(76,175,80,0.15) !important;
         color: #4caf50 !important;
     }
 }
