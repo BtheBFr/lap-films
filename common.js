@@ -289,7 +289,6 @@ function initPlayer() {
     currentFilm = film;
 
     // Определяем начальные сезон и серию (если есть)
-    // Проверяем, что seasons – это объект, а не строка "none"
     if (film.seasons && typeof film.seasons === 'object' && !Array.isArray(film.seasons)) {
         const seasonsKeys = Object.keys(film.seasons).sort();
         if (seasonsKeys.length > 0) {
@@ -304,10 +303,10 @@ function initPlayer() {
         currentSeriesKey = null;
     }
 
-    // Загружаем информацию о фильме (постер, описание, категории)
+    // Загружаем информацию о фильме
     updateFilmInfo();
 
-    // Создаём навигацию по сезонам/сериям (если есть)
+    // Навигация по сезонам
     if (film.seasons && typeof film.seasons === 'object' && !Array.isArray(film.seasons)) {
         renderSeasonSeriesNav();
     } else {
@@ -322,7 +321,7 @@ function initPlayer() {
         }
     }
 
-    // Сиквелы (только один блок над плеером)
+    // Сиквелы
     const sequelNav = document.getElementById('sequelNav');
     if (sequelNav) {
         if (film.sequelGroup) {
@@ -346,7 +345,7 @@ function initPlayer() {
         }
     }
 
-    // Кнопка "Смотреть" – загружает видео по клику для любого фильма
+    // Кнопка "Смотреть"
     const watchBtn = document.getElementById('watchBtn');
     if (watchBtn) {
         watchBtn.onclick = function() {
@@ -354,13 +353,11 @@ function initPlayer() {
         };
     }
 
-    // Кнопки "Предыдущая серия", "Следующая серия", "Выбрать серию"
-    // Показываем только если есть сезоны (объект, не строка)
+    // Кнопки навигации для сериалов
     const hasSeasons = (film.seasons && typeof film.seasons === 'object' && !Array.isArray(film.seasons));
     if (hasSeasons) {
         initNavigationButtons();
     } else {
-        // Скрываем все кнопки навигации
         const prevBtn = document.getElementById('prevEpisodeBtn');
         const nextBtn = document.getElementById('nextEpisodeBtn');
         const chooseBtn = document.getElementById('chooseSeriesBtn');
@@ -369,11 +366,9 @@ function initPlayer() {
         if (chooseBtn) chooseBtn.style.display = 'none';
     }
 
-    // Загружаем отзывы и модалку оценки
     loadReviews(film.id);
     initRatingModal(film);
 
-    // Закрытие модалки сезонов по крестику и клику вне
     const seasonModalClose = document.getElementById('seasonModalClose');
     if (seasonModalClose) {
         seasonModalClose.onclick = function() {
@@ -389,17 +384,15 @@ function initPlayer() {
         });
     }
 
-    // Убеждаемся, что загрузка скрывается
     setTimeout(() => hideLoading(), 1500);
 }
 
-// --- Обновление информации о фильме (постер, описание, категории отдельно) ---
+// --- ОБНОВЛЕНИЕ ИНФОРМАЦИИ О ФИЛЬМЕ (С ИСПРАВЛЕННЫМИ ПОДКАТЕГОРИЯМИ) ---
 function updateFilmInfo() {
     if (!currentFilm) return;
     document.getElementById('filmPoster').src = currentFilm.poster;
     document.getElementById('filmDescription').textContent = currentFilm.description || '';
 
-    // Заголовок с сезоном/серией
     let title = currentFilm.title;
     if (currentSeasonKey && currentSeriesKey && currentFilm.seasons && typeof currentFilm.seasons === 'object') {
         const seasonTitle = currentFilm.seasons[currentSeasonKey]?.title || `Сезон ${currentSeasonKey}`;
@@ -408,24 +401,25 @@ function updateFilmInfo() {
     }
     document.getElementById('filmTitle').textContent = title;
 
-    // --- Отображаем категории отдельно (с человеческими названиями) ---
+    // --- КАТЕГОРИИ (с человеческими названиями для всех подкатегорий) ---
     const categoryContainer = document.getElementById('filmCategories');
     if (categoryContainer) {
         let catHtml = '';
         if (currentFilm.category || currentFilm.subcategory) {
             const cats = Array.isArray(currentFilm.category) ? currentFilm.category : (currentFilm.category ? [currentFilm.category] : []);
             const subcats = Array.isArray(currentFilm.subcategory) ? currentFilm.subcategory : (currentFilm.subcategory ? [currentFilm.subcategory] : []);
-            // Получаем человеческие названия категорий
+            
+            // Названия категорий
             let catLabels = cats.map(c => {
-                // Если категория – это ключ, ищем в CATEGORIES
                 if (CATEGORIES[c]) return CATEGORIES[c].label;
-                // Иначе, может быть уже строка с эмодзи? оставляем как есть
                 return c;
             }).filter(Boolean);
-            // Получаем человеческие названия подкатегорий
+            
+            // Названия подкатегорий – ищем по всем категориям
             let subLabels = [];
             subcats.forEach(s => {
                 let found = false;
+                // Сначала ищем в категориях, которые указаны у фильма
                 for (let c of cats) {
                     if (CATEGORIES[c] && CATEGORIES[c].subcategories && CATEGORIES[c].subcategories[s]) {
                         subLabels.push(CATEGORIES[c].subcategories[s]);
@@ -433,8 +427,20 @@ function updateFilmInfo() {
                         break;
                     }
                 }
-                if (!found && s) subLabels.push(s); // если не нашли, показываем как есть
+                // Если не нашли, ищем во всех глобальных категориях
+                if (!found) {
+                    for (let catKey in CATEGORIES) {
+                        if (CATEGORIES[catKey].subcategories && CATEGORIES[catKey].subcategories[s]) {
+                            subLabels.push(CATEGORIES[catKey].subcategories[s]);
+                            found = true;
+                            break;
+                        }
+                    }
+                }
+                // Если всё равно не нашли – оставляем как есть
+                if (!found && s) subLabels.push(s);
             });
+            
             if (catLabels.length) {
                 catHtml += `<span class="cat-tag">📂 ${catLabels.join(', ')}</span>`;
             }
@@ -445,7 +451,6 @@ function updateFilmInfo() {
         categoryContainer.innerHTML = catHtml ? `<div class="category-tags">${catHtml}</div>` : '';
     }
 
-    // Кнопка скачивания
     const downloadBtn = document.getElementById('downloadBtn');
     if (downloadBtn) {
         if (currentFilm.downloadUrl && currentFilm.videoUrl && currentFilm.videoUrl.includes('drive.google.com')) {
@@ -457,7 +462,7 @@ function updateFilmInfo() {
     }
 }
 
-// --- Загрузка видео в iframe (по клику на "Смотреть") ---
+// --- Загрузка видео (по клику) ---
 function loadVideo() {
     const iframe = document.getElementById('driveIframe');
     if (!iframe) return;
@@ -475,7 +480,7 @@ function loadVideo() {
     }
 }
 
-// --- Отрисовка навигации по сезонам/сериям (в модалке) ---
+// --- Отрисовка модалки сезонов ---
 function renderSeasonSeriesNav() {
     const modalContent = document.getElementById('seasonModalContent');
     if (!modalContent) return;
@@ -510,7 +515,6 @@ function renderSeasonSeriesNav() {
                 currentSeasonKey = sKey;
                 currentSeriesKey = srKey;
                 updateFilmInfo();
-                // Если видео уже загружено, перезагружаем его
                 const iframe = document.getElementById('driveIframe');
                 if (iframe && iframe.src) {
                     loadVideo();
@@ -551,7 +555,7 @@ function initNavigationButtons() {
     updateNavButtonsState();
 }
 
-// --- Переход на предыдущую серию ---
+// --- Переходы по сериям ---
 function goToPrevEpisode() {
     if (!currentFilm.seasons || typeof currentFilm.seasons !== 'object') return;
     const seasonsKeys = Object.keys(currentFilm.seasons).sort();
@@ -601,7 +605,6 @@ function goToPrevEpisode() {
     }
 }
 
-// --- Переход на следующую серию ---
 function goToNextEpisode() {
     if (!currentFilm.seasons || typeof currentFilm.seasons !== 'object') return;
     const seasonsKeys = Object.keys(currentFilm.seasons).sort();
@@ -651,7 +654,6 @@ function goToNextEpisode() {
     }
 }
 
-// --- Обновление состояния кнопок (пред/след) ---
 function updateNavButtonsState() {
     const prevBtn = document.getElementById('prevEpisodeBtn');
     const nextBtn = document.getElementById('nextEpisodeBtn');
@@ -704,7 +706,6 @@ function updateNavButtonsState() {
     }
 }
 
-// --- Открытие модалки выбора сезона/серии ---
 function openSeasonModal() {
     const modal = document.getElementById('seasonModal');
     if (!modal) return;
@@ -718,7 +719,6 @@ function switchSequel(id) {
     if (newFilm) {
         history.pushState(null, '', `?id=${newFilm.id}`);
         currentFilm = newFilm;
-        // Определяем сезоны
         if (newFilm.seasons && typeof newFilm.seasons === 'object' && !Array.isArray(newFilm.seasons)) {
             const seasonsKeys = Object.keys(newFilm.seasons).sort();
             if (seasonsKeys.length > 0) {
@@ -733,7 +733,6 @@ function switchSequel(id) {
             currentSeriesKey = null;
         }
         updateFilmInfo();
-        // Обновляем навигацию сезонов
         const hasSeasons = (newFilm.seasons && typeof newFilm.seasons === 'object' && !Array.isArray(newFilm.seasons));
         if (hasSeasons) {
             renderSeasonSeriesNav();
@@ -747,17 +746,14 @@ function switchSequel(id) {
             if (nextBtn) nextBtn.style.display = 'none';
             if (chooseBtn) chooseBtn.style.display = 'none';
         }
-        // Сбрасываем iframe
         const iframe = document.getElementById('driveIframe');
         if (iframe) iframe.src = '';
-        // Обновляем кнопку "Смотреть"
         const watchBtn = document.getElementById('watchBtn');
         if (watchBtn) {
             watchBtn.onclick = function() {
                 loadVideo();
             };
         }
-        // Обновляем сиквелы
         const sequelNav = document.getElementById('sequelNav');
         if (sequelNav) {
             sequelNav.querySelectorAll('.sequel-btn').forEach(b => b.classList.remove('active'));
