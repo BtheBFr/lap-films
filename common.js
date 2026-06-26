@@ -5,8 +5,6 @@ let allReviewsData = {};
 let reviewsExpanded = {};
 let currentCategory = null;
 let currentSubcategory = null;
-let bestPage = 0;
-const BEST_PER_PAGE = 10;
 
 // ↓↓↓ ТВОИ ССЫЛКИ ↓↓↓
 const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycby86FMOsqBSKIP8qE_1T8W4G5mgINcSiV4z7TnIaVlHpvHR7YYROpSXrhMGO24yfT1C/exec";
@@ -106,58 +104,6 @@ function filterFilms(films) {
 }
 
 // ============= ГЛАВНАЯ СТРАНИЦА =============
-
-// --- ЛУЧШИЕ ФИЛЬМЫ (по списку TOP_FILMS_IDS) ---
-function renderBestFilms() {
-    const container = document.getElementById('bestFilmsContainer');
-    if (!container) return;
-
-    // Берём фильмы из глобального массива TOP_FILMS_IDS
-    const bestFilms = TOP_FILMS_IDS.map(id => allFilms.find(f => f.id === id)).filter(Boolean);
-    if (bestFilms.length === 0) {
-        container.style.display = 'none';
-        return;
-    }
-    container.style.display = 'block';
-
-    const totalPages = Math.ceil(bestFilms.length / BEST_PER_PAGE);
-    if (bestPage >= totalPages) bestPage = totalPages - 1;
-    if (bestPage < 0) bestPage = 0;
-
-    const start = bestPage * BEST_PER_PAGE;
-    const end = Math.min(start + BEST_PER_PAGE, bestFilms.length);
-    const pageFilms = bestFilms.slice(start, end);
-
-    const wrapper = document.getElementById('bestFilmsWrapper');
-    wrapper.innerHTML = pageFilms.map(film => `
-        <div class="best-film-item" data-id="${film.id}">
-            <img src="${film.poster}" alt="${film.title}" loading="lazy">
-            <div class="best-film-title">${film.title}</div>
-        </div>
-    `).join('');
-
-    wrapper.querySelectorAll('.best-film-item').forEach(el => {
-        el.addEventListener('click', function() {
-            showLoading();
-            window.location.href = `player.html?id=${this.dataset.id}`;
-        });
-    });
-
-    const prevBtn = document.getElementById('bestPrev');
-    const nextBtn = document.getElementById('bestNext');
-    const pageInfo = document.getElementById('bestPageInfo');
-    if (prevBtn) {
-        prevBtn.disabled = bestPage === 0;
-        prevBtn.onclick = () => { if (bestPage > 0) { bestPage--; renderBestFilms(); } };
-    }
-    if (nextBtn) {
-        nextBtn.disabled = bestPage >= totalPages - 1;
-        nextBtn.onclick = () => { if (bestPage < totalPages - 1) { bestPage++; renderBestFilms(); } };
-    }
-    if (pageInfo) {
-        pageInfo.textContent = `${bestPage + 1} / ${totalPages}`;
-    }
-}
 
 // --- ОТОБРАЖЕНИЕ ФИЛЬТРОВ ---
 function renderFiltersInfo() {
@@ -837,7 +783,6 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     if (document.getElementById('filmsGrid')) {
-        renderBestFilms();
         const categoryBtn = document.getElementById('categoryToggleBtn');
         if (categoryBtn) categoryBtn.addEventListener('click', openCategoryModal);
         updateCatalog();
