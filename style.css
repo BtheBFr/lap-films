@@ -6,7 +6,7 @@
 
 body {
     font-family: 'Segoe UI', system-ui, sans-serif;
-    background: #12121f; /* тёмный, не чёрный */
+    background: #0a0a0a; /* почти чёрный */
     color: #f0f0f0;
     min-height: 100vh;
     padding: 20px 10px;
@@ -21,7 +21,7 @@ h1 {
     font-size: 2.5rem;
     font-weight: 800;
     text-align: center;
-    color: #ffffff; /* белый, не красный */
+    color: #ffffff;
     margin-bottom: 25px;
 }
 
@@ -34,7 +34,7 @@ h1 {
 #searchInput {
     width: 100%;
     padding: 12px 50px 12px 20px;
-    background: #1e1e32;
+    background: #1a1a2a;
     border: 1px solid #333;
     border-radius: 40px;
     color: white;
@@ -61,86 +61,12 @@ h1 {
     background: #e50914;
 }
 
-/* ============= ЛУЧШИЕ ФИЛЬМЫ ============= */
-.best-films-container {
-    margin: 10px 0 20px;
-    text-align: center;
-}
-.section-title {
-    font-size: 1.4rem;
-    color: #fff;
-    margin-bottom: 12px;
-}
-.best-films-wrapper {
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: center;
-    gap: 16px;
-    padding: 10px 0;
-}
-.best-film-item {
-    flex: 0 0 120px;
-    cursor: pointer;
-    text-align: center;
-}
-.best-film-item img {
-    width: 100%;
-    aspect-ratio: 2/3;
-    object-fit: cover;
-    border-radius: 10px;
-    border: 2px solid #333;
-}
-.best-film-item .best-film-title {
-    margin-top: 6px;
-    font-size: 0.8rem;
-    font-weight: 500;
-    color: #ccc;
-}
-.best-nav {
-    display: flex;
-    justify-content: center;
-    gap: 16px;
-    margin-top: 8px;
-}
-.best-nav button {
-    padding: 6px 20px;
-    background: #333;
-    border: none;
-    border-radius: 30px;
-    color: white;
-    cursor: pointer;
-    font-size: 0.85rem;
-}
-.best-nav button:hover {
-    background: #e50914;
-}
-.best-nav button:disabled {
-    opacity: 0.4;
-    cursor: not-allowed;
-}
-
-/* ============= ФИЛЬТРЫ ============= */
-.filters-info {
-    text-align: center;
-    font-size: 0.85rem;
-    color: #aaa;
-    margin: 8px 0 15px;
-}
-.filters-info span {
-    display: inline-block;
-    background: #1e1e32;
-    padding: 4px 14px;
-    border-radius: 20px;
-    margin: 0 5px 5px 0;
-    border: 1px solid #444;
-}
-
 /* ============= КНОПКА КАТЕГОРИЙ ============= */
 .category-toggle-btn {
     display: block;
     margin: 10px auto 20px;
     padding: 10px 24px;
-    background: #1e1e32;
+    background: #1a1a2a;
     border: 1px solid #444;
     border-radius: 40px;
     color: #fff;
@@ -150,6 +76,22 @@ h1 {
 }
 .category-toggle-btn:hover {
     background: #e50914;
+}
+
+/* ============= ОТОБРАЖЕНИЕ ФИЛЬТРОВ ============= */
+.filters-info {
+    text-align: center;
+    font-size: 0.85rem;
+    color: #aaa;
+    margin: 8px 0 15px;
+}
+.filters-info span {
+    display: inline-block;
+    background: #1a1a2a;
+    padding: 4px 14px;
+    border-radius: 20px;
+    margin: 0 5px 5px 0;
+    border: 1px solid #444;
 }
 
 /* ============= СЕТКА ФИЛЬМОВ ============= */
@@ -213,7 +155,7 @@ h1 {
     display: inline-block;
     text-align: center;
     border: none;
-    background: #1e1e32;
+    background: #1a1a2a;
     border: 1px solid #444;
     color: white;
 }
@@ -379,7 +321,7 @@ h1 {
     display: inline-flex;
     align-items: center;
     gap: 8px;
-    background: #1e1e32;
+    background: #1a1a2a;
     border: 1px solid #444;
     padding: 8px 20px;
     border-radius: 40px;
@@ -660,21 +602,19 @@ h1 {
     .film-card h3 {
         font-size: 0.75rem;
     }
-    .best-film-item {
-        flex: 0 0 100px;
-    }
-    .best-film-item .best-film-title {
-        font-size: 0.7rem;
-    }
+
+    /* Плеер: видео и кнопка сверху, постер и описание снизу */
     .player-layout {
         flex-direction: column;
+        gap: 20px;
     }
     .player-panel {
-        order: 1;
+        order: 1; /* видео наверх */
     }
     .film-info-panel {
-        order: 2;
+        order: 2; /* постер и описание вниз */
         padding: 16px;
+        margin-top: 10px;
     }
     .film-info-panel img {
         max-width: 120px;
@@ -687,6 +627,7 @@ h1 {
     }
     .film-actions {
         gap: 8px;
+        margin-top: 5px;
     }
     .rate-btn, .download-btn, .next-episode-btn {
         padding: 6px 14px;
@@ -695,14 +636,16 @@ h1 {
     .player-panel h1 {
         font-size: 1.2rem;
         text-align: center;
+        margin-top: 0;
     }
     .video-wrapper {
         aspect-ratio: 16/9;
+        margin-bottom: 10px;
     }
     .watch-btn-large {
         padding: 14px;
         font-size: 1rem;
-        margin-top: 15px;
+        margin-top: 5px; /* уменьшили отступ сверху, чтобы кнопка была ближе к видео */
     }
     .back-link {
         padding: 6px 14px;
@@ -736,7 +679,7 @@ h1 {
         animation: none !important;
     }
     body {
-        background: #12121f !important;
+        background: #0a0a0a !important;
     }
 }
 
@@ -744,9 +687,6 @@ h1 {
     .films-grid {
         grid-template-columns: repeat(auto-fill, minmax(110px, 1fr));
         gap: 12px;
-    }
-    .best-film-item {
-        flex: 0 0 90px;
     }
     .film-info-panel img {
         max-width: 100px;
