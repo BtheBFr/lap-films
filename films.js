@@ -7,7 +7,7 @@ const CATEGORIES = {
         subcategories: {
             //action: "Боевик",
             //comedy: "Комедия",
-            //drama: "Драма",
+            drama: "Драма",
             //thriller: "Триллер",
             //horror: "Ужасы",
             //adventure: "Приключения",
