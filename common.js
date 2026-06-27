@@ -23,7 +23,7 @@ function hideLoading() {
     if (overlay) overlay.style.display = 'none';
 }
 
-// ============= ВИДЕО-ПЛЕЕР (с поддержкой 1080p для Dailymotion) =============
+// ============= ВИДЕО-ПЛЕЕР (с поддержкой 1080p для Dailymotion через прокси) =============
 function getEmbedUrl(videoPath) {
     if (!videoPath) return '';
     // YouTube
@@ -31,7 +31,7 @@ function getEmbedUrl(videoPath) {
         return convertToYouTubeEmbed(videoPath);
     }
     if (videoPath.includes('youtube.com/embed/')) return videoPath;
-    // Dailymotion – преобразуем в geo-ссылку с качеством 1080
+    // Dailymotion – используем наш прокси вместо geo-ссылки
     if (videoPath.includes('dailymotion.com') || videoPath.includes('dai.ly')) {
         let videoId = null;
         let match = videoPath.match(/dailymotion\.com\/video\/([a-zA-Z0-9]+)/);
@@ -45,7 +45,8 @@ function getEmbedUrl(videoPath) {
             if (match) videoId = match[1];
         }
         if (videoId) {
-            return `https://geo.dailymotion.com/player.html?video=${videoId}&quality=1080`;
+            // ЗДЕСЬ ЗАМЕНА – используем прокси-ссылку
+            return `https://lap-films.duckdns.org/proxy/dailymotion/embed/video/${videoId}`;
         }
         return videoPath;
     }
