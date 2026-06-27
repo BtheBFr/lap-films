@@ -157,7 +157,7 @@ const FILMS_CATALOG = [
         "1": {
             title: "Сезон 1",
             series: {
-                "1": { title: "Серия 1 - Новоселье", videoUrl: "https://www.dailymotion.com/video/kqGXLSYcry8fUxH4Yn8" },
+                "1": { title: "Серия 1 - Новоселье", videoUrl: "https://lap-films.duckdns.org/proxy/dailymotion/video/kqGXLSYcry8fUxH4Yn8" },
                 "2": { title: "Серия 2 - Продолжение", videoUrl: "https://vkvideo.ru/video_ext.php?oid=-XXX&id=XXX&hash=XXX&hd=4" },
                 "3": { title: "Серия 3 - Финал", videoUrl: "https://vkvideo.ru/video_ext.php?oid=-XXX&id=XXX&hash=XXX&hd=4" }
             }
