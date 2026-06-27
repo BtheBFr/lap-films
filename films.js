@@ -157,7 +157,7 @@ const FILMS_CATALOG = [
         "1": {
             title: "Сезон 1",
             series: {
-                "1": { title: "Серия 1 - Новоселье", videoUrl: "https://rumble.com/embed/v79qcma/?pub=4pvnmc" },
+                "1": { title: "Серия 1 - Новоселье", videoUrl: "https://rumble.com/v79qcma" },
                 "2": { title: "Серия 2 - Продолжение", videoUrl: "https://vkvideo.ru/video_ext.php?oid=-XXX&id=XXX&hash=XXX&hd=4" },
                 "3": { title: "Серия 3 - Финал", videoUrl: "https://vkvideo.ru/video_ext.php?oid=-XXX&id=XXX&hash=XXX&hd=4" }
             }
