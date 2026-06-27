@@ -13,6 +13,30 @@ let currentSeriesKey = null;
 const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycby86FMOsqBSKIP8qE_1T8W4G5mgINcSiV4z7TnIaVlHpvHR7YYROpSXrhMGO24yfT1C/exec";
 const GOOGLE_RATINGS_URL = "https://script.google.com/macros/s/AKfycbyQjl03vdNZEjtyab3faMS-wD22urPYlWqb_mJjX0l0b8qsYwiZDuVmjPLs4-UQ8jj5/exec";
 
+// ============= ПЕРЕВОД ПОДКАТЕГОРИЙ (РУСИФИКАЦИЯ) =============
+const SUBCATEGORY_NAMES = {
+    'comedy': 'Комедия',
+    'fantasy': 'Фантастика',
+    'action': 'Боевик',
+    'drama': 'Драма',
+    'horror': 'Ужасы',
+    'thriller': 'Триллер',
+    'romance': 'Романтика',
+    'adventure': 'Приключения',
+    'sci-fi': 'Научная фантастика',
+    'animation': 'Мультфильм',
+    'documentary': 'Документальный',
+    'crime': 'Криминал',
+    'mystery': 'Мистика',
+    'family': 'Семейный',
+    'war': 'Военный',
+    'history': 'Исторический',
+    'western': 'Вестерн',
+    'music': 'Музыкальный',
+    'sport': 'Спортивный',
+    // Добавь свои, если нужно
+};
+
 // ============= ВСПОМОГАТЕЛЬНЫЕ =============
 function showLoading() {
     const overlay = document.getElementById('loadingOverlay');
@@ -23,7 +47,7 @@ function hideLoading() {
     if (overlay) overlay.style.display = 'none';
 }
 
-// ============= ВИДЕО-ПЛЕЕР (с поддержкой 1080p для Dailymotion через прокси) =============
+// ============= ВИДЕО-ПЛЕЕР (с поддержкой YouTube, Dailymotion, Google Drive, Rumble) =============
 function getEmbedUrl(videoPath) {
     if (!videoPath) return '';
     // YouTube
@@ -31,7 +55,21 @@ function getEmbedUrl(videoPath) {
         return convertToYouTubeEmbed(videoPath);
     }
     if (videoPath.includes('youtube.com/embed/')) return videoPath;
-    // Dailymotion – используем наш прокси вместо geo-ссылки
+    // Rumble
+    if (videoPath.includes('rumble.com')) {
+        // Извлекаем ID из URL, например, https://rumble.com/v123abc
+        let match = videoPath.match(/rumble\.com\/v([a-zA-Z0-9]+)/);
+        if (match) {
+            let videoId = match[1];
+            // Можно добавить параметр качества, если нужно
+            return `https://rumble.com/embed/${videoId}/`;
+        }
+        // Если уже embed-ссылка
+        if (videoPath.includes('/embed/')) return videoPath;
+        // Если не удалось, возвращаем как есть
+        return videoPath;
+    }
+    // Dailymotion – используем прокси
     if (videoPath.includes('dailymotion.com') || videoPath.includes('dai.ly')) {
         let videoId = null;
         let match = videoPath.match(/dailymotion\.com\/video\/([a-zA-Z0-9]+)/);
@@ -45,7 +83,7 @@ function getEmbedUrl(videoPath) {
             if (match) videoId = match[1];
         }
         if (videoId) {
-            // ЗДЕСЬ ЗАМЕНА – используем прокси-ссылку
+            // Используем прокси-ссылку (питерский VPS или немецкий)
             return `https://lap-films.duckdns.org/proxy/dailymotion/embed/video/${videoId}`;
         }
         return videoPath;
@@ -54,7 +92,8 @@ function getEmbedUrl(videoPath) {
     if (videoPath.includes('drive.google.com') || videoPath.includes('drive.usercontent.google.com')) {
         return convertToDriveEmbed(videoPath);
     }
-    return '';
+    // Если ничего не подошло, возвращаем как есть (может быть прямая ссылка на MP4)
+    return videoPath;
 }
 
 function convertToYouTubeEmbed(url) {
@@ -140,7 +179,9 @@ function renderFiltersInfo() {
     if (currentCategory && CATEGORIES[currentCategory]) {
         let label = CATEGORIES[currentCategory].label;
         if (currentSubcategory && CATEGORIES[currentCategory].subcategories[currentSubcategory]) {
-            label += ' → ' + CATEGORIES[currentCategory].subcategories[currentSubcategory];
+            // Используем перевод
+            let subLabel = SUBCATEGORY_NAMES[currentSubcategory] || currentSubcategory;
+            label += ' → ' + subLabel;
         }
         parts.push(label);
     }
@@ -223,7 +264,9 @@ function renderCategoryModal() {
         html += `<div class="category-sub-list">`;
         html += `<button class="category-sub-btn ${!currentSubcategory ? 'active' : ''}" data-subcategory="">Все</button>`;
         subKeys.forEach(key => {
-            html += `<button class="category-sub-btn ${currentSubcategory === key ? 'active' : ''}" data-subcategory="${key}">${subs[key]}</button>`;
+            // Используем перевод
+            let subLabel = SUBCATEGORY_NAMES[key] || key;
+            html += `<button class="category-sub-btn ${currentSubcategory === key ? 'active' : ''}" data-subcategory="${key}">${subLabel}</button>`;
         });
         html += `</div>`;
     } else {
@@ -416,30 +459,33 @@ function updateFilmInfo() {
                 return c;
             }).filter(Boolean);
             
-            // Названия подкатегорий – ищем по всем категориям
+            // Названия подкатегорий – используем перевод
             let subLabels = [];
             subcats.forEach(s => {
-                let found = false;
-                // Сначала ищем в категориях, которые указаны у фильма
-                for (let c of cats) {
-                    if (CATEGORIES[c] && CATEGORIES[c].subcategories && CATEGORIES[c].subcategories[s]) {
-                        subLabels.push(CATEGORIES[c].subcategories[s]);
-                        found = true;
-                        break;
-                    }
-                }
-                // Если не нашли, ищем во всех глобальных категориях
-                if (!found) {
-                    for (let catKey in CATEGORIES) {
-                        if (CATEGORIES[catKey].subcategories && CATEGORIES[catKey].subcategories[s]) {
-                            subLabels.push(CATEGORIES[catKey].subcategories[s]);
+                // Сначала проверяем в маппинге
+                if (SUBCATEGORY_NAMES[s]) {
+                    subLabels.push(SUBCATEGORY_NAMES[s]);
+                } else {
+                    // Ищем в CATEGORIES
+                    let found = false;
+                    for (let c of cats) {
+                        if (CATEGORIES[c] && CATEGORIES[c].subcategories && CATEGORIES[c].subcategories[s]) {
+                            subLabels.push(CATEGORIES[c].subcategories[s]);
                             found = true;
                             break;
                         }
                     }
+                    if (!found) {
+                        for (let catKey in CATEGORIES) {
+                            if (CATEGORIES[catKey].subcategories && CATEGORIES[catKey].subcategories[s]) {
+                                subLabels.push(CATEGORIES[catKey].subcategories[s]);
+                                found = true;
+                                break;
+                            }
+                        }
+                    }
+                    if (!found && s) subLabels.push(s);
                 }
-                // Если всё равно не нашли – оставляем как есть
-                if (!found && s) subLabels.push(s);
             });
             
             if (catLabels.length) {
