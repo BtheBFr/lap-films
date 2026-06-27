@@ -32,14 +32,19 @@ function getEmbedUrl(videoPath) {
     }
     if (videoPath.includes('youtube.com/embed/')) return videoPath;
         // Rumble – через oEmbed (получаем готовый iframe)
+        // Rumble – через питерский VPS (HTTPS)
     if (videoPath.includes('rumble.com')) {
-        let match = videoPath.match(/rumble\.com\/(?:video\/)?(?:embed\/)?v([a-zA-Z0-9]+)/);
+        // Если уже embed-ссылка – просто заменяем домен
+        if (videoPath.includes('/embed/')) {
+            return videoPath.replace('https://rumble.com', 'https://lap-films.duckdns.org');
+        }
+        // Извлекаем ID и формируем embed-ссылку
+        let match = videoPath.match(/rumble\.com\/(?:video\/)?v([a-zA-Z0-9]+)/);
         if (match) {
             let videoId = match[1];
-            // Возвращаем embed-ссылку через питерский VPS
             return `https://lap-films.duckdns.org/proxy/rumble/embed/v${videoId}/`;
         }
-        return videoPath;
+        return videoPath.replace('https://rumble.com', 'https://lap-films.duckdns.org');
     }
     // Dailymotion – через прокси (если ещё нужен)
     if (videoPath.includes('dailymotion.com') || videoPath.includes('dai.ly')) {
