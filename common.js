@@ -31,20 +31,15 @@ function getEmbedUrl(videoPath) {
         return convertToYouTubeEmbed(videoPath);
     }
     if (videoPath.includes('youtube.com/embed/')) return videoPath;
-        // Rumble – через oEmbed (получаем готовый iframe)
-        // Rumble – через питерский VPS (HTTPS)
+    // Rumble – через немецкий VPS напрямую (без /proxy/rumble/)
     if (videoPath.includes('rumble.com')) {
-        // Если уже embed-ссылка – просто заменяем домен
-        if (videoPath.includes('/embed/')) {
-            return videoPath.replace('https://rumble.com', 'https://lap-films.duckdns.org');
-        }
-        // Извлекаем ID и формируем embed-ссылку
         let match = videoPath.match(/rumble\.com\/(?:video\/)?v([a-zA-Z0-9]+)/);
         if (match) {
             let videoId = match[1];
-            return `https://lap-films.duckdns.org/proxy/rumble/embed/v${videoId}/`;
+            return `https://lap-films-de.duckdns.org/embed/v${videoId}/`;
         }
-        return videoPath.replace('https://rumble.com', 'https://lap-films.duckdns.org');
+        // fallback
+        return videoPath.replace('https://rumble.com', 'https://lap-films-de.duckdns.org');
     }
     // Dailymotion – через прокси (если ещё нужен)
     if (videoPath.includes('dailymotion.com') || videoPath.includes('dai.ly')) {
@@ -236,7 +231,6 @@ function renderCategoryModal() {
         html += `<div class="category-sub-list">`;
         html += `<button class="category-sub-btn ${!currentSubcategory ? 'active' : ''}" data-subcategory="">Все</button>`;
         subKeys.forEach(key => {
-            // Название подкатегории берётся прямо из CATEGORIES
             const subLabel = subs[key];
             html += `<button class="category-sub-btn ${currentSubcategory === key ? 'active' : ''}" data-subcategory="${key}">${subLabel}</button>`;
         });
