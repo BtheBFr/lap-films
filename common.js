@@ -31,8 +31,13 @@ function getEmbedUrl(videoPath) {
         return convertToYouTubeEmbed(videoPath);
     }
     if (videoPath.includes('youtube.com/embed/')) return videoPath;
-    // Rumble – через немецкий VPS напрямую (без /proxy/rumble/)
+    // Rumble – через немецкий VPS, сохраняя параметры
     if (videoPath.includes('rumble.com')) {
+        // Если ссылка уже embed (содержит /embed/), просто заменяем домен
+        if (videoPath.includes('/embed/')) {
+            return videoPath.replace('https://rumble.com', 'https://lap-films-de.duckdns.org');
+        }
+        // Иначе извлекаем ID и формируем embed-ссылку (можно добавить ?pub=... если нужно)
         let match = videoPath.match(/rumble\.com\/(?:video\/)?v([a-zA-Z0-9]+)/);
         if (match) {
             let videoId = match[1];
