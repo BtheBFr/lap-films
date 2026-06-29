@@ -9,21 +9,16 @@ let currentFilm = null;
 let currentSeasonKey = null;
 let currentSeriesKey = null;
 
-// ↓↓↓ ТВОИ ССЫЛКИ ↓↓↓
 const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycby86FMOsqBSKIP8qE_1T8W4G5mgINcSiV4z7TnIaVlHpvHR7YYROpSXrhMGO24yfT1C/exec";
 const GOOGLE_RATINGS_URL = "https://script.google.com/macros/s/AKfycbyQjl03vdNZEjtyab3faMS-wD22urPYlWqb_mJjX0l0b8qsYwiZDuVmjPLs4-UQ8jj5/exec";
 
-// ============= ВСПОМОГАТЕЛЬНЫЕ =============
 function showLoading() {
-    const overlay = document.getElementById('loadingOverlay');
-    if (overlay) overlay.style.display = 'flex';
+    document.getElementById('loadingOverlay').style.display = 'flex';
 }
 function hideLoading() {
-    const overlay = document.getElementById('loadingOverlay');
-    if (overlay) overlay.style.display = 'none';
+    document.getElementById('loadingOverlay').style.display = 'none';
 }
 
-// ============= ВИДЕО-ПЛЕЕР =============
 function getEmbedUrl(videoPath) {
     if (!videoPath) return '';
     // YouTube
@@ -31,41 +26,18 @@ function getEmbedUrl(videoPath) {
         return convertToYouTubeEmbed(videoPath);
     }
     if (videoPath.includes('youtube.com/embed/')) return videoPath;
-    // Rumble – через немецкий VPS (сохраняем параметры)
-    if (videoPath.includes('rumble.com')) {
-        // Если ссылка уже embed – заменяем домен
-        if (videoPath.includes('/embed/')) {
-            return videoPath.replace('https://rumble.com', 'https://lap-films-de.duckdns.org');
-        }
-        // Если обычная ссылка на видео – извлекаем ID
-        let match = videoPath.match(/rumble\.com\/(?:video\/)?v([a-zA-Z0-9]+)/);
-        if (match) {
-            let videoId = match[1];
-            return `https://lap-films-de.duckdns.org/embed/v${videoId}/`;
-        }
-        return videoPath;
-    }
-    // Dailymotion – через прокси (если ещё нужен)
-    if (videoPath.includes('dailymotion.com') || videoPath.includes('dai.ly')) {
-        let videoId = null;
-        let match = videoPath.match(/dailymotion\.com\/video\/([a-zA-Z0-9]+)/);
-        if (match) videoId = match[1];
-        if (!videoId) {
-            match = videoPath.match(/dai\.ly\/([a-zA-Z0-9]+)/);
-            if (match) videoId = match[1];
-        }
-        if (!videoId) {
-            match = videoPath.match(/[?&]video=([^&]+)/);
-            if (match) videoId = match[1];
-        }
-        if (videoId) {
-            return `https://lap-films.duckdns.org/proxy/dailymotion/embed/video/${videoId}`;
-        }
-        return videoPath;
-    }
     // Google Drive
     if (videoPath.includes('drive.google.com') || videoPath.includes('drive.usercontent.google.com')) {
         return convertToDriveEmbed(videoPath);
+    }
+    // TeraBox – если уже готовая ссылка на sannjay.tech
+    if (videoPath.includes('sannjay.tech/TeraBox/player.html')) {
+        return videoPath;
+    }
+    // TeraBox – если просто ссылка на terabox.com – превращаем в sannjay.tech
+    if (videoPath.includes('terabox.com') || videoPath.includes('1024terabox.com')) {
+        const encodedUrl = encodeURIComponent(videoPath);
+        return `https://sannjay.tech/TeraBox/player.html?url=${encodedUrl}`;
     }
     // Если ничего не подошло – возвращаем как есть
     return videoPath;
@@ -218,6 +190,7 @@ function updateCatalog() {
 }
 
 // ============= КАТЕГОРИИ (МОДАЛЬНОЕ ОКНО) =============
+
 function renderCategoryModal() {
     const modal = document.getElementById('categoryModal');
     if (!modal) return;
@@ -286,6 +259,7 @@ function openCategoryModal() {
 }
 
 // ============= ПЛЕЕР =============
+
 function initPlayer() {
     showLoading();
     const urlParams = new URLSearchParams(window.location.search);
@@ -481,6 +455,7 @@ function loadVideo() {
 }
 
 // ============= НАВИГАЦИЯ ПО СЕЗОНАМ =============
+
 function renderSeasonSeriesNav() {
     const modalContent = document.getElementById('seasonModalContent');
     if (!modalContent) return;
