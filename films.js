@@ -157,7 +157,7 @@ const FILMS_CATALOG = [
         "1": {
             title: "Сезон 1",
             series: {
-                "1": { title: "Серия 1 - Новоселье", videoUrl: "https://sannjay.tech/TeraBox/player.html?url=https%3A%2F%2F1024terabox.com%2Fs%2F1fdHop_UT_bGjs_9oBUWTWg" },
+                "1": { title: "Серия 1 - Новоселье", videoUrl: "https://vkvideo.ru/video_ext.php?oid=-236370879&id=456239024&hash=97e6fa681ddcdf17&hd=3" },
                 "2": { title: "Серия 2 - Продолжение", videoUrl: "https://vkvideo.ru/video_ext.php?oid=-XXX&id=XXX&hash=XXX&hd=4" },
                 "3": { title: "Серия 3 - Финал", videoUrl: "https://vkvideo.ru/video_ext.php?oid=-XXX&id=XXX&hash=XXX&hd=4" }
             }
