@@ -30,14 +30,9 @@ function getEmbedUrl(videoPath) {
     if (videoPath.includes('drive.google.com') || videoPath.includes('drive.usercontent.google.com')) {
         return convertToDriveEmbed(videoPath);
     }
-    // TeraBox – если уже готовая ссылка на sannjay.tech
-    if (videoPath.includes('sannjay.tech/TeraBox/player.html')) {
-        return videoPath;
-    }
-    // TeraBox – если просто ссылка на terabox.com – превращаем в sannjay.tech
-    if (videoPath.includes('terabox.com') || videoPath.includes('1024terabox.com')) {
-        const encodedUrl = encodeURIComponent(videoPath);
-        return `https://sannjay.tech/TeraBox/player.html?url=${encodedUrl}`;
+    // VK Video – если это уже готовая ссылка для встраивания
+    if (videoPath.includes('vkvideo.ru/video_ext.php') || videoPath.includes('vk.com/video_ext.php')) {
+        return videoPath; // возвращаем как есть (без изменений)
     }
     // Если ничего не подошло – возвращаем как есть
     return videoPath;
