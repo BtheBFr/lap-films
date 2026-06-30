@@ -113,7 +113,40 @@ const FILMS_CATALOG = [
         sequelGroup: "cheburashka",
         sequelOrder: 2
     },
-
+    
+    // - ЗДРАВСТВУЙТЕ, ВАМ ПОРА -
+    {
+    id: "zdravstvuytevampora",
+    title: "Здравствуйте, вам пора!",
+    searchTerms: ["],
+    description: "",
+    poster: "posters/здравствуйтевампора.jpg",
+    seasons: {
+        "1": {
+            title: "Сезон 1",
+            series: {
+                "1": { title: "Серия 1 - Новоселье", videoUrl: "https://vkvideo.ru/video_ext.php?oid=-236370879&id=456239024&hash=97e6fa681ddcdf17&hd=3" },
+                "2": { title: "Серия 2 - Голодовка", videoUrl: "https://vkvideo.ru/video_ext.php?oid=-236370879&id=456239025&hd=3" },
+                "3": { title: "Серия 3 - Финал", videoUrl: "https://vkvideo.ru/video_ext.php?oid=-XXX&id=XXX&hash=XXX&hd=4" }
+            }
+        },
+        "2": {
+            title: "Сезон 2",
+            series: {
+                "1": { title: "Серия 1", videoUrl: "https://vkvideo.ru/video_ext.php?oid=-XXX&id=XXX&hash=XXX&hd=4" },
+                "2": { title: "Серия 2", videoUrl: "https://vkvideo.ru/video_ext.php?oid=-XXX&id=XXX&hash=XXX&hd=4" }
+            }
+        }
+    },
+    downloadUrl: null,
+    betterVersionReady: true,
+    betterVersionDate: null,
+    releaseDate: null,
+    comingSoon: false,
+    category: "serial",
+    subcategory: ["sciFi", "comedy"],
+},
+    
     // ---------- ЖДУН ----------
     {
         id: "zhdun",
@@ -176,8 +209,8 @@ const FILMS_CATALOG = [
         }
     },
     downloadUrl: null,
-    betterVersionReady: false,
-    betterVersionDate: "2026-08-01",
+    betterVersionReady: true,
+    betterVersionDate: null,
     releaseDate: null,
     comingSoon: false,
     category: "serial",
