@@ -25,7 +25,7 @@ const CATEGORIES = {
         subcategories: {
             //action: "Боевик",
             comedy: "Комедия",
-            family: "Семейный"
+            family: "Семейный",
             drama: "Драма",
             sitcom: "Ситком",
             //thriller: "Триллер",
