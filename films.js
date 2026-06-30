@@ -91,7 +91,7 @@ const FILMS_CATALOG = [
         releaseDate: null,
         comingSoon: false,
         category: "film",
-        subcategory: ["comedy", "fantasy"]
+        subcategory: ["comedy", "family"],
         sequelGroup: "cheburashka",
         sequelOrder: 1
     },
@@ -109,7 +109,7 @@ const FILMS_CATALOG = [
         releaseDate: null,
         comingSoon: false,
         category: "film",
-        subcategory: ["comedy", "fantasy"]
+        subcategory: ["comedy", "family"],
         sequelGroup: "cheburashka",
         sequelOrder: 2
     },
@@ -129,7 +129,7 @@ const FILMS_CATALOG = [
         releaseDate: null,
         comingSoon: false,
         category: "film",
-        subcategory: ["comedy", "fantasy", "family"],
+        subcategory: ["comedy", "sciFi", "family"],
         sequelGroup: "zdun",
         sequelOrder: 1
     },
@@ -146,8 +146,7 @@ const FILMS_CATALOG = [
         betterVersionDate: null,
         releaseDate: null,
         comingSoon: false,
-        subcategory: ["comedy", "fantasy", "family"], 
-        subcategory: "sciFi",
+        subcategory: ["comedy", "sciFi", "family"],
         sequelGroup: "zdun",
         sequelOrder: 2
     },
