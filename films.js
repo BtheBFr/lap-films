@@ -140,7 +140,7 @@ const FILMS_CATALOG = [
         description: "Продолжение приключений серого великана",
         poster: "posters/ждун2.png",
         seasons: "none",
-        videoUrl: "https://www.dailymotion.com/video/k2FYq1Mfh8M7ZqH52Xs",
+        videoUrl: "https://vkvideo.ru/video_ext.php?oid=-236370879&id=456239026&hd=3",
         downloadUrl: null,
         betterVersionReady: true,
         betterVersionDate: null,
