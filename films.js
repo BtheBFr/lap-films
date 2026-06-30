@@ -6,12 +6,13 @@ const CATEGORIES = {
         label: "🎬 Фильмы",
         subcategories: {
             //action: "Боевик",
+            family: "Семейный",
             //comedy: "Комедия",
             drama: "Драма",
             //thriller: "Триллер",
             //horror: "Ужасы",
             //adventure: "Приключения",
-            //fantasy: "Фэнтези",
+            fantasy: "Фэнтези",
             sciFi: "Фантастика",
             //romance: "Мелодрама",
             //detective: "Детектив",
@@ -23,8 +24,9 @@ const CATEGORIES = {
         label: "📺 Сериалы",
         subcategories: {
             //action: "Боевик",
-            //comedy: "Комедия",
+            comedy: "Комедия",
             drama: "Драма",
+            sitcom: "Ситком",
             //thriller: "Триллер",
             //horror: "Ужасы",
             //adventure: "Приключения",
@@ -89,7 +91,7 @@ const FILMS_CATALOG = [
         releaseDate: null,
         comingSoon: false,
         category: "film",
-        subcategory: "comedy",
+        subcategory: ["comedy", "fantasy"]
         sequelGroup: "cheburashka",
         sequelOrder: 1
     },
@@ -107,7 +109,7 @@ const FILMS_CATALOG = [
         releaseDate: null,
         comingSoon: false,
         category: "film",
-        subcategory: "comedy",
+        subcategory: ["comedy", "fantasy"]
         sequelGroup: "cheburashka",
         sequelOrder: 2
     },
@@ -127,7 +129,9 @@ const FILMS_CATALOG = [
         releaseDate: null,
         comingSoon: false,
         category: "film",
-        subcategory: "comedy"
+        subcategory: ["comedy", "fantasy", "family"],
+        sequelGroup: "zdun",
+        sequelOrder: 1
     },
     {
         id: "zhdun2",
@@ -142,8 +146,10 @@ const FILMS_CATALOG = [
         betterVersionDate: null,
         releaseDate: null,
         comingSoon: false,
-        category: ["sequel", "film"], 
-        subcategory: "sciFi"
+        subcategory: ["comedy", "fantasy", "family"], 
+        subcategory: "sciFi",
+        sequelGroup: "zdun",
+        sequelOrder: 2
     },
 
     // --------- САШАТАНЯ ---------
@@ -176,7 +182,7 @@ const FILMS_CATALOG = [
     releaseDate: null,
     comingSoon: false,
     category: "serial",
-    subcategory: "drama"
+    subcategory: ["sitcom", "comedy"],
 },
     
     // ---------- ДРУГИЕ ----------
