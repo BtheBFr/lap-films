@@ -31,7 +31,12 @@ function updateUrl(seasonKey, seriesKey) {
     window.history.pushState({}, '', newUrl);
 }
 
-// ============= ВИДЕО-ПЛЕЕР (ТОЛЬКО YouTube, Google Drive, VK Video) =============
+// ============= ПРОВЕРКА: это прямая ссылка на MP4? =============
+function isMp4Url(url) {
+    return url && (url.endsWith('.mp4') || url.includes('.mp4?'));
+}
+
+// ============= ВИДЕО-ПЛЕЕР (ТОЛЬКО YouTube, Google Drive, VK Video, MP4) =============
 function getEmbedUrl(videoPath) {
     if (!videoPath) return '';
     // YouTube
@@ -45,7 +50,11 @@ function getEmbedUrl(videoPath) {
     }
     // VK Video – если это уже готовая ссылка для встраивания
     if (videoPath.includes('vkvideo.ru/video_ext.php') || videoPath.includes('vk.com/video_ext.php')) {
-        return videoPath; // возвращаем как есть
+        return videoPath;
+    }
+    // Прямая ссылка на MP4
+    if (isMp4Url(videoPath)) {
+        return videoPath;
     }
     // Если ничего не подошло – возвращаем как есть
     return videoPath;
@@ -284,7 +293,6 @@ function initPlayer() {
 
     currentFilm = film;
 
-    // Определяем сезон и серию из URL
     const seasonFromUrl = urlParams.get('season');
     const seriesFromUrl = urlParams.get('series');
 
@@ -299,7 +307,6 @@ function initPlayer() {
                 currentSeriesKey = seriesKeys[0] || null;
             }
         } else {
-            // первый сезон, первая серия
             if (seasonsKeys.length > 0) {
                 currentSeasonKey = seasonsKeys[0];
                 const seriesKeys = Object.keys(film.seasons[currentSeasonKey].series).sort((a,b) => Number(a) - Number(b));
@@ -461,20 +468,74 @@ function updateFilmInfo() {
     }
 }
 
+// ============= ЗАГРУЗКА ВИДЕО (поддержка MP4 и iframe) =============
 function loadVideo() {
-    const iframe = document.getElementById('driveIframe');
-    if (!iframe) return;
+    const wrapper = document.querySelector('.video-wrapper');
+    if (!wrapper) return;
 
+    let iframe = document.getElementById('driveIframe');
+    let video = document.getElementById('driveVideo');
+
+    // Если видео-элемента нет – создаём
+    if (!video) {
+        video = document.createElement('video');
+        video.id = 'driveVideo';
+        video.style.width = '100%';
+        video.style.height = '100%';
+        video.style.position = 'absolute';
+        video.style.top = '0';
+        video.style.left = '0';
+        video.style.display = 'none'; // по умолчанию скрыт
+        video.controls = true;
+        video.setAttribute('playsinline', '');
+        wrapper.appendChild(video);
+    }
+
+    // Получаем ссылку на видео
     let videoUrl = null;
     if (currentSeasonKey && currentSeriesKey && currentFilm.seasons && typeof currentFilm.seasons === 'object') {
         videoUrl = currentFilm.seasons[currentSeasonKey]?.series[currentSeriesKey]?.videoUrl;
-    } else if (currentFilm.videoUrl) {
+    } else if (currentFilm?.videoUrl) {
         videoUrl = currentFilm.videoUrl;
     }
 
-    if (videoUrl) {
-        const embedUrl = getEmbedUrl(videoUrl);
+    if (!videoUrl) {
+        // Если ссылки нет – очищаем всё
+        iframe.src = '';
+        video.src = '';
+        video.style.display = 'none';
+        iframe.style.display = 'none';
+        return;
+    }
+
+    const embedUrl = getEmbedUrl(videoUrl);
+
+    // Определяем, MP4 ли это
+    if (isMp4Url(embedUrl)) {
+        // Показываем video, скрываем iframe
+        iframe.style.display = 'none';
+        video.style.display = 'block';
+        // Устанавливаем источник и запускаем загрузку
+        if (video.src !== embedUrl) {
+            video.src = embedUrl;
+            video.load();
+        }
+        // Не забываем обновить URL с сезоном/серией (если это сериал)
+        if (currentSeasonKey && currentSeriesKey) {
+            updateUrl(currentSeasonKey, currentSeriesKey);
+        }
+        return;
+    }
+
+    // Иначе – показываем iframe, скрываем video
+    video.style.display = 'none';
+    iframe.style.display = 'block';
+    if (iframe.src !== embedUrl) {
         iframe.src = embedUrl;
+    }
+    // Обновляем URL
+    if (currentSeasonKey && currentSeriesKey) {
+        updateUrl(currentSeasonKey, currentSeriesKey);
     }
 }
 
@@ -514,10 +575,8 @@ function renderSeasonSeriesNav() {
                 currentSeasonKey = sKey;
                 currentSeriesKey = srKey;
                 updateFilmInfo();
-                const iframe = document.getElementById('driveIframe');
-                if (iframe && iframe.src) {
-                    loadVideo();
-                }
+                // Загружаем видео (автоматически определит MP4 или iframe)
+                loadVideo();
                 renderSeasonSeriesNav();
                 updateNavButtonsState();
                 updateUrl(currentSeasonKey, currentSeriesKey);
@@ -592,10 +651,7 @@ function goToPrevEpisode() {
         currentSeasonKey = prevSeason;
         currentSeriesKey = prevSeries;
         updateFilmInfo();
-        const iframe = document.getElementById('driveIframe');
-        if (iframe && iframe.src) {
-            loadVideo();
-        }
+        loadVideo();
         renderSeasonSeriesNav();
         updateNavButtonsState();
         updateUrl(currentSeasonKey, currentSeriesKey);
@@ -642,10 +698,7 @@ function goToNextEpisode() {
         currentSeasonKey = nextSeason;
         currentSeriesKey = nextSeries;
         updateFilmInfo();
-        const iframe = document.getElementById('driveIframe');
-        if (iframe && iframe.src) {
-            loadVideo();
-        }
+        loadVideo();
         renderSeasonSeriesNav();
         updateNavButtonsState();
         updateUrl(currentSeasonKey, currentSeriesKey);
@@ -718,7 +771,6 @@ function switchSequel(id) {
     if (newFilm) {
         const params = new URLSearchParams();
         params.set('id', newFilm.id);
-        // Сохраняем сезон/серию только если они есть
         if (newFilm.seasons && typeof newFilm.seasons === 'object' && !Array.isArray(newFilm.seasons)) {
             const seasonsKeys = Object.keys(newFilm.seasons).sort((a,b) => Number(a) - Number(b));
             if (seasonsKeys.length > 0) {
@@ -730,7 +782,6 @@ function switchSequel(id) {
         }
         const newUrl = window.location.pathname + '?' + params.toString();
         window.history.pushState({}, '', newUrl);
-        // Перезагружаем страницу, чтобы переинициализировать плеер с новым фильмом
         window.location.reload();
     }
 }
