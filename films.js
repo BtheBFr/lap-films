@@ -127,7 +127,14 @@ const FILMS_CATALOG = [
             series: {
                 "1": { title: "Серия 1", videoUrl: "https://vkvideo.ru/video_ext.php?oid=-236370879&id=456239027&hash=d82e044018b07d9d&hd=4" },
                 "2": { title: "Серия 2", videoUrl: "https://vkvideo.ru/video_ext.php?oid=-236370879&id=456239028&hash=e5181f1a8e9dcd76&hd=4" },
-                "3": { title: "Серия 3", videoUrl: "https://vkvideo.ru/video_ext.php?oid=-236370879&id=456239029&hash=bd0ee527ba2f7d8c&hd=4" }
+                "3": { title: "Серия 3", videoUrl: "https://vkvideo.ru/video_ext.php?oid=-236370879&id=456239029&hash=bd0ee527ba2f7d8c&hd=4" },
+                "4": { title: "Серия 4", videoUrl: "https://vkvideo.ru/video_ext.php?oid=-236370879&id=456239030&hash=c122fb58072ad03f&hd=4" },
+                "5": { title: "Серия 5", videoUrl: "https://vkvideo.ru/video_ext.php?oid=-236370879&id=456239029&hash=bd0ee527ba2f7d8c&hd=4" },
+                "6": { title: "Серия 6", videoUrl: "https://vkvideo.ru/video_ext.php?oid=-236370879&id=456239029&hash=bd0ee527ba2f7d8c&hd=4" },
+                "7": { title: "Серия 7", videoUrl: "https://vkvideo.ru/video_ext.php?oid=-236370879&id=456239029&hash=bd0ee527ba2f7d8c&hd=4" },
+                "8": { title: "Серия 8", videoUrl: "https://vkvideo.ru/video_ext.php?oid=-236370879&id=456239029&hash=bd0ee527ba2f7d8c&hd=4" },
+                "9": { title: "Серия 9", videoUrl: "https://vkvideo.ru/video_ext.php?oid=-236370879&id=456239029&hash=bd0ee527ba2f7d8c&hd=4" },
+                "10": { title: "Серия 10", videoUrl: "https://vkvideo.ru/video_ext.php?oid=-236370879&id=456239029&hash=bd0ee527ba2f7d8c&hd=4" },
             }
         },
         "2": {
