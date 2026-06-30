@@ -125,9 +125,9 @@ const FILMS_CATALOG = [
         "1": {
             title: "Сезон 1",
             series: {
-                "1": { title: "Серия 1", videoUrl: "https://vkvideo.ru/video_ext.php?oid=-236370879&id=456239027&hash=d82e044018b07d9d&hd=3" },
-                "2": { title: "Серия 2", videoUrl: "https://vkvideo.ru/video_ext.php?oid=-236370879&id=456239028&hash=e5181f1a8e9dcd76&hd=3" },
-                "3": { title: "Серия 3", videoUrl: "https://vkvideo.ru/video_ext.php?oid=-XXX&id=XXX&hash=XXX&hd=4" }
+                "1": { title: "Серия 1", videoUrl: "https://vkvideo.ru/video_ext.php?oid=-236370879&id=456239027&hash=d82e044018b07d9d&hd=4" },
+                "2": { title: "Серия 2", videoUrl: "https://vkvideo.ru/video_ext.php?oid=-236370879&id=456239028&hash=e5181f1a8e9dcd76&hd=4" },
+                "3": { title: "Серия 3", videoUrl: "https://vkvideo.ru/video_ext.php?oid=-236370879&id=456239029&hash=bd0ee527ba2f7d8c&hd=4" }
             }
         },
         "2": {
