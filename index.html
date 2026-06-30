@@ -5,6 +5,22 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
     <title>lap-films — каталог</title>
     <link rel="stylesheet" href="style.css">
+    
+    <!-- ===== O N E S I G N A L  К О Д ===== -->
+    <script src="https://cdn.onesignal.com/sdks/web/v16/OneSignalSDK.page.js" defer></script>
+    <script>
+        window.OneSignalDeferred = window.OneSignalDeferred || [];
+        OneSignalDeferred.push(async function(OneSignal) {
+            await OneSignal.init({
+                appId: "06743d87-ef34-4413-b35d-6d0e18d16f27",
+                safari_web_id: "web.onesignal.auto.25811132-3882-4d1b-a1e7-3632ed052841",
+                notifyButton: {
+                    enable: true,
+                },
+            });
+        });
+    </script>
+    <!-- ===== К О Н Е Ц  O N E S I G N A L ===== -->
 </head>
 <body>
     <!-- ОВЕРЛЕЙ ЗАГРУЗКИ – виден сразу, без display:none -->
