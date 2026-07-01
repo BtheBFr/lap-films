@@ -126,7 +126,7 @@ const FILMS_CATALOG = [
         "1": {
             title: "Сезон 1",
             series: {
-                "1": { title: "Серия 1", videoUrl: "https://host.cinemap.cc/dc734326dab9be042cc44d522d9bc1c1:2026063019/tvseries/66df29371893468a3af6c6c6e497a5f9c6471772/1080.mp4" },
+                "1": { title: "Серия 1", videoUrl: "https://vidmoly.biz/embed-caqp6ddphj55.html" },
                 "2": { title: "Серия 2", videoUrl: "https://host.cinemap.cc/ae02847144f097b6ffe024dbfb9af1bd:2026063019/tvseries/536586b9ec3e5c80f6bb0470b0edc11767357415/1080.mp4" },
                 "3": { title: "Серия 3", videoUrl: "https://host.cinemap.cc/6c627a095d1c054e6177d6c5c8a3cd31:2026063019/tvseries/aeb53fe5cd51fe35aabed3cc7ce75812ea7b1da1/1080.mp4" },
                 "4": { title: "Серия 4", videoUrl: "https://host.cinemap.cc/0626c4f56e164e7bba51c8c46ae53160:2026063019/tvseries/faf0ad02deff679dd804585a2dddfba7c9a22eb4/1080.mp4" },
