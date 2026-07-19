@@ -27,10 +27,9 @@
                 <div id="sequelNav" class="sequel-nav" style="display: none;"></div>
                 <h1 id="filmTitle"></h1>
                 <div class="video-wrapper">
-                    <!-- IFRAME С РАЗРЕШЕНИЯМИ ДЛЯ СКРИПТОВ И ПЕСОЧНИЦЫ -->
+                    <!-- ИСПРАВЛЕННЫЙ IFRAME: без sandbox, без scripts -->
                     <iframe id="driveIframe" src="" width="100%" height="100%" frameborder="0" 
-                        allow="autoplay; fullscreen; picture-in-picture; scripts" 
-                        sandbox="allow-scripts allow-same-origin allow-forms allow-popups" 
+                        allow="autoplay; fullscreen; picture-in-picture; encrypted-media" 
                         style="position: absolute; top: 0; left: 0; width: 100%; height: 100%;">
                     </iframe>
                 </div>
