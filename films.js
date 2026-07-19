@@ -245,7 +245,7 @@ const FILMS_CATALOG = [
                 "7": { title: "Серия 7 - Юбилей Алёшки", videoUrl: "https://gallium.host.cinemap.cc/fed156dfe6c1da8b1ebb0f95225bdbcb:2026063014/tvseries/27ef43d742bd38b8e358d893d7fe58ec8bf05b78/1080.mp4" },
                 "8": { title: "Серия 8 - Рублёвка", videoUrl: "https://gallium.host.cinemap.cc/fed156dfe6c1da8b1ebb0f95225bdbcb:2026063014/tvseries/27ef43d742bd38b8e358d893d7fe58ec8bf05b78/1080.mp4" },
                 "9": { title: "Серия 9 - Квартирный вопрос", videoUrl: "https://gallium.host.cinemap.cc/fed156dfe6c1da8b1ebb0f95225bdbcb:2026063014/tvseries/27ef43d742bd38b8e358d893d7fe58ec8bf05b78/1080.mp4" },
-                "10": { title: "Серия 10 - Соседка", videoUrl: "https://gallium.host.cinemap.cc/fed156dfe6c1da8b1ebb0f95225bdbcb:2026063014/tvseries/27ef43d742bd38b8e358d893d7fe58ec8bf05b78/1080.mp4" },
+                "10": { title: "Серия 10 - Соседка", videoUrl: "https://gallium.host.cinemap.cc/fed156dfe6c1da8b1ebb0f95225bdbcb:2026063014/tvseries/27ef43d742bd38b8e358d893d7fe58ec8bf05b78/1080.mp4" }
             }
         },
         "2": {
