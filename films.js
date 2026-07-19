@@ -132,9 +132,9 @@ const FILMS_CATALOG = [
                 "4": { title: "Серия 4", videoUrl: "https://nuno.ru/embed/d025n5xUgnY?autoplay=1" },
                 "5": { title: "Серия 5", videoUrl: "https://nuno.ru/embed/AmOrAMbr7Ne?autoplay=1" },
                 "6": { title: "Серия 6", videoUrl: "https://nuno.ru/embed/CkyOCkFZO97?autoplay=1" },
-                "7": { title: "Серия 7", videoUrl: "https://host.cinemap.cc/73ee35dbbe5b6c3cd23a81c1cadbd2ee:2026063019/tvseries/4e771031b2c96d0397d6d9821f4c58acb7e0b485/1080.mp4" },
-                "8": { title: "Серия 8", videoUrl: "https://host.cinemap.cc/c32ed0a12c51cf82494a3a43bd24e17e:2026063019/tvseries/a817534bec85095abc927b941d813fb4a203b52a/1080.mp4" },
-                "9": { title: "Серия 9", videoUrl: "https://host.cinemap.cc/944d2a95c574e6fdab515fcebe1ea13b:2026063019/tvseries/4439fc54fa4c16229b495af58454c7f6453a7144/1080.mp4" },
+                "7": { title: "Серия 7", videoUrl: "https://nuno.ru/embed/rgOXDdkGT7Q?autoplay=1" },
+                "8": { title: "Серия 8", videoUrl: "https://nuno.ru/embed/bBMsOg5HgIi?autoplay=1" },
+                "9": { title: "Серия 9", videoUrl: "https://nuno.ru/embed/0HQOpLimmjg?autoplay=1" },
                 "10": { title: "Серия 10", videoUrl: "https://host.cinemap.cc/865f9db1f8d952b58d9e344a67eaeba7:2026063019/tvseries/1e35d445990572ef3e8147b17a20cb85cf46876c/1080.mp4" }
             }
         }
