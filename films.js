@@ -238,7 +238,14 @@ const FILMS_CATALOG = [
             series: {
                 "1": { title: "Серия 1 - Новоселье", videoUrl: "https://vkvideo.ru/video_ext.php?oid=-236370879&id=456239024&hash=97e6fa681ddcdf17&hd=3" },
                 "2": { title: "Серия 2 - Голодовка", videoUrl: "https://gallium.host.cinemap.cc/fed156dfe6c1da8b1ebb0f95225bdbcb:2026063014/tvseries/27ef43d742bd38b8e358d893d7fe58ec8bf05b78/1080.mp4" },
-                "3": { title: "Серия 3 - Финал", videoUrl: "https://vkvideo.ru/video_ext.php?oid=-XXX&id=XXX&hash=XXX&hd=4" }
+                "3": { title: "Серия 3 - Алёшка Микаэлян", videoUrl: "https://vkvideo.ru/video_ext.php?oid=-XXX&id=XXX&hash=XXX&hd=4" },
+                "4": { title: "Серия 4 - Диета", videoUrl: "https://gallium.host.cinemap.cc/fed156dfe6c1da8b1ebb0f95225bdbcb:2026063014/tvseries/27ef43d742bd38b8e358d893d7fe58ec8bf05b78/1080.mp4" },
+                "5": { title: "Серия 5 - День рождения Тани", videoUrl: "https://gallium.host.cinemap.cc/fed156dfe6c1da8b1ebb0f95225bdbcb:2026063014/tvseries/27ef43d742bd38b8e358d893d7fe58ec8bf05b78/1080.mp4" },
+                "6": { title: "Серия 6 - Шантаж", videoUrl: "https://gallium.host.cinemap.cc/fed156dfe6c1da8b1ebb0f95225bdbcb:2026063014/tvseries/27ef43d742bd38b8e358d893d7fe58ec8bf05b78/1080.mp4" },
+                "7": { title: "Серия 7 - Юбилей Алёшки", videoUrl: "https://gallium.host.cinemap.cc/fed156dfe6c1da8b1ebb0f95225bdbcb:2026063014/tvseries/27ef43d742bd38b8e358d893d7fe58ec8bf05b78/1080.mp4" },
+                "8": { title: "Серия 8 - Рублёвка", videoUrl: "https://gallium.host.cinemap.cc/fed156dfe6c1da8b1ebb0f95225bdbcb:2026063014/tvseries/27ef43d742bd38b8e358d893d7fe58ec8bf05b78/1080.mp4" },
+                "9": { title: "Серия 9 - Квартирный вопрос", videoUrl: "https://gallium.host.cinemap.cc/fed156dfe6c1da8b1ebb0f95225bdbcb:2026063014/tvseries/27ef43d742bd38b8e358d893d7fe58ec8bf05b78/1080.mp4" },
+                "10": { title: "Серия 10 - Соседка", videoUrl: "https://gallium.host.cinemap.cc/fed156dfe6c1da8b1ebb0f95225bdbcb:2026063014/tvseries/27ef43d742bd38b8e358d893d7fe58ec8bf05b78/1080.mp4" },
             }
         },
         "2": {
