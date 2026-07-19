@@ -127,7 +127,7 @@ const FILMS_CATALOG = [
             title: "Сезон 1",
             series: {
                 "1": { title: "Серия 1", videoUrl: "https://nuno.ru/embed/jDT1JnSxW2a?autoplay=1" },
-                "2": { title: "Серия 2", videoUrl: "https://drive.google.com/file/d/1W3JQ-V0Z0bzn8yad97qkWKnRNc3T7tJP/preview" },
+                "2": { title: "Серия 2", videoUrl: "https://nuno.ru/embed/a7soHoBYHKg?autoplay=1" },
                 "3": { title: "Серия 3", videoUrl: "https://nuno.ru/embed/wYMtpBpk5KL?autoplay=1" },
                 "4": { title: "Серия 4", videoUrl: "https://drive.google.com/file/d/1_xxZoZblMx6bs9IGJ05wkjbcFeTMhdAr/preview" },
                 "5": { title: "Серия 5", videoUrl: "https://drive.google.com/file/d/1qDWIEZTq2koCXoZ5PLi6EwMbTIgudpi-/preview" },
