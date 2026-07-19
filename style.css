@@ -1071,3 +1071,17 @@ h1 {
     background: #4caf50;
     color: #0a0a0a;
 }
+
+/* === ФИКС КНОПКИ "СМОТРЕТЬ" === */
+.watch-btn-large,
+.watch-btn-large:focus,
+.watch-btn-large:active,
+.watch-btn-large:hover {
+    background: #e50914 !important;
+    color: white !important;
+    display: inline-block !important;
+    opacity: 1 !important;
+    visibility: visible !important;
+    position: relative;
+    z-index: 10;
+}
