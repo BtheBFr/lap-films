@@ -181,6 +181,16 @@ const FILMS_CATALOG = [
                 "18": { title: "Серия 18 - Игра в нищих", videoUrl: "https://nunoY?autoplay=1" },
                 "19": { title: "Серия 19 - Сын олигарха", videoUrl: "https://nunoautoplay=1" },
                 "20": { title: "Серия 20 - Семейный психолог", videoUrl: "https://nun?autoplay=1" },
+                "21": { title: "Серия 21 - Семейный психолог", videoUrl: "https://nun?autoplay=1" },
+                "22": { title: "Серия 22 - Семейный психолог", videoUrl: "https://nun?autoplay=1" },
+                "23": { title: "Серия 23 - Семейный психолог", videoUrl: "https://nun?autoplay=1" },
+                "24": { title: "Серия 24 - Семейный психолог", videoUrl: "https://nun?autoplay=1" },
+                "25": { title: "Серия 25 - Семейный психолог", videoUrl: "https://nun?autoplay=1" },
+                "26": { title: "Серия 26 - Семейный психолог", videoUrl: "https://nun?autoplay=1" },
+                "27": { title: "Серия 27 - Семейный психолог", videoUrl: "https://nun?autoplay=1" },
+                "28": { title: "Серия 28 - Семейный психолог", videoUrl: "https://nun?autoplay=1" },
+                "29": { title: "Серия 29 - Семейный психолог", videoUrl: "https://nun?autoplay=1" },
+                "30": { title: "Серия 30 - Семейный психолог", videoUrl: "https://nun?autoplay=1" }
             }
         },
         "2": {
