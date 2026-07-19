@@ -127,8 +127,8 @@ const FILMS_CATALOG = [
             title: "Сезон 1",
             series: {
                 "1": { title: "Серия 1", videoUrl: "https://drive.google.com/file/d/1_xxZoZblMx6bs9IGJ05wkjbcFeTMhdAr/preview" },
-                "2": { title: "Серия 2", videoUrl: "https://host.cinemap.cc/ae02847144f097b6ffe024dbfb9af1bd:2026063019/tvseries/536586b9ec3e5c80f6bb0470b0edc11767357415/1080.mp4" },
-                "3": { title: "Серия 3", videoUrl: "https://host.cinemap.cc/6c627a095d1c054e6177d6c5c8a3cd31:2026063019/tvseries/aeb53fe5cd51fe35aabed3cc7ce75812ea7b1da1/1080.mp4" },
+                "2": { title: "Серия 2", videoUrl: "https://drive.google.com/file/d/1W3JQ-V0Z0bzn8yad97qkWKnRNc3T7tJP/preview" },
+                "3": { title: "Серия 3", videoUrl: "https://drive.google.com/file/d/1BH6a3CLz5F2bB8NC8_TKTqhszLw3wV9W/preview" },
                 "4": { title: "Серия 4", videoUrl: "https://drive.usercontent.google.com/download?id=1_xxZoZblMx6bs9IGJ05wkjbcFeTMhdAr&export=download&authuser=0" },
                 "5": { title: "Серия 5", videoUrl: "https://host.cinemap.cc/9ea3579eecb3f07a144ccb7385ed3b48:2026063019/tvseries/6cf212b7ad48e6172afb3780a1b7d19727481ced/1080.mp4" },
                 "6": { title: "Серия 6", videoUrl: "https://host.cinemap.cc/2e657b180074a33e9055422101dc82fb:2026063019/tvseries/822b06b1f2875ea13dad1c7a435629163884cf41/1080.mp4" },
