@@ -170,7 +170,17 @@ const FILMS_CATALOG = [
                 "7": { title: "Серия 7 - Юбилей Алёшки", videoUrl: "https://gallium.host.cinemap.cc/fed156dfe6c1da8b1ebb0f95225bdbcb:2026063014/tvseries/27ef43d742bd38b8e358d893d7fe58ec8bf05b78/1080.mp4" },
                 "8": { title: "Серия 8 - Рублёвка", videoUrl: "https://gallium.host.cinemap.cc/fed156dfe6c1da8b1ebb0f95225bdbcb:2026063014/tvseries/27ef43d742bd38b8e358d893d7fe58ec8bf05b78/1080.mp4" },
                 "9": { title: "Серия 9 - Квартирный вопрос", videoUrl: "https://gallium.host.cinemap.cc/fed156dfe6c1da8b1ebb0f95225bdbcb:2026063014/tvseries/27ef43d742bd38b8e358d893d7fe58ec8bf05b78/1080.mp4" },
-                "10": { title: "Серия 10 - Соседка", videoUrl: "https://gallium.host.cinemap.cc/fed156dfe6c1da8b1ebb0f95225bdbcb:2026063014/tvseries/27ef43d742bd38b8e358d893d7fe58ec8bf05b78/1080.mp4" }
+                "10": { title: "Серия 10 - Соседка", videoUrl: "https://gallium.host.cinemap.cc/fed156dfe6c1da8b1ebb0f95225bdbcb:2026063014/tvseries/27ef43d742bd38b8e358d893d7fe58ec8bf05b78/1080.mp4" },
+                "11": { title: "Серия 11 - Шантаж", videoUrl: "https://nuno.ru/embed/o3zVAgmm9iY?autoplay=1" },
+                "12": { title: "Серия 12 - Шантаж", videoUrl: "https://nuno.ru/embed/o3zVAgmm9iY?autoplay=1" },
+                "13": { title: "Серия 13 - Шантаж", videoUrl: "https://nuno.ru/embed/o3zVAgmm9iY?autoplay=1" },
+                "14": { title: "Серия 14 - Шантаж", videoUrl: "https://nuno.ru/embed/o3zVAgmm9iY?autoplay=1" },
+                "15": { title: "Серия 15 - Шантаж", videoUrl: "https://nuno.ru/embed/o3zVAgmm9iY?autoplay=1" },
+                "16": { title: "Серия 16 - Шантаж", videoUrl: "https://nuno.ru/embed/o3zVAgmm9iY?autoplay=1" },
+                "17": { title: "Серия 17 - Шантаж", videoUrl: "https://nuno.ru/embed/o3zVAgmm9iY?autoplay=1" },
+                "18": { title: "Серия 18 - Шантаж", videoUrl: "https://nuno.ru/embed/o3zVAgmm9iY?autoplay=1" },
+                "19": { title: "Серия 19 - Шантаж", videoUrl: "https://nuno.ru/embed/o3zVAgmm9iY?autoplay=1" },
+                "20": { title: "Серия 20 - Шантаж", videoUrl: "https://nuno.ru/embed/o3zVAgmm9iY?autoplay=1" },
             }
         },
         "2": {
