@@ -49,19 +49,24 @@ function isMp4Url(url) {
 // ================================================================
 function getEmbedUrl(videoPath) {
     if (!videoPath) return '';
+    // YouTube
     if (videoPath.includes('youtube.com/watch') || videoPath.includes('youtu.be/')) {
         return convertToYouTubeEmbed(videoPath);
     }
     if (videoPath.includes('youtube.com/embed/')) return videoPath;
+    // Google Drive
     if (videoPath.includes('drive.google.com') || videoPath.includes('drive.usercontent.google.com')) {
         return convertToDriveEmbed(videoPath);
     }
+    // VK Video
     if (videoPath.includes('vkvideo.ru/video_ext.php') || videoPath.includes('vk.com/video_ext.php')) {
         return videoPath;
     }
+    // Прямой MP4
     if (isMp4Url(videoPath)) {
         return videoPath;
     }
+    // Если ничего не подошло – возвращаем как есть
     return videoPath;
 }
 
@@ -78,6 +83,9 @@ function convertToYouTubeEmbed(url) {
 }
 
 function convertToDriveEmbed(url) {
+    // Если уже preview – возвращаем как есть
+    if (url.includes('/preview')) return url;
+    // Если это ссылка на просмотр – преобразуем в preview
     let fileId = null;
     let match = url.match(/\/d\/([^\/]+)/);
     if (match) fileId = match[1];
@@ -86,6 +94,8 @@ function convertToDriveEmbed(url) {
         if (match) fileId = match[1];
     }
     if (fileId) return `https://drive.google.com/file/d/${fileId}/preview`;
+    // Если это прямая ссылка на скачивание – оставляем как есть
+    if (url.includes('download')) return url;
     return url;
 }
 
