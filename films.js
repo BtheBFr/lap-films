@@ -77,44 +77,6 @@ const CATEGORIES = {
 // КАТАЛОГ ФИЛЬМОВ
 // ================================================================
 const FILMS_CATALOG = [
-    // ---------- ЧЕБУРАШКА (группа сиквелов) ----------
-    {
-        id: "cheburashka",
-        title: "Чебурашка",
-        searchTerms: ["чебурашка", "ушастый", "cheburashka", "чебурвашка"],
-        description: "На небольшой приморский городок обрушивается дождь из апельсинов, а вместе с фруктами с неба падает неизвестный науке мохнатый непоседливый зверёк. Одержимое апельсинами животное оказывается в домике нелюдимого старика-садовника Геннадия, который из вредности решает оставить его жить у себя, так как местная богачка жаждет заполучить необычного зверя для своей избалованной внучки. Также эта коварная женщина, владелица кондитерской фабрики, пытается выведать секрет шоколада у хозяйки маленького магазинчика — дочери Геннадия, много лет обиженной на отца.",
-        poster: "posters/чебурашка.png",
-        seasons: "none",
-        videoUrl: "https://kraken.host.cinemap.cc/c7cb84b82bd8a059f290b0fc9afc50b0:2026063015/movies/a4fb5832065b42d39c35de7f4c24b0f39333da06/1080.mp4",
-        downloadUrl: null,
-        betterVersionReady: true,
-        betterVersionDate: null,
-        releaseDate: null,
-        comingSoon: false,
-        category: "film",
-        subcategory: ["comedy", "family"],
-        sequelGroup: "cheburashka",
-        sequelOrder: 1
-    },
-    {
-        id: "cheburashka2",
-        title: "Чебурашка 2",
-        searchTerms: ["чебурашка два", "чебурашка", "чебурашка 2", "чебурвашка 2", "чебурвашка", "чебураха два", "ушастый", "cheburashka dwa", "cheburashka 2", "cheburashka two", "cheburashka"],
-        description: "Уже год, как Чебурашка живет у Гены. Ушастик взрослеет, и у друзей часто случаются разногласия: Чебурашка начинает проявлять излишнюю самостоятельность и хулиганить, а Гена пытается его воспитывать. Героев приглашают на роскошный день рождения Сони, где ушастик случайно портит праздник. В надежде избежать очередной ссоры Чебурашка вместе с Соней и Гришей тайно сбегают в горы, где их ждут невероятные пейзажи и захватывающие, но опасные приключения!",
-        poster: "posters/чебурашка2.png",
-        seasons: "none",
-        videoUrl: "https://host.cinemap.cc/2cf76ab7804dfc6778b8eb2f7611c473:2026063015/movies/40e6dd18a664eca3d3817cfc09329dd6260355cb/1080.mp4",
-        downloadUrl: null,
-        betterVersionReady: true,
-        betterVersionDate: null,
-        releaseDate: null,
-        comingSoon: false,
-        category: "film",
-        subcategory: ["comedy", "family"],
-        sequelGroup: "cheburashka",
-        sequelOrder: 2
-    },
-
     // КОРОЛЕВА ДВОРА
     {
     id: "korolevadvora",
@@ -188,43 +150,6 @@ const FILMS_CATALOG = [
     subcategory: ["sciFi", "comedy"],
 },
     
-    // ---------- ЖДУН ----------
-    {
-        id: "zhdun",
-        title: "Ждун",
-        searchTerms: ["ждун", "ждуненок", "zhdun"],
-        description: "Корабль доброго инопланетянина Ждуна потерпел крушение во время метеоритного дождя и упал в лесу недалеко от Абрау-Дюрсо. Ждун отправляет сигнал бедствия и начинает ждать помощи, но вот незадача — до его планеты 5 световых лет и ждать пришлось бы долго. К счастью, на помощь Ждуну приходит любознательный мальчик Никита и вся его семья. Никите и семье Семеновых предстоит помочь пришельцу отремонтировать корабль, избежать козней местного афериста-бизнесмена, который страстно мечтает завладеть инопланетными технологиями, и вернуться домой.",
-        poster: "posters/ждун.png",
-        seasons: "none",
-        videoUrl: "https://limbo.host.cinemap.cc/d01d15e4e775d893d00a520f200b75f0:2026063015/movies/fada3592bb473aed39a057a1fe64c86f17501c64/1080.mp4",
-        downloadUrl: null,
-        betterVersionReady: true,
-        betterVersionDate: null,
-        releaseDate: null,
-        comingSoon: false,
-        category: "film",
-        subcategory: ["comedy", "sciFi", "family"],
-        sequelGroup: "zdun",
-        sequelOrder: 1
-    },
-    {
-        id: "zhdun2",
-        title: "Ждун 2",
-        searchTerms: ["ждун", "ждун2", "zhdun"],
-        description: "Продолжение приключений серого великана",
-        poster: "posters/ждун2.png",
-        seasons: "none",
-        videoUrl: "https://silence.host.cinemap.cc/138459c7dccb7321c2ec2a5990a21a61:2026063015/movies/8a8b06dab5152ee8252091460df348b9a71a3de4/1080.mp4",
-        downloadUrl: null,
-        betterVersionReady: true,
-        betterVersionDate: null,
-        releaseDate: null,
-        comingSoon: false,
-        subcategory: ["comedy", "sciFi", "family"],
-        sequelGroup: "zdun",
-        sequelOrder: 2
-    },
-
     // --------- САШАТАНЯ ---------
     {
     id: "sashatanya",
@@ -263,25 +188,7 @@ const FILMS_CATALOG = [
     comingSoon: false,
     category: "serial",
     subcategory: ["sitcom", "comedy"],
-},
-    
-    // ---------- ДРУГИЕ ----------
-    {
-        id: "obsessiya",
-        title: "Обсессия",
-        searchTerms: ["обсессия", "obsessiya", "одержимость"],
-        description: "Психологический триллер",
-        poster: "posters/obsessiya.jpg",
-        seasons: "none",
-        videoUrl: "https://dagon.host.cinemap.cc/4f1d86552b89f12d3b84bc8fb3b7bf3f:2026063015/movies/8dd9dee132073d449095fb77aa91505dd634d61f/1080.mp4",
-        downloadUrl: "https://drive.google.com/uc?export=download&id=ВАШ_ID_2",
-        betterVersionReady: false,
-        betterVersionDate: null,
-        releaseDate: null,
-        comingSoon: false,
-        category: "film",
-        subcategory: "thriller"
-    }
+}
 ];
 
 // ================================================================
