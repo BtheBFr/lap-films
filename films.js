@@ -135,7 +135,7 @@ const FILMS_CATALOG = [
                 "7": { title: "Серия 7", videoUrl: "https://nuno.ru/embed/rgOXDdkGT7Q?autoplay=1" },
                 "8": { title: "Серия 8", videoUrl: "https://nuno.ru/embed/bBMsOg5HgIi?autoplay=1" },
                 "9": { title: "Серия 9", videoUrl: "https://nuno.ru/embed/0HQOpLimmjg?autoplay=1" },
-                "10": { title: "Серия 10", videoUrl: "https://host.cinemap.cc/865f9db1f8d952b58d9e344a67eaeba7:2026063019/tvseries/1e35d445990572ef3e8147b17a20cb85cf46876c/1080.mp4" }
+                "10": { title: "Серия 10", videoUrl: "https://nuno.ru/embed/bhIkE07gxHo?autoplay=1" }
             }
         }
     },
