@@ -1062,3 +1062,12 @@ h1 {
 .category-tags .cat-tag:first-child {
     border-color: #e50914;
 }
+
+.download-app-btn {
+    border-color: #4caf50;
+    color: #4caf50;
+}
+.download-app-btn:hover {
+    background: #4caf50;
+    color: #0a0a0a;
+}
