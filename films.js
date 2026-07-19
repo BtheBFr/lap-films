@@ -190,7 +190,17 @@ const FILMS_CATALOG = [
                 "27": { title: "Серия 27 - Конфликт", videoUrl: "https://nun?autoplay=1" },
                 "28": { title: "Серия 28 - Водительские права", videoUrl: "https://nun?autoplay=1" },
                 "29": { title: "Серия 29 - Смена руководства", videoUrl: "https://nun?autoplay=1" },
-                "30": { title: "Серия 30 - Друзья", videoUrl: "https://nun?autoplay=1" }
+                "30": { title: "Серия 30 - Друзья", videoUrl: "https://nun?autoplay=1" },
+                "31": { title: "Серия 31 - Смена руководства", videoUrl: "https://nun?autoplay=1" },
+                "32": { title: "Серия 32 - Смена руководства", videoUrl: "https://nun?autoplay=1" },
+                "33": { title: "Серия 33 - Смена руководства", videoUrl: "https://nun?autoplay=1" },
+                "34": { title: "Серия 34 - Смена руководства", videoUrl: "https://nun?autoplay=1" },
+                "35": { title: "Серия 35 - Смена руководства", videoUrl: "https://nun?autoplay=1" },
+                "36": { title: "Серия 36 - Смена руководства", videoUrl: "https://nun?autoplay=1" },
+                "37": { title: "Серия 37 - Смена руководства", videoUrl: "https://nun?autoplay=1" },
+                "38": { title: "Серия 38 - Смена руководства", videoUrl: "https://nun?autoplay=1" },
+                "39": { title: "Серия 39 - Смена руководства", videoUrl: "https://nun?autoplay=1" },
+                "40": { title: "Серия 40 - Смена руководства", videoUrl: "https://nun?autoplay=1" },
             }
         },
         "2": {
