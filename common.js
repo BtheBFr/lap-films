@@ -725,7 +725,8 @@ function renderSeasonSeriesNav() {
         html += `<div class="series-list">`;
         seriesKeys.forEach(srKey => {
             const isActive = (sKey === currentSeasonKey && srKey === currentSeriesKey);
-            html += `<button class="series-select-btn ${isActive ? 'active' : ''}" data-season="${sKey}" data-series="${srKey}">${season.series[srKey].title || 'Серия '+srKey}</button>`;
+            // Изменено: выводим только "Серия N"
+            html += `<button class="series-select-btn ${isActive ? 'active' : ''}" data-season="${sKey}" data-series="${srKey}">Серия ${srKey}</button>`;
         });
         html += `</div>`;
         html += `</div>`;
