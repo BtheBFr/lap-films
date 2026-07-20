@@ -221,6 +221,14 @@ h1 {
     transform: scale(1.03);
     box-shadow: 0 6px 20px rgba(229,9,20,0.3);
 }
+.download-app-btn {
+    border-color: #4caf50;
+    color: #4caf50;
+}
+.download-app-btn:hover {
+    background: #4caf50;
+    color: #0a0a0a;
+}
 
 /* ================================================================
    СТРАНИЦА ПЛЕЕРА
@@ -463,6 +471,19 @@ h1 {
 .watch-btn-large:active {
     transform: scale(0.98);
 }
+/* Фикс для мобильных — чтобы кнопка не исчезала */
+.watch-btn-large,
+.watch-btn-large:focus,
+.watch-btn-large:active,
+.watch-btn-large:hover {
+    background: #e50914 !important;
+    color: white !important;
+    display: inline-block !important;
+    opacity: 1 !important;
+    visibility: visible !important;
+    position: relative;
+    z-index: 10;
+}
 
 /* ----- Кнопка "Назад" ----- */
 .back-link {
@@ -612,6 +633,25 @@ h1 {
 .modal-content textarea:focus {
     outline: none;
     border-color: #e50914;
+}
+
+/* ----- Стилизация скролла в модалках ----- */
+.modal-content::-webkit-scrollbar {
+    width: 4px;
+}
+.modal-content::-webkit-scrollbar-track {
+    background: #1a1a2a;
+}
+.modal-content::-webkit-scrollbar-thumb {
+    background: #e50914;
+    border-radius: 10px;
+}
+.modal-content::-webkit-scrollbar-thumb:hover {
+    background: #b00710;
+}
+.modal-content {
+    scrollbar-width: thin;
+    scrollbar-color: #e50914 #1a1a2a;
 }
 
 /* ----- Модалка выбора сезона/серии ----- */
@@ -1061,27 +1101,4 @@ h1 {
 }
 .category-tags .cat-tag:first-child {
     border-color: #e50914;
-}
-
-.download-app-btn {
-    border-color: #4caf50;
-    color: #4caf50;
-}
-.download-app-btn:hover {
-    background: #4caf50;
-    color: #0a0a0a;
-}
-
-/* === ФИКС КНОПКИ "СМОТРЕТЬ" === */
-.watch-btn-large,
-.watch-btn-large:focus,
-.watch-btn-large:active,
-.watch-btn-large:hover {
-    background: #e50914 !important;
-    color: white !important;
-    display: inline-block !important;
-    opacity: 1 !important;
-    visibility: visible !important;
-    position: relative;
-    z-index: 10;
 }
