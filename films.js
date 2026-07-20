@@ -89,12 +89,12 @@ const FILMS_CATALOG = [
             title: "Сезон 1",
             series: {
                 "1": { title: "Серия 1", videoUrl: "https://nuno.ru/embed/jDT1JnSxW2a?autoplay=1" },
-                "2": { title: "Серия 2", videoUrl: "https://nuno.ru/embed/a7soHoBYHKg?autoplay=1" },
-                "3": { title: "Серия 3", videoUrl: "https://nuno.ru/embed/wYMtpBpk5KL?autoplay=1" },
-                "4": { title: "Серия 4", videoUrl: "https://nuno.ru/embed/d025n5xUgnY?autoplay=1" },
-                "5": { title: "Серия 5", videoUrl: "https://nuno.ru/embed/AmOrAMbr7Ne?autoplay=1" },
-                "6": { title: "Серия 6", videoUrl: "https://nuno.ru/embed/CkyOCkFZO97?autoplay=1" },
-                "7": { title: "Серия 7", videoUrl: "https://nuno.ru/embed/rgOXDdkGT7Q?autoplay=1" },
+                "2": { title: "Серия 2", videoUrl: "https://kinescope.io/embed/e4EYUzRqpT9ppvxsbPhVqR?autoplay=1" },
+                "3": { title: "Серия 3", videoUrl: "https://kinescope.io/embed/hEQZCq74ivS3gC2imUNBve?autoplay=1" },
+                "4": { title: "Серия 4", videoUrl: "https://kinescope.io/embed/kiWzsuj1PH31eKX9iFSAfD?autoplay=1" },
+                "5": { title: "Серия 5", videoUrl: "https://kinescope.io/embed/wvUDso7wXYTHavYcGwwYym?autoplay=1" },
+                "6": { title: "Серия 6", videoUrl: "https://kinescope.io/embed/rCPCATm7GoKM3o9aqtnr82?autoplay=1" },
+                "7": { title: "Серия 7", videoUrl: "https://kinescope.io/embed/2npU4FADoEWmdP8xiSE66a?autoplay=1" },
                 "8": { title: "Серия 8", videoUrl: "https://nuno.ru/embed/bBMsOg5HgIi?autoplay=1" },
                 "9": { title: "Серия 9", videoUrl: "https://nuno.ru/embed/0HQOpLimmjg?autoplay=1" },
                 "10": { title: "Серия 10", videoUrl: "https://nuno.ru/embed/bhIkE07gxHo?autoplay=1" }
