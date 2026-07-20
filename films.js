@@ -96,7 +96,7 @@ const FILMS_CATALOG = [
                 "6": { title: "Серия 6", videoUrl: "https://kinescope.io/embed/rCPCATm7GoKM3o9aqtnr82?autoplay=1" },
                 "7": { title: "Серия 7", videoUrl: "https://kinescope.io/embed/2npU4FADoEWmdP8xiSE66a?autoplay=1" },
                 "8": { title: "Серия 8", videoUrl: "https://kinescope.io/embed/aps5Jj5pwpuWA1fyiL3mcP?autoplay=1" },
-                "9": { title: "Серия 9", videoUrl: "https://nuno.ru/embed/0HQOpLimmjg?autoplay=1" },
+                "9": { title: "Серия 9", videoUrl: "https://kinescope.io/embed/kaLJDeSv2czcXQJdPwGa9p?autoplay=1" },
                 "10": { title: "Серия 10", videoUrl: "https://kinescope.io/embed/vbGRqCWZNUwnDm57Y6caTy?autoplay=1" }
             }
         }
