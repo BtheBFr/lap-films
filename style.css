@@ -265,12 +265,28 @@ h1 {
     overflow-y: auto;
     padding-right: 5px;
 }
+/* Стили для скролла описания (без стрелок) */
 .film-description-full::-webkit-scrollbar {
     width: 4px;
+}
+.film-description-full::-webkit-scrollbar-track {
+    background: #1a1a2a;
 }
 .film-description-full::-webkit-scrollbar-thumb {
     background: #e50914;
     border-radius: 10px;
+}
+.film-description-full::-webkit-scrollbar-thumb:hover {
+    background: #b00710;
+}
+.film-description-full::-webkit-scrollbar-button {
+    display: none;
+    height: 0;
+    width: 0;
+}
+.film-description-full {
+    scrollbar-width: thin;
+    scrollbar-color: #e50914 #1a1a2a;
 }
 
 /* ----- Сиквелы (над плеером) ----- */
@@ -635,21 +651,32 @@ h1 {
     border-color: #e50914;
 }
 
-/* ----- Стилизация скролла в модалках ----- */
-.modal-content::-webkit-scrollbar {
+/* ----- Стилизация скроллов в модалках и др. (без стрелок) ----- */
+.modal-content::-webkit-scrollbar,
+.suggested-films-list::-webkit-scrollbar {
     width: 4px;
 }
-.modal-content::-webkit-scrollbar-track {
+.modal-content::-webkit-scrollbar-track,
+.suggested-films-list::-webkit-scrollbar-track {
     background: #1a1a2a;
 }
-.modal-content::-webkit-scrollbar-thumb {
+.modal-content::-webkit-scrollbar-thumb,
+.suggested-films-list::-webkit-scrollbar-thumb {
     background: #e50914;
     border-radius: 10px;
 }
-.modal-content::-webkit-scrollbar-thumb:hover {
+.modal-content::-webkit-scrollbar-thumb:hover,
+.suggested-films-list::-webkit-scrollbar-thumb:hover {
     background: #b00710;
 }
-.modal-content {
+.modal-content::-webkit-scrollbar-button,
+.suggested-films-list::-webkit-scrollbar-button {
+    display: none;
+    height: 0;
+    width: 0;
+}
+.modal-content,
+.suggested-films-list {
     scrollbar-width: thin;
     scrollbar-color: #e50914 #1a1a2a;
 }
